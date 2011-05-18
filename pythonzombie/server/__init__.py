@@ -3,6 +3,7 @@ from simplejson import loads, dumps
 import subprocess
 import socket
 import threading
+import time
 import atexit
 import os
 
@@ -32,9 +33,8 @@ class ZombieProxyServer(object):
 
     process = None
 
-    def __init__(self, port=8124):
+    def __init__(self):
         print "Starting Zombie.js..."
-        self.port = port
 
         #
         # Execute the node proxy server in a subprocess.
@@ -42,13 +42,14 @@ class ZombieProxyServer(object):
         # evaluates it as Javascript, and passes the eval'ed
         # input to a Zombie.js Browser object.
         #
-        args = ['node', self.__proxy_path__(), str(self.port)]
+        args = ['node', self.__proxy_path__()]
         self.process = subprocess.Popen(
             args,
             stdout = subprocess.PIPE,
             stderr = subprocess.STDOUT,
             universal_newlines = True
         )
+        time.sleep(.5)
 
         #
         # Start a thread to monitor and redirect the
@@ -65,8 +66,8 @@ class ZombieProxyServer(object):
 
     def __send__(self, js):
         # Establish a socket connection to the Zombie.js proxy server
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect(('127.0.0.1', self.port))
+        self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        self.sock.connect('/tmp/zombie.sock')
 
         # Send Zombie.js API calls, followed by a stream.end() call.
         self.sock.send("%s" % js)

@@ -25,6 +25,6 @@ net.createServer(function (stream) {
     buffer = "";
   });
 
-}).listen(process.argv[2], 'localhost');
+}).listen('/tmp/zombie.sock');
 
-console.log('Proxy server running at http://127.0.0.1:'+process.argv[2]+'/');
+console.log('Proxy server running on /tmp/zombie.sock...');
