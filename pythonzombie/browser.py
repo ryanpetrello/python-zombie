@@ -1,10 +1,35 @@
 from pythonzombie.server import ZombieProxyServer
+import abc
 
 class Queryable(object):
+    """
+    An abstract base class which represents a DOM reference
+    point from which a CSS selector can be applied.
+    """
 
+    __metaclass__ = abc.ABCMeta
+    
     def __query__(self, selector, context=None):
+        """
+        Evaluate a CSS selector against the document (or an option context
+        DOMNode) and return a list of DOMNode objects.
+        """
+
+        #
+        # JSON-encode the provided CSS selector so it can be treated as a Javascript
+        # query argument.
+        #
+        # Combine the selector with the (optional) context reference and
+        # building a function argstring to be passed to Zombie.js'
+        # browser.querySelectorAll() API method.
+        #
         args = ','.join(filter(None, [self.__encode__(selector), context]))
 
+        #
+        # Run the compiled query, store object (JSDOM Element) references
+        # in the TCP server's ELEMENTS cache, and return a stringified list of
+        # reference indexes.
+        #
         js = """
             var results = [];
             var nodes = browser.querySelectorAll(%s);
@@ -17,6 +42,11 @@ class Queryable(object):
         """ % (
             args
         )
+
+        #
+        # Translate each index of ELEMENTS into a DOMNode object which can be
+        # used to make subsequent object/attribute lookups later.
+        #
         return map(
             lambda x: DOMNode(int(x), self.server),
             self.__decode__(self.server.send(js))
@@ -38,12 +68,22 @@ class Browser(Queryable):
             self.server = ZombieProxyServer()
 
     def visit(self, url):
+        """
+        Load the document from the specified URL.
+        """
         return self.server.wait('visit', url) 
 
     def html(self):
+        """
+        Returns the HTML content of the current document.
+        """
         return self.server.json('browser.html()')
 
     def css(self, selector, context=None):
+        """
+        Evaluate a CSS selector against the document (or an option context
+        DOMNode) and return a list of DOMNode objects.
+        """
         return self.__query__(selector, context)
 
 
@@ -54,6 +94,10 @@ class DOMNode(Queryable):
         self.server = server
 
     def css(self, selector):
+        """
+        Evaluate a CSS selector against this node and return a list of
+        child DOMNode objects.
+        """
         return self.__query__(selector, self.__native__)
 
     #
@@ -62,13 +106,13 @@ class DOMNode(Queryable):
     # 
     @property
     def tagName(self):
-        return self.json('tagName').lower()
+        return self.__jsonattr__('tagName').lower()
     
     @property
     def value(self):
         if self.tagName == 'textarea':
             return self.textContent
-        return self.json('value')
+        return self.__jsonattr__('value')
 
     @value.setter
     def value(self, value):
@@ -95,11 +139,11 @@ class DOMNode(Queryable):
 
         self.server.send(js)
 
-    def json(self, attr):
+    def __jsonattr__(self, attr):
         return self.server.json("%s.%s" % (self.__native__, attr))
 
     def __getattr__(self, name):
-        return self.json(name)
+        return self.__jsonattr__(name)
 
     #
     # Events
