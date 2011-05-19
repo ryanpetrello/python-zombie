@@ -37,7 +37,7 @@ class ZombieProxyServer(object):
         print "Starting Zombie.js..."
 
         #
-        # Execute the node proxy server in a subprocess.
+        # Spawn the node proxy server in a subprocess.
         # This is a simple socket server that listens for data,
         # evaluates it as Javascript, and passes the eval'ed
         # input to a Zombie.js Browser object.
@@ -45,10 +45,11 @@ class ZombieProxyServer(object):
         args = ['node', self.__proxy_path__()]
         self.process = subprocess.Popen(
             args,
+            stdin  = subprocess.PIPE,
             stdout = subprocess.PIPE,
-            stderr = subprocess.STDOUT,
-            universal_newlines = True
+            stderr = subprocess.STDOUT
         )
+        self.process.stdin.close()
         time.sleep(.5)
 
         #
@@ -75,7 +76,7 @@ class ZombieProxyServer(object):
         # Read the response
         response = []
         while True:
-            data = self.sock.recv(1024)
+            data = self.sock.recv(4096)
             if not data: break
             response.append(data)
 
