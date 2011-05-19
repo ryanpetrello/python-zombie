@@ -5,7 +5,7 @@ var zombie = require('zombie');
 //
 // Store a global reference to the Zombie.js
 // browser object and a buffered collection
-// of Zombie.JS calls.
+// of Zombie.js calls.
 //
 var browser = null;
 
