@@ -92,36 +92,29 @@ class ZombieProxyServer(object):
     def __decode__(self, json):
         return loads(json)
 
-    def attr(self, attr):
-        js = """
-        stream.end(browser.%s);
-        """ % attr
-        return self.__send__(js);
+    def json(self, js):
+        return self.__decode__(self.__send__(
+            "stream.end(JSON.stringify(%s));" % js
+        ))
 
-    def method(self, method, *args):
+    def wait(self, method, *args):
         if args:
-            argstring = ', '.join(
+            methodargs = ', '.join(
                 [self.__encode__(a) for a in args]
             )
         else:
-            argstring = 'null'
+            methodargs = 'null'
 
         js = """
-        stream.end(browser.%s(%s));
-        """ % (method, argstring)
-
-        return self.__send__(js);
-
-    def visit(self, *args):
-        js = """
-        browser.visit(%s, function(err, browser){
+        browser.%s(%s, function(err, browser){
             if(err)
                 stream.end(JSON.stringify(err.stack));
             else    
                 stream.end();
         });
-        """ % ', '.join(
-            [self.__encode__(a) for a in args]
+        """ % (
+            method,
+            methodargs
         )
 
         return self.__send__(js);

@@ -9,7 +9,7 @@ class Control(object):
             self.server = ZombieProxyServer()
 
     def visit(self, url):
-        return self.server.visit(url) 
+        return self.server.wait('visit', url) 
 
     def html(self, *args):
-        return self.server.method('html', *args)
+        return self.server.json('browser.html()', *args)

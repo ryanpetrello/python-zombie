@@ -15,7 +15,6 @@ var buffer = "";
 
 net.createServer(function (stream){
   stream.setEncoding('utf8');
-  stream.allowHalfOpen = true;
 
   stream.on('data', function (data){
     buffer += data;
