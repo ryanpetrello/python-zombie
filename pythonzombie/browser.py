@@ -11,7 +11,7 @@ class Queryable(object):
     
     def __query__(self, selector, context=None):
         """
-        Evaluate a CSS selector against the document (or an option context
+        Evaluate a CSS selector against the document (or an optional context
         DOMNode) and return a list of DOMNode objects.
         """
 
