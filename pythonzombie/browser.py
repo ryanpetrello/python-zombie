@@ -67,12 +67,10 @@ class Browser(Queryable):
         else:
             self.server = ZombieProxyServer()
 
-    def visit(self, url):
-        """
-        Load the document from the specified URL.
-        """
-        return self.server.wait('visit', url) 
-
+    #
+    # Document Content
+    #
+    @property
     def html(self):
         """
         Returns the HTML content of the current document.
@@ -85,6 +83,31 @@ class Browser(Queryable):
         DOMNode) and return a list of DOMNode objects.
         """
         return self.__query__(selector, context)
+
+    #
+    # Navigation
+    #
+    @property
+    def location(self):
+        return self.server.json('browser.location')
+
+    @location.setter
+    def location(self, url):
+        self.visit(url)
+
+    @property
+    def statusCode(self):
+        return self.server.json('browser.statusCode')
+
+    @property
+    def redirected(self):
+        return self.server.json('browser.redirected')
+    
+    def visit(self, url):
+        """
+        Load the document from the specified URL.
+        """
+        return self.server.wait('visit', url) 
 
 
 class DOMNode(Queryable):
