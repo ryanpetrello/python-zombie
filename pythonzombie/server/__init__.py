@@ -92,6 +92,9 @@ class ZombieProxyServer(object):
     def __decode__(self, json):
         return loads(json)
 
+    def send(self, js):
+        return self.__send__(js)
+
     def json(self, js):
         return self.__decode__(self.__send__(
             "stream.end(JSON.stringify(%s));" % js

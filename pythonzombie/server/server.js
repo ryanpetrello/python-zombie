@@ -1,8 +1,22 @@
 var net = require('net');
 var sys = require('sys');
 var zombie = require('zombie');
+
+//
+// Store a global reference to the Zombie.js
+// browser object and a buffered collection
+// of Zombie.JS calls.
+//
 var browser = null;
-var buffer = "";
+
+//
+// This is used as a per-browser cache to store
+// NodeList results.  Subsequent TCP API calls
+// will reference indexes of ELEMENTS to retrieve
+// DOM attributes/properties accumulated in previous
+// browser.querySelectorAll() calls.
+//
+var ELEMENTS = [];
 
 //
 // Simple proxy server implementation
@@ -17,11 +31,11 @@ net.createServer(function (stream){
   stream.setEncoding('utf8');
 
   stream.on('data', function (data){
-    buffer += data;
-    if (browser == null)
+    if (browser == null){
       browser = new zombie.Browser();
-    eval(buffer);
-    buffer = "";
+      ELEMENTS = [];
+    }
+    eval(data);
   });
 
 }).listen(process.argv[2]);
