@@ -33,8 +33,9 @@ class ZombieProxyServer(object):
 
     process = None
 
-    def __init__(self):
+    def __init__(self, socket='/tmp/zombie.sock'):
         print "Starting Zombie.js..."
+        self.socket = socket
 
         #
         # Spawn the node proxy server in a subprocess.
@@ -42,21 +43,21 @@ class ZombieProxyServer(object):
         # evaluates it as Javascript, and passes the eval'ed
         # input to a Zombie.js Browser object.
         #
-        args = ['node', self.__proxy_path__()]
-        self.process = subprocess.Popen(
+        args = ['env', 'node', self.__proxy_path__(), self.socket]
+        self.child = subprocess.Popen(
             args,
             stdin  = subprocess.PIPE,
             stdout = subprocess.PIPE,
             stderr = subprocess.STDOUT
         )
-        self.process.stdin.close()
+        self.child.stdin.close()
         time.sleep(.5)
 
         #
         # Start a thread to monitor and redirect the
         # subprocess stdout and stderr to the console.
         #
-        PipeWorker(self.process.stdout).start()
+        PipeWorker(self.child.stdout).start()
 
         # When this process ends, clean up the node subprocess
         atexit.register(self.kill)
@@ -67,21 +68,21 @@ class ZombieProxyServer(object):
 
     def __send__(self, js):
         # Establish a socket connection to the Zombie.js proxy server
-        self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        self.sock.connect('/tmp/zombie.sock')
+        s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        s.connect(self.socket)
 
         # Send Zombie.js API calls, followed by a stream.end() call.
-        self.sock.send("%s" % js)
+        s.send("%s" % js)
 
         # Read the response
         response = []
         while True:
-            data = self.sock.recv(4096)
+            data = s.recv(4096)
             if not data: break
             response.append(data)
 
         # Close the socket connection
-        self.sock.close();
+        s.close();
 
         return ''.join(response)
 
@@ -126,7 +127,11 @@ class ZombieProxyServer(object):
         return self.__send__(js);
 
     def kill(self):
-        if self.process:
+        if self.child:
             print "Stopping Zombie.js..."
-            self.process.kill()
-            self.process = None
+            self.child.kill()
+            self.child = None
+
+        # Cleanup the closed socket
+        if os.path.exists(self.socket):
+            os.remove(self.socket)

@@ -13,11 +13,11 @@ var buffer = "";
 // https://github.com/plataformatec/capybara-zombie
 //
 
-net.createServer(function (stream) {
+net.createServer(function (stream){
   stream.setEncoding('utf8');
   stream.allowHalfOpen = true;
 
-  stream.on('data', function (data) {
+  stream.on('data', function (data){
     buffer += data;
     if (browser == null)
       browser = new zombie.Browser();
@@ -25,6 +25,6 @@ net.createServer(function (stream) {
     buffer = "";
   });
 
-}).listen('/tmp/zombie.sock');
+}).listen(process.argv[2]);
 
-console.log('Proxy server running on /tmp/zombie.sock...');
+console.log('Node TCP server running on '+process.argv[2]+'...');
