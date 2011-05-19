@@ -87,6 +87,8 @@ class ZombieProxyServer(object):
         return ''.join(response)
 
     def __encode__(self, obj):
+        if hasattr(obj, '__json__'):
+            return obj.__json__
         return dumps(obj)
 
     def __decode__(self, json):

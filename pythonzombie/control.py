@@ -90,7 +90,7 @@ class DOMNode(object):
     # Events
     #
     def click(self):
-        self.server.wait('fire', 'click', self.__native__)
+        self.server.wait('fire', 'click', self)
 
     #
     # Private methods
@@ -106,3 +106,7 @@ class DOMNode(object):
         if className:
             name = "%s.%s" % (name, className)
         return "DOMNode<%s>" % name
+
+    @property
+    def __json__(self):
+        return self.__native__
