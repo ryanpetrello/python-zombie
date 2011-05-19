@@ -201,8 +201,11 @@ class DOMNode(BaseNode):
     #
     # Events
     #
+    def fire(self, event):
+        self.server.wait('fire', event, self)
+
     def click(self):
-        self.server.wait('fire', 'click', self)
+        self.fire('click')
 
     #
     # Private methods
