@@ -59,7 +59,22 @@ class Queryable(object):
         return self.server.__decode__(value)
 
 
-class Browser(Queryable):
+class BaseNode(Queryable):
+
+    def __fill__(self, field, value):
+        js = """
+            browser.fill(%s, %s);
+            stream.end();
+        """ % (
+            self.__encode__(field),
+            self.__encode__(value)
+        )
+       
+        self.server.send(js)
+        return self
+
+
+class Browser(BaseNode):
 
     def __init__(self, server=None):
         if server:
@@ -107,21 +122,36 @@ class Browser(Queryable):
         """
         Load the document from the specified URL.
         """
-        return self.server.wait('visit', url) 
+        self.server.wait('visit', url) 
+
+    #
+    # Forms
+    #
+    def fill(self, field, value):
+        return self.__fill__(field, value)
+
+    def pressButton(self, selector):
+        self.server.wait('pressButton', selector)
 
 
-class DOMNode(Queryable):
+class DOMNode(BaseNode):
 
     def __init__(self, index, server):
         self.index = index
         self.server = server
 
+    #
+    # Inherited functionality
+    #
     def css(self, selector):
         """
         Evaluate a CSS selector against this node and return a list of
         child DOMNode objects.
         """
         return self.__query__(selector, self.__native__)
+
+    def fill(self, value):
+        return self.__fill__(self, value)
 
     #
     # Attribute (normal and specialized)
