@@ -41,19 +41,63 @@ class DOMNode(object):
         self.index = index
         self.server = server
 
+    #
+    # Attribute (normal and specialized)
+    # access methods.
+    # 
     @property
     def tagName(self):
         return self.json('tagName').lower()
+    
+    @property
+    def value(self):
+        if self.tagName == 'textarea':
+            return self.textContent
+        return self.json('value')
+
+    @value.setter
+    def value(self, value):
+        js = """
+            var node = %(native)s;
+            var tagName = node.tagName;
+            if(tagName == "TEXTAREA"){
+              node.textContent = %(value)s;
+            }else{
+                var type = node.getAttribute('type');
+                if(type == "checkbox"){
+                    %(value)s ? browser.check(node) : browser.uncheck(node);
+                }else if(type == "radio"){
+                    browser.choose(node);
+                }else{
+                    browser.fill(node, %(value)s);
+                }
+            }
+            stream.end();
+        """ % {
+            'native'    : self.__native__,
+            'value'     : self.server.__encode__(value)
+        }
+
+        self.server.send(js)
 
     def json(self, attr):
         return self.server.json("%s.%s" % (self.__native__, attr))
 
+    def __getattr__(self, name):
+        return self.json(name)
+
+    #
+    # Events
+    #
+    def click(self):
+        self.server.wait('fire', 'click', self.__native__)
+
+    #
+    # Private methods
+    #
     @property
     def __native__(self):
         return "ELEMENTS[%s]" % self.index
-
-    def __getattr__(self, name):
-        return self.json(name)
 
     def __repr__(self):
         name, id, className = self.tagName, self.id, self.className
@@ -61,4 +105,4 @@ class DOMNode(object):
             name = "%s#%s" % (name, id)
         if className:
             name = "%s.%s" % (name, className)
-        return name
+        return "DOMNode<%s>" % name
