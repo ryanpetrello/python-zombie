@@ -14,7 +14,7 @@ class Control(object):
     def html(self):
         return self.server.json('browser.html()')
 
-    def query(self, selector, context=None):
+    def css(self, selector, context=None):
         args = ','.join(filter(None, [self.server.__encode__(selector), context]))
 
         js = """
