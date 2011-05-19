@@ -1,21 +1,9 @@
 from pythonzombie.server import ZombieProxyServer
 
-class Control(object):
+class Queryable(object):
 
-    def __init__(self, server=None):
-        if server:
-            self.server = server
-        else:
-            self.server = ZombieProxyServer()
-
-    def visit(self, url):
-        return self.server.wait('visit', url) 
-
-    def html(self):
-        return self.server.json('browser.html()')
-
-    def css(self, selector, context=None):
-        args = ','.join(filter(None, [self.server.__encode__(selector), context]))
+    def __query__(self, selector, context=None):
+        args = ','.join(filter(None, [self.__encode__(selector), context]))
 
         js = """
             var results = [];
@@ -31,15 +19,42 @@ class Control(object):
         )
         return map(
             lambda x: DOMNode(int(x), self.server),
-            self.server.__decode__(self.server.send(js))
+            self.__decode__(self.server.send(js))
         )
 
+    def __encode__(self, value):
+        return self.server.__encode__(value)
 
-class DOMNode(object):
+    def __decode__(self, value):
+        return self.server.__decode__(value)
+
+
+class Browser(Queryable):
+
+    def __init__(self, server=None):
+        if server:
+            self.server = server
+        else:
+            self.server = ZombieProxyServer()
+
+    def visit(self, url):
+        return self.server.wait('visit', url) 
+
+    def html(self):
+        return self.server.json('browser.html()')
+
+    def css(self, selector, context=None):
+        return self.__query__(selector, context)
+
+
+class DOMNode(Queryable):
 
     def __init__(self, index, server):
         self.index = index
         self.server = server
+
+    def css(self, selector):
+        return self.__query__(selector, self.__native__)
 
     #
     # Attribute (normal and specialized)
@@ -75,7 +90,7 @@ class DOMNode(object):
             stream.end();
         """ % {
             'native'    : self.__native__,
-            'value'     : self.server.__encode__(value)
+            'value'     : self.__encode__(value)
         }
 
         self.server.send(js)
@@ -105,7 +120,7 @@ class DOMNode(object):
             name = "%s#%s" % (name, id)
         if className:
             name = "%s.%s" % (name, className)
-        return "DOMNode<%s>" % name
+        return "<%s>" % name
 
     @property
     def __json__(self):
