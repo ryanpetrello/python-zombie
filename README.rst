@@ -1,7 +1,7 @@
 NOTE: This is in active development and not ready for use yet.
 
-A Python driver/wrapper for Zombie.js (http://zombie.labnotes.org/), inspired
-by Capybara-Zombie (https://github.com/plataformatec/capybara-zombie)::
+A Python driver for Zombie.js (http://zombie.labnotes.org/) running on
+top of node.js, inspired by Capybara-Zombie (https://github.com/plataformatec/capybara-zombie)::
 
     from pythonzombie import Browser
     browser = Browser()

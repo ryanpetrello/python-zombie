@@ -62,6 +62,7 @@ class ZombieProxyServer(object):
         # When this process ends, clean up the node subprocess
         atexit.register(self.kill)
 
+    @classmethod
     def __proxy_path__(self):
         path = os.path.dirname(os.path.abspath(__file__))
         return os.path.join(path, 'server.js')
