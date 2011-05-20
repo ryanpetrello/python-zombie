@@ -14,7 +14,7 @@ class TestServerCommunication(TestCase):
         # Build the path to the example.html file
         path = os.path.dirname(os.path.abspath(__file__)) 
         path = os.path.join(path, 'helpers', 'example.html')
-        self.path = 'file://localhost:80%s' % path
+        self.path = 'file://%s' % path
         print self.path
 
     def tearDown(self):
