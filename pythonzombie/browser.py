@@ -3,6 +3,10 @@ from pythonzombie.proxy.client import ZombieProxyClient
 import abc
 
 def verb(f):
+    """
+    Methods that are decorated as `@verb` should always return a reference
+    to the original object (e.g., Browser, DOMNode) to allow function chaining.
+    """
     def wrap(self, *args, **kwargs):
         f(self, *args, **kwargs)
         return self
@@ -117,6 +121,7 @@ class Browser(BaseNode):
         return self.client.json('browser.location')
 
     @location.setter
+    @verb
     def location(self, url):
         self.visit(url)
 
