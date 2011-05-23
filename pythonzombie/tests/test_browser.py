@@ -39,4 +39,4 @@ class TestServerCommunication(TestCase):
                 with_args(js)
             )):
 
-            self.browser.visit(self.path)
+            assert self.browser.visit(self.path) == self.browser
