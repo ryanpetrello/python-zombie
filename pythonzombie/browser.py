@@ -1,4 +1,5 @@
-from pythonzombie.server import ZombieProxyServer
+from pythonzombie.proxy.server import ZombieProxyServer
+from pythonzombie.proxy.client import ZombieProxyClient
 import abc
 
 def verb(f):
@@ -55,15 +56,15 @@ class Queryable(object):
         # used to make subsequent object/attribute lookups later.
         #
         return map(
-            lambda x: DOMNode(int(x), self.server),
-            self.__decode__(self.server.send(js))
+            lambda x: DOMNode(int(x), self.client),
+            self.__decode__(self.client.send(js))
         )
 
     def __encode__(self, value):
-        return self.server.__encode__(value)
+        return self.client.__encode__(value)
 
     def __decode__(self, value):
-        return self.server.__decode__(value)
+        return self.client.__decode__(value)
 
 
 class BaseNode(Queryable):
@@ -77,16 +78,19 @@ class BaseNode(Queryable):
             self.__encode__(value)
         )
        
-        self.server.send(js)
+        self.client.send(js)
 
 
 class Browser(BaseNode):
 
     def __init__(self, server=None):
-        if server:
-            self.server = server
-        else:
-            self.server = ZombieProxyServer()
+        #
+        # If a server isn't specified,
+        # spawn a new one.
+        #
+        if server is None:
+            server = ZombieProxyServer()
+        self.client = ZombieProxyClient(server.socket)
 
     #
     # Document Content
@@ -96,7 +100,7 @@ class Browser(BaseNode):
         """
         Returns the HTML content of the current document.
         """
-        return self.server.json('browser.html()')
+        return self.client.json('browser.html()')
 
     def css(self, selector, context=None):
         """
@@ -110,7 +114,7 @@ class Browser(BaseNode):
     #
     @property
     def location(self):
-        return self.server.json('browser.location')
+        return self.client.json('browser.location')
 
     @location.setter
     def location(self, url):
@@ -118,18 +122,18 @@ class Browser(BaseNode):
 
     @property
     def statusCode(self):
-        return self.server.json('browser.statusCode')
+        return self.client.json('browser.statusCode')
 
     @property
     def redirected(self):
-        return self.server.json('browser.redirected')
+        return self.client.json('browser.redirected')
     
     @verb
     def visit(self, url):
         """
         Load the document from the specified URL.
         """
-        self.server.wait('visit', url) 
+        self.client.wait('visit', url) 
 
     #
     # Forms
@@ -140,14 +144,14 @@ class Browser(BaseNode):
 
     @verb
     def pressButton(self, selector):
-        self.server.wait('pressButton', selector)
+        self.client.wait('pressButton', selector)
 
 
 class DOMNode(BaseNode):
 
-    def __init__(self, index, server):
+    def __init__(self, index, client):
         self.index = index
-        self.server = server
+        self.client = client
 
     #
     # Inherited functionality
@@ -201,10 +205,10 @@ class DOMNode(BaseNode):
             'value'     : self.__encode__(value)
         }
 
-        self.server.send(js)
+        self.client.send(js)
 
     def __jsonattr__(self, attr):
-        return self.server.json("%s.%s" % (self.__native__, attr))
+        return self.client.json("%s.%s" % (self.__native__, attr))
 
     def __getattr__(self, name):
         return self.__jsonattr__(name)
@@ -214,7 +218,7 @@ class DOMNode(BaseNode):
     #
     @verb
     def fire(self, event):
-        self.server.wait('fire', event, self)
+        self.client.wait('fire', event, self)
 
     @verb
     def click(self):

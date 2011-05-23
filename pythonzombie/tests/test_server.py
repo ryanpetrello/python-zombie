@@ -1,6 +1,6 @@
-from pythonzombie.server    import ZombieProxyServer
-from simplejson             import loads, dumps
-from unittest               import TestCase
+from pythonzombie.proxy.server      import ZombieProxyServer
+from simplejson                     import loads, dumps
+from unittest                       import TestCase
 
 import cStringIO
 import fudge
@@ -22,6 +22,10 @@ class FakePopen(object):
 
 
 class TestServerSpawn(TestCase):
+
+    def setUp(self):
+        super(TestServerSpawn, self).setUp()
+        self.server = ZombieProxyServer()
 
     def tearDown(self):
         super(TestServerSpawn, self).tearDown()
@@ -89,18 +93,6 @@ class TestServerSpawn(TestCase):
             ):
             ZombieProxyServer()
 
-
-class TestServerCommunication(TestCase):
-    
-    def setUp(self):
-        super(TestServerCommunication, self).setUp()
-        self.server = ZombieProxyServer()
-
-    def tearDown(self):
-        super(TestServerCommunication, self).tearDown()
-        fudge.clear_expectations()
-        self.server.kill()
-
     def test_server_running(self):
         assert self.server.child is not None
         assert self.server.child.pid is not None
@@ -121,71 +113,3 @@ class TestServerCommunication(TestCase):
     def test_server_kill_cleanup(self):
         self.server.kill() 
         assert os.path.exists('/tmp/zombie.sock') == False
-
-    def test_encode(self):
-        foo = {
-            'foo': 'bar'
-        }
-        self.server.__encode__(foo) == dumps(foo)
-
-        self.server.__encode__(FakeNode()) == 'ENCODED'
-
-    def test_decode(self):
-        foo = dumps({
-            'foo': 'bar'
-        })
-        self.server.__decode__(foo) == loads(foo)
-
-    def test_simple_send(self):
-        self.server.send(
-            "stream.end()"
-        )
-
-    def test_simple_json(self):
-        obj = {
-            'foo'   : 'bar',
-            'test'  : 500
-        }
-        assert self.server.json(obj) == obj
-
-    @fudge.with_fakes
-    def test_simple_wait(self):
-
-        js = """
-        browser.visit("http://example.com", function(err, browser){
-            if(err)
-                stream.end(JSON.stringify(err.stack));
-            else    
-                stream.end();
-        });
-        """
-
-        with fudge.patched_context(
-            ZombieProxyServer,
-            '__send__',
-            (fudge.Fake('__send__', expect_call=True).
-                with_args(js)
-            )):
-
-            self.server.wait('visit', 'http://example.com')
-
-    @fudge.with_fakes
-    def test_wait_without_arguments(self):
-
-        js = """
-        browser.wait(null, function(err, browser){
-            if(err)
-                stream.end(JSON.stringify(err.stack));
-            else    
-                stream.end();
-        });
-        """
-
-        with fudge.patched_context(
-            ZombieProxyServer,
-            '__send__',
-            (fudge.Fake('__send__', expect_call=True).
-                with_args(js)
-            )):
-
-            self.server.wait('wait')

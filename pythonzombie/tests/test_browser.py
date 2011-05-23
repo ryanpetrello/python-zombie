@@ -1,4 +1,4 @@
-from pythonzombie.server        import ZombieProxyServer
+from pythonzombie.proxy.client  import ZombieProxyClient
 from pythonzombie.browser       import Browser
 from unittest                   import TestCase
 
@@ -33,7 +33,7 @@ class TestServerCommunication(TestCase):
         """ % self.path
 
         with fudge.patched_context(
-            ZombieProxyServer,
+            ZombieProxyClient,
             '__send__',
             (fudge.Fake('__send__', expect_call=True).
                 with_args(js)
