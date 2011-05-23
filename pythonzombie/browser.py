@@ -1,6 +1,13 @@
 from pythonzombie.server import ZombieProxyServer
 import abc
 
+def verb(f):
+    def wrap(self, *args, **kwargs):
+        f(self, *args, **kwargs)
+        return self
+    return wrap 
+
+
 class Queryable(object):
     """
     An abstract base class which represents a DOM reference
@@ -71,7 +78,6 @@ class BaseNode(Queryable):
         )
        
         self.server.send(js)
-        return self
 
 
 class Browser(BaseNode):
@@ -118,22 +124,23 @@ class Browser(BaseNode):
     def redirected(self):
         return self.server.json('browser.redirected')
     
+    @verb
     def visit(self, url):
         """
         Load the document from the specified URL.
         """
         self.server.wait('visit', url) 
-        return self
 
     #
     # Forms
     #
+    @verb
     def fill(self, field, value):
-        return self.__fill__(field, value)
+        self.__fill__(field, value)
 
+    @verb
     def pressButton(self, selector):
         self.server.wait('pressButton', selector)
-        return self
 
 
 class DOMNode(BaseNode):
@@ -152,8 +159,9 @@ class DOMNode(BaseNode):
         """
         return self.__query__(selector, self.__native__)
 
+    @verb
     def fill(self, value):
-        return self.__fill__(self, value)
+        self.__fill__(self, value)
 
     #
     # Attribute (normal and specialized)
@@ -170,6 +178,7 @@ class DOMNode(BaseNode):
         return self.__jsonattr__('value')
 
     @value.setter
+    @verb
     def value(self, value):
         js = """
             var node = %(native)s;
@@ -193,7 +202,6 @@ class DOMNode(BaseNode):
         }
 
         self.server.send(js)
-        return self
 
     def __jsonattr__(self, attr):
         return self.server.json("%s.%s" % (self.__native__, attr))
@@ -204,12 +212,13 @@ class DOMNode(BaseNode):
     #
     # Events
     #
+    @verb
     def fire(self, event):
         self.server.wait('fire', event, self)
-        return self
 
+    @verb
     def click(self):
-        return self.fire('click')
+        self.fire('click')
 
     #
     # Private methods
