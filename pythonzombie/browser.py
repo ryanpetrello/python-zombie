@@ -121,7 +121,6 @@ class Browser(BaseNode):
         return self.client.json('browser.location')
 
     @location.setter
-    @verb
     def location(self, url):
         self.visit(url)
 
@@ -187,7 +186,6 @@ class DOMNode(BaseNode):
         return self.__jsonattr__('value')
 
     @value.setter
-    @verb
     def value(self, value):
         js = """
             var node = %(native)s;
