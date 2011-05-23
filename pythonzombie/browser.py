@@ -123,6 +123,7 @@ class Browser(BaseNode):
         Load the document from the specified URL.
         """
         self.server.wait('visit', url) 
+        return self
 
     #
     # Forms
@@ -132,6 +133,7 @@ class Browser(BaseNode):
 
     def pressButton(self, selector):
         self.server.wait('pressButton', selector)
+        return self
 
 
 class DOMNode(BaseNode):
@@ -191,6 +193,7 @@ class DOMNode(BaseNode):
         }
 
         self.server.send(js)
+        return self
 
     def __jsonattr__(self, attr):
         return self.server.json("%s.%s" % (self.__native__, attr))
@@ -203,9 +206,10 @@ class DOMNode(BaseNode):
     #
     def fire(self, event):
         self.server.wait('fire', event, self)
+        return self
 
     def click(self):
-        self.fire('click')
+        return self.fire('click')
 
     #
     # Private methods
