@@ -4,11 +4,26 @@ except ImportError:
     from ez_setup import use_setuptools
     use_setuptools()
     from setuptools import setup, find_packages
+from distutils.core import Command
 
 #
 # determine requirements
 #
-requirements = []
+requirements = [
+    'simplejson',
+    'fudge'
+]
+
+class PyTest(Command):
+    user_options = []
+    def initialize_options(self):
+        pass
+    def finalize_options(self):
+        pass
+    def run(self):
+        import sys,subprocess
+        errno = subprocess.call([sys.executable, 'pythonzombie/tests/run.py'])
+        raise SystemExit(errno)
 
 setup(
     name                    = "pythonzombie",
@@ -32,4 +47,5 @@ setup(
     license                 = "BSD",
                             
     install_requires        = requirements,
+    cmdclass                = {'test': PyTest}
 )
