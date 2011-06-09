@@ -15,12 +15,12 @@ class TestServerCommunication(TestCase):
         path = os.path.dirname(os.path.abspath(__file__)) 
         path = os.path.join(path, 'helpers', 'example.html')
         self.path = 'file://%s' % path
-        print self.path
 
     def tearDown(self):
         super(TestServerCommunication, self).tearDown()
         fudge.clear_expectations()
 
+    @fudge.with_fakes
     def test_visit(self):
 
         js = """
