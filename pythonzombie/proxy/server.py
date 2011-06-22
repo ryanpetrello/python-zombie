@@ -37,7 +37,6 @@ class ZombieProxyServer(object):
     process = None
 
     def __init__(self, socket='/tmp/zombie.sock'):
-        print "Starting Zombie.js..."
         self.socket = socket
 
         #
@@ -49,9 +48,9 @@ class ZombieProxyServer(object):
         args = ['env', 'node', self.__proxy_path__(), self.socket]
         self.child = subprocess.Popen(
             args,
-            stdin  = subprocess.PIPE,
-            stdout = subprocess.PIPE,
-            stderr = subprocess.STDOUT
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
         )
         self.child.stdin.close()
         time.sleep(.5)
@@ -72,7 +71,6 @@ class ZombieProxyServer(object):
 
     def kill(self):
         if self.child:
-            print "Stopping Zombie.js..."
             self.child.kill()
             self.child = None
 
