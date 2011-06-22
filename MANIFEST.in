@@ -1,2 +1,3 @@
+include pythonzombie/proxy/server.js
 include setup.py
 include README.rst
