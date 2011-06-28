@@ -37,7 +37,6 @@ class ZombieProxyServer(object):
     process = None
 
     def __init__(self, socket='/tmp/zombie.sock'):
-        print "Starting Zombie.js..."
         self.socket = socket
 
         #
@@ -72,7 +71,6 @@ class ZombieProxyServer(object):
 
     def kill(self):
         if self.child:
-            print "Stopping Zombie.js..."
             self.child.kill()
             self.child = None
 
