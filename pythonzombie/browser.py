@@ -35,7 +35,7 @@ class Queryable(object):
         # building a function argstring to be passed to Zombie.js'
         # browser.querySelectorAll() API method.
         #
-        args = ','.join(filter(None, [self.__encode__(selector), context]))
+        args = ','.join(filter(None, [self.__encode__(selector)]))
 
         #
         # Run the compiled query, store object (JSDOM Element) references
@@ -44,7 +44,7 @@ class Queryable(object):
         #
         js = """
             var results = [];
-            var nodes = browser.querySelectorAll(%s);
+            var nodes = %s.querySelectorAll(%s);
             for(var i = 0; i < nodes.length; i++){
                 var node = nodes[i];
                 ELEMENTS.push(node);
@@ -52,6 +52,7 @@ class Queryable(object):
             };
             stream.end(JSON.stringify(results));
         """ % (
+            context if context else 'browser',
             args
         )
 
