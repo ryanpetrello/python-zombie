@@ -246,10 +246,12 @@ class DOMNode(BaseNode):
         return "ELEMENTS[%s]" % self.index
 
     def __repr__(self):
-        name, id, className = self.tagName, self.id, self.className
-        if id:
+        name, id, className = self.tagName.upper(), self.id, self.className
+        if id and className:
+            name = "%s#%s.%s" % (name, id, className)
+        elif id:
             name = "%s#%s" % (name, id)
-        if className:
+        elif className:
             name = "%s.%s" % (name, className)
         return "<%s>" % name
 

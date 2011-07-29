@@ -95,9 +95,23 @@ class TestBrowser(BrowserClientTest):
 
 
 class TestDOMNode(BrowserClientTest):
+
+    def test_printable(self):
+        self.browser.visit(self.path)
+
+        form = self.browser.css('form')[0]
+        assert repr(form) == '<FORM#form.submittable>'
+
+        button = self.browser.css('button')[0]
+        assert repr(button) == '<BUTTON#submit>' 
+
+        textfield = self.browser.css('input')[0]
+        assert repr(textfield) == '<INPUT.textfield>' 
+
+        paragraph = self.browser.css('p')[0]
+        assert repr(paragraph) == '<P>'
     
     def test_css_chaining(self):
-
         # The <form> contains 4 input fields
         form = self.browser.visit(self.path).css('form')[0]
         matches = form.css('input')
