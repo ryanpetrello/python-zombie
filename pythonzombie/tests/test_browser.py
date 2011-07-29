@@ -1,14 +1,18 @@
 from pythonzombie.proxy.client  import ZombieProxyClient
-from pythonzombie.browser       import Browser
+from pythonzombie               import Browser
 from unittest                   import TestCase
 
 import fudge
 import os
 
-class TestServerCommunication(TestCase):
-    
+
+class BrowserClientTest(TestCase):
+    """
+    Sets up a pythonzombie.Browser() object to test with.
+    """
+
     def setUp(self):
-        super(TestServerCommunication, self).setUp()
+        super(BrowserClientTest, self).setUp()
         self.browser = Browser()
        
         # Build the path to the example.html file
@@ -17,8 +21,11 @@ class TestServerCommunication(TestCase):
         self.path = 'file://%s' % path
 
     def tearDown(self):
-        super(TestServerCommunication, self).tearDown()
+        super(BrowserClientTest, self).tearDown()
         fudge.clear_expectations()
+
+
+class TestServerCommunication(BrowserClientTest):
 
     @fudge.with_fakes
     def test_visit(self):
@@ -41,7 +48,7 @@ class TestServerCommunication(TestCase):
 
             assert self.browser.visit(self.path) == self.browser
 
-class TestBrowser(TestCase):
+class TestBrowser(BrowserClientTest):
 
     def setUp(self):
         super(TestBrowser, self).setUp()
@@ -85,3 +92,7 @@ class TestBrowser(TestCase):
         assert self.browser.location['hash'] == ''
         self.browser.pressButton('Search')
         assert self.browser.location['hash'] == '#submit'
+
+
+class TestDOMNode(BrowserClientTest):
+    pass
