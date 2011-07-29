@@ -199,7 +199,26 @@ class DOMNode(BaseNode):
             'native'    : self.__native__,
             'value'     : self.__encode__(value)
         }
+        self.client.send(js)
 
+    @property
+    def checked(self):
+        return self.__jsonattr__('checked')
+
+    @checked.setter
+    def checked(self, value):
+        js = """
+            var node = %(native)s;
+            var type = node.getAttribute('type');
+            if(type == "radio")
+                browser.choose(node);
+            else
+                node.checked = %(value)s;
+            stream.end();
+        """ % {
+            'native'    : self.__native__,
+            'value'     : self.__encode__(value)
+        }
         self.client.send(js)
 
     def __jsonattr__(self, attr):
