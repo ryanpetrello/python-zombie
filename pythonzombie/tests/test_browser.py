@@ -76,6 +76,16 @@ class TestBrowser(BrowserClientTest):
             matches = self.browser.css(tag)
             assert len(matches)
 
+    def test_by_id(self):
+        matches = self.browser.visit(self.path).css('#submit')
+        assert len(matches) == 1
+        assert matches[0].tagName.lower() == 'button'
+
+    def test_by_class_name(self):
+        matches = self.browser.visit(self.path).css('.textfield')
+        assert len(matches) == 1
+        assert matches[0].tagName.lower() == 'input'
+
     def test_location_get(self):
         assert self.browser.visit(self.path).location['href'] == self.path
 
