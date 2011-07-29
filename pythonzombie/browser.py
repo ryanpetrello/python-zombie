@@ -65,6 +65,7 @@ class Queryable(object):
             self.__decode__(self.client.send(js))
         )
 
+    # Shortcuts for JSON loads/dumps
     def __encode__(self, value):
         return self.client.__encode__(value)
 
@@ -73,6 +74,9 @@ class Queryable(object):
 
 
 class BaseNode(Queryable):
+    """
+    More Browser/DOMNode shared functionality.
+    """
 
     def __fill__(self, field, value):
         js = """
@@ -87,11 +91,13 @@ class BaseNode(Queryable):
 
 
 class Browser(BaseNode):
+    """
+    A Browser object, analogous to zombie.Browser.
+    """
 
     def __init__(self, server=None):
         #
-        # If a server isn't specified,
-        # spawn a new one.
+        # If a proxy server isn't specified, spawn one automatically.
         #
         if server is None:
             server = ZombieProxyServer()
@@ -128,7 +134,7 @@ class Browser(BaseNode):
     @verb
     def visit(self, url):
         """
-        Load the document from the specified URL.
+        A shortcut to load the document from the specified URL.
         """
         self.client.wait('visit', url) 
 
@@ -137,14 +143,24 @@ class Browser(BaseNode):
     #
     @verb
     def fill(self, field, value):
+        """
+        Fill a specified form field in the current document.
+        """
         self.__fill__(field, value)
 
     @verb
     def pressButton(self, selector):
+        """
+        Press a specific button (by innerText or CSS selector in the current
+        document.
+        """
         self.client.wait('pressButton', selector)
 
 
 class DOMNode(BaseNode):
+    """
+    Represents a node in the current document's DOM.
+    """
 
     def __init__(self, index, client):
         self.index = index
@@ -156,12 +172,15 @@ class DOMNode(BaseNode):
     def css(self, selector):
         """
         Evaluate a CSS selector against this node and return a list of
-        child DOMNode objects.
+        (child) DOMNode objects.
         """
         return self.__query__(selector, self.__native__)
 
     @verb
     def fill(self, value):
+        """
+        If applicable, fill the current node's value.
+        """
         self.__fill__(self, value)
 
     #

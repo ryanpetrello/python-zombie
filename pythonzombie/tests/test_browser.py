@@ -145,7 +145,7 @@ class TestDOMNode(BrowserClientTest):
             matches = self.browser.css(tag)
             assert matches[0].tagName.lower() == tag
 
-    def test_simple_value(self):
+    def test_simple_field_value(self):
         """
         <input> fields should have a toggleable value.
         """
@@ -153,6 +153,15 @@ class TestDOMNode(BrowserClientTest):
         assert self.browser.css('input')[0].value == ''
         self.browser.css('input')[0].value = 'Zombie.js'
         assert self.browser.css('input')[0].value == 'Zombie.js'
+
+    def test_textarea_value(self):
+        """
+        <textarea> fields should have a toggleable value.
+        """
+        self.browser.visit(self.path)
+        assert self.browser.css('textarea')[0].value == ''
+        self.browser.css('textarea')[0].value = 'Sample Content'
+        assert self.browser.css('textarea')[0].value == 'Sample Content'
 
     def test_checkbox_value(self):
         """
