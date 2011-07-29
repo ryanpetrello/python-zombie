@@ -40,3 +40,48 @@ class TestServerCommunication(TestCase):
             )):
 
             assert self.browser.visit(self.path) == self.browser
+
+class TestBrowser(TestCase):
+
+    def setUp(self):
+        super(TestBrowser, self).setUp()
+        self.browser = Browser()
+       
+        # Build the path to the example.html file
+        path = os.path.dirname(os.path.abspath(__file__)) 
+        path = os.path.join(path, 'helpers', 'example.html')
+        self.path = 'file://%s' % path
+        self.html = open(path, 'r').read()
+
+    def test_html(self):
+        assert '<p>This is an HTML document</p>' in self.browser.visit(
+            self.path
+        ).html
+
+    def test_html(self):
+        assert '<p>This is an HTML document</p>' in self.browser.visit(
+            self.path
+        ).html
+
+    def test_location_get(self):
+        assert self.browser.visit(self.path).location['href'] == self.path
+
+    def test_location_set(self):
+        self.browser.location = self.path
+        assert self.browser.visit(self.path).location['href'] == self.path
+
+    def test_css(self):
+        for tag in ['h1', 'p', 'form', 'input', 'button']:
+            matches = self.browser.visit(self.path).css(tag)
+            assert len(matches) == 1
+            assert matches[0].tagName.lower() == tag
+
+    def test_fill(self):
+        self.browser.visit(self.path).fill('q', 'Zombie.js')
+        assert self.browser.css('input')[0].value == 'Zombie.js'
+
+    def test_press_button(self):
+        self.browser.visit(self.path)
+        assert self.browser.location['hash'] == ''
+        self.browser.pressButton('Search')
+        assert self.browser.location['hash'] == '#submit'

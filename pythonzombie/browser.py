@@ -124,14 +124,6 @@ class Browser(BaseNode):
     def location(self, url):
         self.visit(url)
 
-    @property
-    def statusCode(self):
-        return self.client.json('browser.statusCode')
-
-    @property
-    def redirected(self):
-        return self.client.json('browser.redirected')
-    
     @verb
     def visit(self, url):
         """
