@@ -65,11 +65,6 @@ class TestBrowser(BrowserClientTest):
             self.path
         ).html
 
-    def test_html(self):
-        assert '<p>This is an HTML document</p>' in self.browser.visit(
-            self.path
-        ).html
-
     def test_css(self):
         self.browser.visit(self.path)
         for tag in ['h1', 'p', 'form', 'input', 'button']:
