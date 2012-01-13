@@ -111,5 +111,5 @@ class TestServerSpawn(TestCase):
         assert os.path.exists('/tmp/zombie.sock')
 
     def test_server_kill_cleanup(self):
-        self.server.kill() 
+        self.server.kill()
         assert os.path.exists('/tmp/zombie.sock') == False

@@ -14,9 +14,9 @@ class BrowserClientTest(TestCase):
     def setUp(self):
         super(BrowserClientTest, self).setUp()
         self.browser = Browser()
-       
+
         # Build the path to the example.html file
-        path = os.path.dirname(os.path.abspath(__file__)) 
+        path = os.path.dirname(os.path.abspath(__file__))
         path = os.path.join(path, 'helpers', 'example.html')
         self.path = 'file://%s' % path
 
@@ -34,7 +34,7 @@ class TestServerCommunication(BrowserClientTest):
         browser.visit("%s", function(err, browser){
             if(err)
                 stream.end(JSON.stringify(err.stack));
-            else    
+            else
                 stream.end();
         });
         """ % self.path
@@ -53,9 +53,9 @@ class TestBrowser(BrowserClientTest):
     def setUp(self):
         super(TestBrowser, self).setUp()
         self.browser = Browser()
-       
+
         # Build the path to the example.html file
-        path = os.path.dirname(os.path.abspath(__file__)) 
+        path = os.path.dirname(os.path.abspath(__file__))
         path = os.path.join(path, 'helpers', 'example.html')
         self.path = 'file://%s' % path
         self.html = open(path, 'r').read()
@@ -108,14 +108,14 @@ class TestDOMNode(BrowserClientTest):
         assert repr(form) == '<FORM#form.submittable>'
 
         button = self.browser.css('button')[0]
-        assert repr(button) == '<BUTTON#submit>' 
+        assert repr(button) == '<BUTTON#submit>'
 
         textfield = self.browser.css('input')[0]
-        assert repr(textfield) == '<INPUT.textfield>' 
+        assert repr(textfield) == '<INPUT.textfield>'
 
         paragraph = self.browser.css('p')[0]
         assert repr(paragraph) == '<P>'
-    
+
     def test_css_chaining(self):
         # The <form> contains 4 input fields
         form = self.browser.visit(self.path).css('form')[0]
