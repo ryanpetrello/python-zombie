@@ -2,6 +2,7 @@ from pythonzombie.proxy.server import ZombieProxyServer
 from pythonzombie.proxy.client import ZombieProxyClient
 import abc
 
+
 def verb(f):
     """
     Methods that are decorated as `@verb` should always return a reference
@@ -10,7 +11,7 @@ def verb(f):
     def wrap(self, *args, **kwargs):
         f(self, *args, **kwargs)
         return self
-    return wrap 
+    return wrap
 
 
 class Queryable(object):
@@ -20,7 +21,7 @@ class Queryable(object):
     """
 
     __metaclass__ = abc.ABCMeta
-    
+
     def __query__(self, selector, context=None):
         """
         Evaluate a CSS selector against the document (or an optional context
@@ -86,7 +87,7 @@ class BaseNode(Queryable):
             self.__encode__(field),
             self.__encode__(value)
         )
-       
+
         self.client.send(js)
 
 
@@ -136,7 +137,7 @@ class Browser(BaseNode):
         """
         A shortcut to load the document from the specified URL.
         """
-        self.client.wait('visit', url) 
+        self.client.wait('visit', url)
 
     #
     # Forms
@@ -186,11 +187,11 @@ class DOMNode(BaseNode):
     #
     # Attribute (normal and specialized)
     # access methods.
-    # 
+    #
     @property
     def tagName(self):
         return self.__jsonattr__('tagName').lower()
-    
+
     @property
     def value(self):
         if self.tagName == 'textarea':
@@ -216,8 +217,8 @@ class DOMNode(BaseNode):
             }
             stream.end();
         """ % {
-            'native'    : self.__native__,
-            'value'     : self.__encode__(value)
+            'native': self.__native__,
+            'value': self.__encode__(value)
         }
         self.client.send(js)
 
@@ -236,8 +237,8 @@ class DOMNode(BaseNode):
                 node.checked = %(value)s;
             stream.end();
         """ % {
-            'native'    : self.__native__,
-            'value'     : self.__encode__(value)
+            'native': self.__native__,
+            'value': self.__encode__(value)
         }
         self.client.send(js)
 
