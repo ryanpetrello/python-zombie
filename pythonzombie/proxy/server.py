@@ -17,7 +17,8 @@ class PipeWorker(threading.Thread):
             line = pipe.readline()
             if line:
                 print line
-            else: break
+            else:
+                break
 
     def run(self):
         try:
@@ -29,7 +30,7 @@ class PipeWorker(threading.Thread):
 class ZombieProxyServer(object):
     """
     Spawns a node.js subprocess that listens on a TCP socket.
-    A ZombieProxyClient streams data to the server, which 
+    A ZombieProxyClient streams data to the server, which
     evaluates it as Javascript, passes it on to a Zombie.js
     Browser object, and returns the results.
     """
@@ -48,9 +49,9 @@ class ZombieProxyServer(object):
         args = ['env', 'node', self.__proxy_path__(), self.socket]
         self.child = subprocess.Popen(
             args,
-            stdin  = subprocess.PIPE,
-            stdout = subprocess.PIPE,
-            stderr = subprocess.STDOUT
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT
         )
         self.child.stdin.close()
         time.sleep(.5)

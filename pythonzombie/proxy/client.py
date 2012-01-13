@@ -24,11 +24,12 @@ class ZombieProxyClient(object):
         response = []
         while True:
             data = s.recv(4096)
-            if not data: break
+            if not data:
+                break
             response.append(data)
 
         # Close the socket connection
-        s.close();
+        s.close()
 
         return ''.join(response)
 
@@ -60,7 +61,7 @@ class ZombieProxyClient(object):
         browser.%s(%s, function(err, browser){
             if(err)
                 stream.end(JSON.stringify(err.stack));
-            else    
+            else
                 stream.end();
         });
         """ % (
@@ -68,4 +69,4 @@ class ZombieProxyClient(object):
             methodargs
         )
 
-        return self.__send__(js);
+        return self.__send__(js)
