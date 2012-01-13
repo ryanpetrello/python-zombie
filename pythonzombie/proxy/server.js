@@ -1,5 +1,4 @@
 var net = require('net');
-var sys = require('sys');
 var zombie = require('zombie');
 
 //
