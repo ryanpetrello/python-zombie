@@ -1,4 +1,10 @@
 *.pyc
-/*.egg-info
-/*.coverage
-/htmlcov/
+*.egg-info
+*.coverage
+.Python
+bin
+htmlcov
+include
+lib
+share
+
