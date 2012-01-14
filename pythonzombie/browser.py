@@ -118,7 +118,7 @@ class Browser(BaseNode):
     #
     @property
     def location(self):
-        return self.client.json('browser.location')
+        return self.client.json('browser.location.toString()')
 
     @location.setter
     def location(self, url):
