@@ -2,6 +2,10 @@ from simplejson import loads, dumps
 import socket
 
 
+class NodeError(Exception):
+    pass
+
+
 class ZombieProxyClient(object):
     """
     Sends data to a ZombieProxyServer bound to a specific
@@ -55,15 +59,21 @@ class ZombieProxyClient(object):
             methodargs = 'null'
 
         js = """
-        browser.%s(%s, function(err, browser){
-            if(err)
-                stream.end(JSON.stringify(err.stack));
-            else
-                stream.end();
-        });
+        try {
+            browser.%s(%s, function(err, browser){
+                if (err)
+                    stream.end(JSON.stringify(err.message));
+                else
+                    stream.end();
+            });
+        } catch (err) {
+            stream.end(JSON.stringify(err.message));
+        }
         """ % (
             method,
             methodargs
         )
 
-        return self.send(js)
+        response = self.send(js)
+        if response:
+            raise NodeError(self.decode(response))
