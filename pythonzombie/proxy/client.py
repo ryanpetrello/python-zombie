@@ -12,7 +12,7 @@ class ZombieProxyClient(object):
     def __init__(self, socket='/tmp/zombie.sock'):
         self.socket = socket
 
-    def __send__(self, js):
+    def send(self, js):
         # Establish a socket connection to the Zombie.js proxy server
         s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         s.connect(self.socket)
@@ -33,26 +33,23 @@ class ZombieProxyClient(object):
 
         return ''.join(response)
 
-    def __encode__(self, obj):
-        if hasattr(obj, '__json__'):
-            return obj.__json__
+    def encode(self, obj):
+        if hasattr(obj, 'json'):
+            return obj.json
         return dumps(obj)
 
-    def __decode__(self, json):
+    def decode(self, json):
         return loads(json)
 
-    def send(self, js):
-        return self.__send__(js)
-
     def json(self, js):
-        return self.__decode__(self.__send__(
+        return self.decode(self.send(
             "stream.end(JSON.stringify(%s));" % js
         ))
 
     def wait(self, method, *args):
         if args:
             methodargs = ', '.join(
-                [self.__encode__(a) for a in args]
+                [self.encode(a) for a in args]
             )
         else:
             methodargs = 'null'
@@ -69,4 +66,4 @@ class ZombieProxyClient(object):
             methodargs
         )
 
-        return self.__send__(js)
+        return self.send(js)
