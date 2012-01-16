@@ -116,6 +116,9 @@ class Browser(BaseNode):
     #
     # Navigation
     #
+    def click_link(self, selector):
+        self.client.wait('clickLink', selector)
+
     @property
     def location(self):
         return self.client.json('browser.location.toString()')
