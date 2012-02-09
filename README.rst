@@ -11,5 +11,5 @@ top of node.js, inspired by Capybara-Zombie (https://github.com/plataformatec/ca
 Requires the latest node and zombie::
 
     brew install node
-    brew install npm
+    curl http://npmjs.org/install.sh | sh
     npm install zombie
