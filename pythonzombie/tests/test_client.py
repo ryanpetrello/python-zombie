@@ -38,9 +38,9 @@ class TestServerCommunication(TestCase):
         foo = {
             'foo': 'bar'
         }
-        self.client.__encode__(foo) == dumps(foo)
+        self.client.encode(foo) == dumps(foo)
 
-        self.client.__encode__(FakeNode()) == 'ENCODED'
+        self.client.encode(FakeNode()) == 'ENCODED'
 
     def test_decode(self):
         foo = dumps({
@@ -49,7 +49,7 @@ class TestServerCommunication(TestCase):
         self.client.__decode__(foo) == loads(foo)
 
     def test_simple_send(self):
-        self.client.send(
+        self.client.__send__(
             "stream.end()"
         )
 

@@ -63,7 +63,7 @@ class Queryable(object):
         #
         return map(
             lambda x: DOMNode(int(x), self.client),
-            self.decode(self.client.send(js))
+            self.decode(self.client.__send__(js))
         )
 
     # Shortcuts for JSON loads/dumps
@@ -71,7 +71,7 @@ class Queryable(object):
         return self.client.encode(value)
 
     def decode(self, value):
-        return self.client.decode(value)
+        return self.client.__decode__(value)
 
 
 class BaseNode(Queryable):
@@ -215,7 +215,7 @@ class DOMNode(BaseNode):
             'native': self._native,
             'value': self.encode(value)
         }
-        self.client.send(js)
+        self.client.__send__(js)
 
     @property
     def checked(self):
@@ -235,7 +235,7 @@ class DOMNode(BaseNode):
             'native': self._native,
             'value': self.encode(value)
         }
-        self.client.send(js)
+        self.client.__send__(js)
 
     def _jsonattr(self, attr):
         return self.client.json("%s.%s" % (self._native, attr))
