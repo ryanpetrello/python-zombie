@@ -5,8 +5,8 @@ top of node.js, inspired by Capybara-Zombie (https://github.com/plataformatec/ca
 
     from pythonzombie import Browser
     b = Browser()
-    b.visit('http://google.com/m').fill('input', 'Zombie.js').pressButton('Search')
-    assert b.location['href'] == 'http://www.google.com/m?q=Zombie.js'
+    b.visit('http://google.com/m').fill('input', 'Zombie.js').press_button('Search')
+    assert b.location == 'http://www.google.com/m?q=Zombie.js'
 
 Requires the latest node and zombie::
 

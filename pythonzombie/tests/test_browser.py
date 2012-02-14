@@ -82,11 +82,11 @@ class TestBrowser(BrowserClientTest):
         assert matches[0].tagName.lower() == 'input'
 
     def test_location_get(self):
-        assert self.browser.visit(self.path).location['href'] == self.path
+        assert self.browser.visit(self.path).location == self.path
 
     def test_location_set(self):
         self.browser.location = self.path
-        assert self.browser.visit(self.path).location['href'] == self.path
+        assert self.browser.visit(self.path).location == self.path
 
     def test_fill(self):
         self.browser.visit(self.path).fill('q', 'Zombie.js')
@@ -94,9 +94,9 @@ class TestBrowser(BrowserClientTest):
 
     def test_press_button(self):
         self.browser.visit(self.path)
-        assert self.browser.location['hash'] == ''
-        self.browser.pressButton('Search')
-        assert self.browser.location['hash'] == '#submit'
+        assert self.browser.location.endswith(self.path)
+        self.browser.press_button('Search')
+        assert self.browser.location.endswith('submit')
 
 
 class TestDOMNode(BrowserClientTest):
@@ -122,7 +122,7 @@ class TestDOMNode(BrowserClientTest):
         matches = form.css('input')
         assert len(matches) == 4
         for field in matches:
-            field.tagName.lower() == 'input'
+            assert field.tagName.lower() == 'input'
 
         # The document contains a paragraph, but it's *outside* of the form,
         # so it shouldn't be found under the form DOM node.
@@ -227,6 +227,7 @@ class TestDOMNode(BrowserClientTest):
 
     def test_fire(self):
         self.browser.visit(self.path)
-        assert self.browser.location['hash'] == ''
+        assert self.browser.location.endswith(self.path)
         self.browser.css('button')[0].click()
-        assert self.browser.location['hash'] == '#submit'
+        assert self.browser.location.endswith('#submit')
+
