@@ -137,6 +137,10 @@ class Browser(BaseNode):
         """
         self.client.wait('visit', url)
 
+    @verb
+    def back(self):
+        self.client.wait('back')
+
     #
     # Forms
     #
