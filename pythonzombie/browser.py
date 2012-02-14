@@ -113,6 +113,9 @@ class Browser(BaseNode):
         """
         return self._query(selector, context)
 
+    def text(self, value):
+        return self.client.json('browser.text("%s")' % value)
+
     #
     # Navigation
     #
