@@ -42,7 +42,6 @@ class TestServerCommunication(BrowserClientTest):
             stream.end(JSON.stringify(err.message));
         }
         """ % self.path
-        print js
 
         with fudge.patched_context(
             ZombieProxyClient,

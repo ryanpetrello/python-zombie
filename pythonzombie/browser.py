@@ -56,7 +56,6 @@ class Queryable(object):
             'args': args,
             'context': context if context else 'browser',
         }
-        print js
 
         #
         # Translate each index of ELEMENTS into a DOMNode object which can be
@@ -135,7 +134,6 @@ class Browser(BaseNode):
         """
         A shortcut to load the document from the specified URL.
         """
-        print url
         self.client.wait('visit', url)
 
     @verb

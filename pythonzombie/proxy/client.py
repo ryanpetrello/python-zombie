@@ -78,7 +78,6 @@ class ZombieProxyClient(object):
             method,
             methodargs
         )
-        print js
         response = self.__send__(js)
         if response:
             raise NodeError(self.__decode__(response))
