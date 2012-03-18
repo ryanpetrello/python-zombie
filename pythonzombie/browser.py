@@ -37,7 +37,7 @@ class Queryable(object):
         # browser.querySelectorAll() API method.
         #
         args = ','.join(filter(None, [self.encode(selector)]))
-
+        #args = selector
         #
         # Run the compiled query, store object (JSDOM Element) references
         # in the TCP server's ELEMENTS cache, and return a stringified list of
@@ -45,26 +45,26 @@ class Queryable(object):
         #
         js = """
             var results = [];
-            var nodes = %s.querySelectorAll(%s);
+            var nodes = browser.queryAll(%(args)s, %(context)s);
             for(var i = 0; i < nodes.length; i++){
                 var node = nodes[i];
                 ELEMENTS.push(node);
                 results.push(ELEMENTS.length - 1);
             };
             stream.end(JSON.stringify(results));
-        """ % (
-            context if context else 'browser',
-            args
-        )
+        """ % {
+            'args': args,
+            'context': context if context else 'browser',
+        }
+        print js
 
         #
         # Translate each index of ELEMENTS into a DOMNode object which can be
         # used to make subsequent object/attribute lookups later.
         #
-        return map(
-            lambda x: DOMNode(int(x), self.client),
+        return [DOMNode(int(x), self.client) for x in
             self.decode(self.client.__send__(js))
-        )
+        ]
 
     # Shortcuts for JSON loads/dumps
     def encode(self, value):
@@ -135,6 +135,7 @@ class Browser(BaseNode):
         """
         A shortcut to load the document from the specified URL.
         """
+        print url
         self.client.wait('visit', url)
 
     @verb

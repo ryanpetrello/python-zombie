@@ -1,6 +1,6 @@
 from pythonzombie.proxy.client  import ZombieProxyClient
 from pythonzombie               import Browser
-from unittest                   import TestCase
+from unittest2                  import TestCase
 
 import fudge
 import os
@@ -31,13 +31,18 @@ class TestServerCommunication(BrowserClientTest):
     def test_visit(self):
 
         js = """
-        browser.visit("%s", function(err, browser){
-            if(err)
-                stream.end(JSON.stringify(err.stack));
-            else
-                stream.end();
-        });
+        try {
+            browser.visit("%s",  function(err, browser){
+                if (err)
+                    stream.end(JSON.stringify(err.message));
+                else
+                    stream.end();
+            });
+        } catch (err) {
+            stream.end(JSON.stringify(err.message));
+        }
         """ % self.path
+        print js
 
         with fudge.patched_context(
             ZombieProxyClient,
@@ -118,7 +123,8 @@ class TestDOMNode(BrowserClientTest):
 
     def test_css_chaining(self):
         # The <form> contains 4 input fields
-        form = self.browser.visit(self.path).css('form')[0]
+        doc = self.browser.visit(self.path)
+        form = doc.css('form')[0]
         matches = form.css('input')
         assert len(matches) == 4
         for field in matches:
@@ -126,7 +132,7 @@ class TestDOMNode(BrowserClientTest):
 
         # The document contains a paragraph, but it's *outside* of the form,
         # so it shouldn't be found under the form DOM node.
-        assert len(form.css('p')) == 0
+        self.assertEqual(len(form.css('p')), 0)
 
     def test_fill(self):
         node = self.browser.visit(self.path).css('input')[0]

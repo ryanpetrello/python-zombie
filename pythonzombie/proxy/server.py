@@ -3,7 +3,8 @@ import threading
 import time
 import atexit
 import os
-
+import random
+NUM_SOCKS = random.randint(0, 1000)
 
 class PipeWorker(threading.Thread):
 
@@ -35,11 +36,14 @@ class ZombieProxyServer(object):
     Browser object, and returns the results.
     """
 
-    process = None
+    #process = None
 
-    def __init__(self, socket='/tmp/zombie.sock'):
+    def __init__(self, socket=None, wait=True):
+        global NUM_SOCKS
+        socket = socket or '/tmp/zombie-%s.sock' % NUM_SOCKS
+
         self.socket = socket
-
+        print "Starting zombie."
         #
         # Spawn the node proxy server in a subprocess.
         # This is a simple socket server that listens for data,
@@ -54,7 +58,15 @@ class ZombieProxyServer(object):
             stderr=subprocess.STDOUT
         )
         self.child.stdin.close()
-        time.sleep(.5)
+
+        if wait:
+            retries = 50
+            while not os.path.exists(socket):
+                retries -= 1
+                if retries < 0:
+                    raise RuntimeError("Server has not been started for 10 seconds.")
+                time.sleep(.2)
+
 
         #
         # Start a thread to monitor and redirect the

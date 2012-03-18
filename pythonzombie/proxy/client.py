@@ -40,6 +40,8 @@ class ZombieProxyClient(object):
     def encode(self, obj):
         if hasattr(obj, 'json'):
             return obj.json
+        if hasattr(obj, '__json__'):
+            return obj.__json__()
         return dumps(obj)
 
     def __decode__(self, json):
@@ -59,7 +61,7 @@ class ZombieProxyClient(object):
                 [self.encode(a) for a in args]
             ) + ', '
         else:
-            methodargs = ''
+            methodargs = 'null,'
 
         js = """
         try {
@@ -76,7 +78,7 @@ class ZombieProxyClient(object):
             method,
             methodargs
         )
-
+        print js
         response = self.__send__(js)
         if response:
             raise NodeError(self.__decode__(response))
