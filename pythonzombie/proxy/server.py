@@ -48,9 +48,9 @@ class ZombieProxyServer(object):
         args = ['env', 'node', self.__proxy_path__(), self.socket]
         self.child = subprocess.Popen(
             args,
-            stdin  = subprocess.PIPE,
-            stdout = subprocess.PIPE,
-            stderr = subprocess.STDOUT
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
         )
         self.child.stdin.close()
         time.sleep(.5)

@@ -29,8 +29,12 @@ setup(
     name                    = "pythonzombie",
     version                 = "0.0.1a1",
     include_package_data    = True,
-                            
-    # metadata              
+    # The problem is here - he did not include *.js files - how do i include them correctly?
+    # 
+    # This is what i thought of, but its wrong.
+    #
+    package_data            = {'pythonzombie.proxy': ['*.js']},
+    #
     author                  = "Ryan Petrello",
     author_email            = "ryan [at] ryanpetrello [dot] com",
     description             = "A Python driver for Zombie.js",
@@ -45,7 +49,6 @@ setup(
         'Programming Language :: Python :: 2.7'
     ],
     license                 = "BSD",
-                            
     install_requires        = requirements,
     cmdclass                = {'test': PyTest}
 )

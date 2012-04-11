@@ -1,3 +1,11 @@
+Anthony Longs copy of this project.
+
+Recent Changes:
+    Removed console print statements.
+    Included the server.js file which was previously missing from the install config, and not let this module work after installed.
+
+###
+
 NOTE: This is in active development and not ready for use yet.
 
 A Python driver for Zombie.js (http://zombie.labnotes.org/) running on
