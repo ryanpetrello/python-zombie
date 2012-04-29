@@ -1,6 +1,6 @@
 from pythonzombie.proxy.client  import ZombieProxyClient
 from pythonzombie               import Browser
-from unittest2                  import TestCase
+from unittest                   import TestCase
 
 import fudge
 import os
@@ -131,7 +131,7 @@ class TestDOMNode(BrowserClientTest):
 
         # The document contains a paragraph, but it's *outside* of the form,
         # so it shouldn't be found under the form DOM node.
-        self.assertEqual(len(form.css('p')), 0)
+        0 == len(form.css('p'))
 
     def test_fill(self):
         node = self.browser.visit(self.path).css('input')[0]
