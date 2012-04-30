@@ -93,6 +93,7 @@ class Browser(BaseNode):
         #
         if server is None:
             server = ZombieProxyServer()
+        self.server = server
         self.client = ZombieProxyClient(server.socket)
 
     #
