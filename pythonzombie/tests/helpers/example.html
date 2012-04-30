@@ -1,21 +1,26 @@
+<!doctype html>
 <html>
+<head>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+    <title>Example</title>
+</head>
 <body>
+  <div>
+    <h1>Search</h1>
+    <p>This is an HTML document</p>
+  </div>
+  <div>
+    <form id="form" name="form" class="submittable" method="GET" action="/#submit">
+      <input name="q" type="text" class="textfield"></input>
 
-  <h1>Search</h1>
+      <input type="checkbox" value="1"></input>
+      <input name="color" type="radio" value="1"></input>
+      <input name="color" type="radio" value="2"></input>
 
-  <p>This is an HTML document</p>
+      <textarea cols="80" rows="5"></textarea>
 
-  <form id="form" name="form" class="submittable" method="GET" action="#submit">
-    <input name="q" type="text" class="textfield" />
-
-    <input type="checkbox" value="1" />
-    <input name="color" type="radio" value="1" />
-    <input name="color" type="radio" value="2" />
-
-    <textarea></textarea>
-
-    <button id="submit">Search</button>
-  </form>
-
+      <button id="submit">Search</button>
+    </form>
+  </div>
 </body>
 </html>

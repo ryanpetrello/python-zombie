@@ -14,9 +14,9 @@ class BrowserClientTest(TestCase):
     def setUp(self):
         super(BrowserClientTest, self).setUp()
         self.browser = Browser()
-       
+
         # Build the path to the example.html file
-        path = os.path.dirname(os.path.abspath(__file__)) 
+        path = os.path.dirname(os.path.abspath(__file__))
         path = os.path.join(path, 'helpers', 'example.html')
         self.path = 'file://%s' % path
 
@@ -31,12 +31,16 @@ class TestServerCommunication(BrowserClientTest):
     def test_visit(self):
 
         js = """
-        browser.visit("%s", function(err, browser){
-            if(err)
-                stream.end(JSON.stringify(err.stack));
-            else    
-                stream.end();
-        });
+        try {
+            browser.visit("%s",  function(err, browser){
+                if (err)
+                    stream.end(JSON.stringify(err.message));
+                else
+                    stream.end();
+            });
+        } catch (err) {
+            stream.end(JSON.stringify(err.message));
+        }
         """ % self.path
 
         with fudge.patched_context(
@@ -53,9 +57,9 @@ class TestBrowser(BrowserClientTest):
     def setUp(self):
         super(TestBrowser, self).setUp()
         self.browser = Browser()
-       
+
         # Build the path to the example.html file
-        path = os.path.dirname(os.path.abspath(__file__)) 
+        path = os.path.dirname(os.path.abspath(__file__))
         path = os.path.join(path, 'helpers', 'example.html')
         self.path = 'file://%s' % path
         self.html = open(path, 'r').read()
@@ -82,11 +86,11 @@ class TestBrowser(BrowserClientTest):
         assert matches[0].tagName.lower() == 'input'
 
     def test_location_get(self):
-        assert self.browser.visit(self.path).location['href'] == self.path
+        assert self.browser.visit(self.path).location == self.path
 
     def test_location_set(self):
         self.browser.location = self.path
-        assert self.browser.visit(self.path).location['href'] == self.path
+        assert self.browser.visit(self.path).location == self.path
 
     def test_fill(self):
         self.browser.visit(self.path).fill('q', 'Zombie.js')
@@ -94,9 +98,9 @@ class TestBrowser(BrowserClientTest):
 
     def test_press_button(self):
         self.browser.visit(self.path)
-        assert self.browser.location['hash'] == ''
-        self.browser.pressButton('Search')
-        assert self.browser.location['hash'] == '#submit'
+        assert self.browser.location.endswith(self.path)
+        self.browser.press_button('Search')
+        assert self.browser.location.endswith('submit')
 
 
 class TestDOMNode(BrowserClientTest):
@@ -108,25 +112,26 @@ class TestDOMNode(BrowserClientTest):
         assert repr(form) == '<FORM#form.submittable>'
 
         button = self.browser.css('button')[0]
-        assert repr(button) == '<BUTTON#submit>' 
+        assert repr(button) == '<BUTTON#submit>'
 
         textfield = self.browser.css('input')[0]
-        assert repr(textfield) == '<INPUT.textfield>' 
+        assert repr(textfield) == '<INPUT.textfield>'
 
         paragraph = self.browser.css('p')[0]
         assert repr(paragraph) == '<P>'
-    
+
     def test_css_chaining(self):
         # The <form> contains 4 input fields
-        form = self.browser.visit(self.path).css('form')[0]
+        doc = self.browser.visit(self.path)
+        form = doc.css('form')[0]
         matches = form.css('input')
         assert len(matches) == 4
         for field in matches:
-            field.tagName.lower() == 'input'
+            assert field.tagName.lower() == 'input'
 
         # The document contains a paragraph, but it's *outside* of the form,
         # so it shouldn't be found under the form DOM node.
-        assert len(form.css('p')) == 0
+        0 == len(form.css('p'))
 
     def test_fill(self):
         node = self.browser.visit(self.path).css('input')[0]
@@ -227,6 +232,7 @@ class TestDOMNode(BrowserClientTest):
 
     def test_fire(self):
         self.browser.visit(self.path)
-        assert self.browser.location['hash'] == ''
+        assert self.browser.location.endswith(self.path)
         self.browser.css('button')[0].click()
-        assert self.browser.location['hash'] == '#submit'
+        assert self.browser.location.endswith('#submit')
+

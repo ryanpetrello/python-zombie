@@ -1,5 +1,4 @@
 var net = require('net');
-var sys = require('sys');
 var zombie = require('zombie');
 
 //
@@ -38,6 +37,7 @@ net.createServer(function (stream){
     eval(data);
   });
 
-}).listen(process.argv[2]);
+}).listen(process.argv[2], function () {
+    console.log('Zombie.js server running on ' + process.argv[2] + '...');
+});
 
-console.log('Node TCP server running on '+process.argv[2]+'...');
