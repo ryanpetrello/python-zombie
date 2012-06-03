@@ -2,8 +2,10 @@ import socket
 
 try:
     from json import loads, dumps
-except ImportError:
+except ImportError:  # pragma: nocover
     from simplejson import loads, dumps  # noqa
+
+from pythonzombie.compat import PY3
 
 
 class NodeError(Exception):
@@ -26,7 +28,10 @@ class ZombieProxyClient(object):
         s.connect(self.socket)
 
         # Send Zombie.js API calls, followed by a stream.end() call.
-        s.send("%s" % js)
+        out = "%s" % js
+        if PY3:  # pragma: nocover
+            out = bytes(out, 'utf-8')
+        s.send(out)
 
         # Read the response
         response = []
@@ -34,6 +39,8 @@ class ZombieProxyClient(object):
             data = s.recv(4096)
             if not data:
                 break
+            if PY3:  # pragma: nocover
+                data = str(data, 'utf-8')
             response.append(data)
 
         # Close the socket connection

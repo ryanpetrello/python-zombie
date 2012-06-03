@@ -1,11 +1,11 @@
 from unittest import TestCase
-import cStringIO
 import subprocess
 import os
 
 import fudge
 
 from pythonzombie.proxy.server import ZombieProxyServer
+from pythonzombie.compat import StringIO
 
 
 class FakeNode(object):
@@ -15,8 +15,8 @@ class FakeNode(object):
 
 class FakePopen(object):
 
-    stdin = cStringIO.StringIO()
-    stdout = cStringIO.StringIO()
+    stdin = StringIO()
+    stdout = StringIO()
 
 
 class TestServerSpawn(TestCase):

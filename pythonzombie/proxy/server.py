@@ -31,10 +31,10 @@ class PipeWorker(threading.Thread):
     def run(self):
         try:
             self.__worker__(self.pipe)
-        except Exception, e:
+        except Exception as e:
             try:
                 sys.stdout.write(e)
-            except:
+            except:  # pragma: nocover
                 pass
 
 
@@ -72,7 +72,7 @@ class ZombieProxyServer(object):
             retries = 30
             while True:
                 retries -= 1
-                if retries < 0:
+                if retries < 0:  # pragma: nocover
                     raise RuntimeError(
                         "The proxy server has not replied within 3 seconds."
                     )
@@ -102,7 +102,7 @@ class ZombieProxyServer(object):
 
 
 # When this process ends, ensure all node subprocesses terminate
-def __kill_node_processes__():
+def __kill_node_processes__():  # pragma: nocover
     for child, socket in __proxy_instances__:
         from os import path
         if hasattr(child, 'kill'):

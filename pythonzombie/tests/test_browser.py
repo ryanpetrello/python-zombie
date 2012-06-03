@@ -1,11 +1,11 @@
 from unittest import TestCase
-from urlparse import urlparse
 import os
 
 import fudge
 
-from pythonzombie.proxy.client import ZombieProxyClient
 from pythonzombie import Browser
+from pythonzombie.proxy.client import ZombieProxyClient
+from pythonzombie.compat import urlparse
 
 
 class BrowserClientTest(TestCase):
