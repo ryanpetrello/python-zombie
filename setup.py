@@ -4,13 +4,34 @@ except ImportError:
     from ez_setup import use_setuptools
     use_setuptools()
     from setuptools import setup, find_packages  # noqa
+from distutils.core import Command
+
+from pythonzombie import __version__
+
+
+class Tox(Command):
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        try:
+            import tox
+        except ImportError:
+            import sys
+            sys.exit("tox is required to run tests.  $ pip install tox")
+        tox.cmdline()
 
 #
 # determine requirements
 #
 setup(
     name="pythonzombie",
-    version="0.0.1a1",
+    version=__version__,
     include_package_data=True,
     author="Ryan Petrello",
     author_email="ryan [at] ryanpetrello [dot] com",
@@ -39,6 +60,5 @@ setup(
     ],
     license="MIT",
     install_requires=[],
-    tests_require=['fudge'],
-    test_suite='pythonzombie.tests'
+    cmdclass={'test': Tox}
 )
