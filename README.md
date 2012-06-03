@@ -31,4 +31,4 @@ All contributions must:
   ``Browser.press_button``).
 * Not break the tests or build. Before issuing a pull request, ensure that all
   tests still pass across multiple versions of Python.
-* Add your name to the (bottom of the) AUTHORS file.
+* Add your name to the (bottom of the) ``AUTHORS`` file.
