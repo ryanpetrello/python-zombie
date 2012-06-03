@@ -3,6 +3,8 @@ import abc
 from pythonzombie.proxy.server import ZombieProxyServer
 from pythonzombie.proxy.client import ZombieProxyClient
 
+__all__ = ['Browser', 'DOMNode']
+
 
 def verb(f):
     """
@@ -23,10 +25,15 @@ class Queryable(object):
 
     __metaclass__ = abc.ABCMeta
 
-    def _query(self, selector, context=None):
+    def _with_context(self, method, selector, context=None):
         """
         Evaluate a CSS selector against the document (or an optional context
-        DOMNode) and return a list of DOMNode objects.
+        DOMNode) and return decoded text.
+
+        :param selector a string CSS selector
+                        (http://zombie.labnotes.org/selectors)
+        :param context an (optional) instance of DOMNode
+        :param method the method (e.g., html, text) to call on the browser
         """
 
         #
@@ -34,11 +41,50 @@ class Queryable(object):
         # a Javascript query argument.
         #
         # Combine the selector with the (optional) context reference and
-        # building a function argstring to be passed to Zombie.js'
+        # build a function argstring to be passed to Zombie.js'
         # browser.querySelectorAll() API method.
         #
         args = ','.join(filter(None, [self.encode(selector)]))
-        #args = selector
+
+        if context and hasattr(context, '_native'):
+            context = context._native
+
+        #
+        # Run the compiled query, store object (JSDOM Element) references
+        # in the TCP server's ELEMENTS cache, and return an encoded string.
+        #
+        js = """
+            var results = [];
+            var node = browser.%(method)s(%(args)s, %(context)s);
+            stream.end(JSON.stringify(node));
+        """ % {
+            'args': args,
+            'context': context if context else 'browser',
+            'method': method
+        }
+
+        return self.decode(self.client.send(js))
+
+    def _query(self, selector, context=None):
+        """
+        Evaluate a CSS selector against the document (or an optional context
+        DOMNode) and return a list of DOMNode objects.
+
+        :param selector a string CSS selector
+                        (http://zombie.labnotes.org/selectors)
+        :param context an (optional) instance of DOMNode
+        """
+
+        #
+        # JSON-encode the provided CSS selector so it can be treated as
+        # a Javascript query argument.
+        #
+        # Combine the selector with the (optional) context reference and
+        # build a function argstring to be passed to Zombie.js'
+        # browser.querySelectorAll() API method.
+        #
+        args = ','.join(filter(None, [self.encode(selector)]))
+
         #
         # Run the compiled query, store object (JSDOM Element) references
         # in the TCP server's ELEMENTS cache, and return a stringified list of
@@ -55,7 +101,7 @@ class Queryable(object):
             stream.end(JSON.stringify(results));
         """ % {
             'args': args,
-            'context': context if context else 'browser',
+            'context': context if context else 'browser'
         }
 
         #
@@ -63,12 +109,12 @@ class Queryable(object):
         # used to make subsequent object/attribute lookups later.
         #
         return [DOMNode(int(x), self.client) for x in
-            self.decode(self.client.__send__(js))
+            self.decode(self.client.send(js))
         ]
 
     # Shortcuts for JSON loads/dumps
     def encode(self, value):
-        return self.client.encode(value)
+        return self.client.__encode__(value)
 
     def decode(self, value):
         return self.client.__decode__(value)
@@ -100,19 +146,36 @@ class Browser(BaseNode):
     #
     # Document Content
     #
-    @property
-    def html(self):
+    def html(self, selector='html', context=None):
         """
         Returns the HTML content of the current document.
-        """
-        return self.client.json('browser.html()')
 
-    def css(self, selector, context=None):
+        :param selector an optional string CSS selector
+                        (http://zombie.labnotes.org/selectors)
+        :param context an (optional) instance of DOMNode
+        """
+        return self._with_context('html', selector, context)
+
+    def queryAll(self, selector, context=None):
         """
         Evaluate a CSS selector against the document (or an option context
         DOMNode) and return a list of DOMNode objects.
+
+        :param selector a string CSS selector
+                        (http://zombie.labnotes.org/selectors)
+        :param context an (optional) instance of DOMNode
         """
         return self._query(selector, context)
+
+    def css(self, selector, context=None):
+        """
+        An alias for Browser.queryAll.
+
+        :param selector a string CSS selector
+                        (http://zombie.labnotes.org/selectors)
+        :param context an (optional) instance of DOMNode
+        """
+        return self.queryAll(selector, context)
 
     def text(self, value):
         return self.client.json('browser.text("%s")' % value)
@@ -173,12 +236,18 @@ class DOMNode(BaseNode):
     #
     # Inherited functionality
     #
-    def css(self, selector):
+    def queryAll(self, selector):
         """
         Evaluate a CSS selector against this node and return a list of
         (child) DOMNode objects.
         """
         return self._query(selector, self._native)
+
+    def css(self, selector):
+        """
+        An alias for DOMNode.queryAll.
+        """
+        return self.queryAll(selector)
 
     @verb
     def fill(self, value):
@@ -223,7 +292,7 @@ class DOMNode(BaseNode):
             'native': self._native,
             'value': self.encode(value)
         }
-        self.client.__send__(js)
+        self.client.send(js)
 
     @property
     def checked(self):
@@ -243,7 +312,7 @@ class DOMNode(BaseNode):
             'native': self._native,
             'value': self.encode(value)
         }
-        self.client.__send__(js)
+        self.client.send(js)
 
     def _jsonattr(self, attr):
         return self.client.json("%s.%s" % (self._native, attr))

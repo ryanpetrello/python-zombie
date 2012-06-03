@@ -10,10 +10,15 @@ import sys
 
 from pythonzombie.proxy.client import ZombieProxyClient
 
+__all__ = ['ZombieProxyServer']
 __proxy_instances__ = []
 
 
 class PipeWorker(threading.Thread):
+    """
+    A thread that monitors and redirects node.js stdout and stderr to the
+    parent process console.
+    """
 
     def __init__(self, pipe):
         super(PipeWorker, self).__init__()
@@ -39,14 +44,19 @@ class PipeWorker(threading.Thread):
 
 
 class ZombieProxyServer(object):
-    """
-    Spawns a node.js subprocess that listens on a TCP socket.
-    A ZombieProxyClient streams data to the server, which
-    evaluates it as Javascript, passes it on to a Zombie.js
-    Browser object, and returns the results.
-    """
 
     def __init__(self, socket=None, wait=True):
+        """
+        Spawns a node.js subprocess that listens on a TCP socket.
+        A ZombieProxyClient streams data to the server, which
+        evaluates it as Javascript, passes it on to a Zombie.js
+        Browser object, and returns the results.
+
+        :param socket a (random, by default) filepath representing the intended
+                      TCP socket location
+        :param wait when True, wait until the node.js subprocess is responsive
+                    via the specified TCP socket.
+        """
         socket = socket or '/tmp/zombie-%s.sock' % random.randint(0, 10000)
 
         self.socket = socket
@@ -66,7 +76,6 @@ class ZombieProxyServer(object):
         self.child.stdin.close()
 
         if wait:
-
             # Wait until we can ping the node.js server
             client = ZombieProxyClient(socket)
             retries = 30

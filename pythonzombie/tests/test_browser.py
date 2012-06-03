@@ -47,8 +47,8 @@ class TestServerCommunication(BrowserClientTest):
 
         with fudge.patched_context(
             ZombieProxyClient,
-            '__send__',
-            (fudge.Fake('__send__', expect_call=True).
+            'send',
+            (fudge.Fake('send', expect_call=True).
                 with_args(js)
             )):
 
@@ -69,9 +69,22 @@ class TestBrowser(BrowserClientTest):
             self.html = f.read()
 
     def test_html(self):
-        assert '<p>This is an HTML document</p>' in self.browser.visit(
-            self.path
-        ).html
+        self.browser.visit(self.path)
+        html = self.browser.html()
+        assert '<title>Example</title>' in html
+        assert '<p>This is an HTML document</p>' in html
+
+    def test_html_with_selector(self):
+        self.browser.visit(self.path)
+        html = self.browser.html('#content')
+        assert '<title>Example</title>' not in html
+        assert '<p>This is an HTML document</p>' in html
+
+    def test_html_with_context(self):
+        self.browser.visit(self.path)
+        html = self.browser.html('#content', self.browser.css('body')[0])
+        assert '<title>Example</title>' not in html
+        assert '<p>This is an HTML document</p>' in html
 
     def test_css(self):
         self.browser.visit(self.path)

@@ -37,9 +37,9 @@ class TestServerCommunication(TestCase):
         foo = {
             'foo': 'bar'
         }
-        self.client.encode(foo) == dumps(foo)
+        self.client.__encode__(foo) == dumps(foo)
 
-        self.client.encode(FakeNode()) == 'ENCODED'
+        self.client.__encode__(FakeNode()) == 'ENCODED'
 
     def test_decode(self):
         foo = dumps({
@@ -48,7 +48,7 @@ class TestServerCommunication(TestCase):
         self.client.__decode__(foo) == loads(foo)
 
     def test_simple_send(self):
-        self.client.__send__(
+        self.client.send(
             "stream.end()"
         )
 
@@ -77,8 +77,8 @@ class TestServerCommunication(TestCase):
 
         with fudge.patched_context(
             ZombieProxyClient,
-            '__send__',
-            (fudge.Fake('__send__', expect_call=True).
+            'send',
+            (fudge.Fake('send', expect_call=True).
                 with_args(js)
             )):
 
@@ -102,8 +102,8 @@ class TestServerCommunication(TestCase):
 
         with fudge.patched_context(
             ZombieProxyClient,
-            '__send__',
-            (fudge.Fake('__send__', expect_call=True).
+            'send',
+            (fudge.Fake('send', expect_call=True).
                 with_args(js)
             )):
 

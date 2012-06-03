@@ -4,7 +4,7 @@ var zombie = require('zombie');
 //
 // Store a global reference to the Zombie.js
 // browser object and a buffered collection
-// of Zombie.js calls.
+// of Zombie.js return values.
 //
 var browser = null;
 var ping = 'pong'
@@ -38,7 +38,6 @@ net.createServer(function (stream){
     eval(data);
   });
 
-}).listen(process.argv[2], function () {
+}).listen(process.argv[2], function(){
     console.log('Zombie.js server running on ' + process.argv[2] + '...');
 });
-
