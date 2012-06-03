@@ -3,15 +3,15 @@ import os
 
 import fudge
 
-from pythonzombie import Browser
-from pythonzombie.dom import DOMNode
-from pythonzombie.proxy.client import ZombieProxyClient
-from pythonzombie.compat import urlparse
+from zombie import Browser
+from zombie.dom import DOMNode
+from zombie.proxy.client import ZombieProxyClient
+from zombie.compat import urlparse
 
 
 class BrowserClientTest(TestCase):
     """
-    Sets up a pythonzombie.Browser() object to test with.
+    Sets up a zombie.Browser() object to test with.
     """
 
     def setUp(self):

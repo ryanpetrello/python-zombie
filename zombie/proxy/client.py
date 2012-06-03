@@ -5,7 +5,7 @@ try:
 except ImportError:  # pragma: nocover
     from simplejson import loads, dumps  # noqa
 
-from pythonzombie.compat import PY3
+from zombie.compat import PY3
 
 __all__ = ['ZombieProxyClient', 'NodeError']
 

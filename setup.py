@@ -6,7 +6,7 @@ except ImportError:
     from setuptools import setup, find_packages  # noqa
 from distutils.core import Command
 
-from pythonzombie import __version__
+from zombie import __version__
 
 
 class Tox(Command):
@@ -30,7 +30,7 @@ class Tox(Command):
 # determine requirements
 #
 setup(
-    name="pythonzombie",
+    name="zombie",
     version=__version__,
     include_package_data=True,
     author="Ryan Petrello",

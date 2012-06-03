@@ -1,13 +1,13 @@
-pythonzombie Package
+zombie Package
 ====================
 
-:mod:`pythonzombie` Package
+:mod:`zombie` Package
 ---------------------------
 
 :mod:`browser` Module
 ---------------------
 
-.. automodule:: pythonzombie.browser
+.. automodule:: zombie.browser
     :members:
     :undoc-members:
     :show-inheritance:
@@ -15,7 +15,7 @@ pythonzombie Package
 :mod:`dom` Module
 -----------------
 
-.. automodule:: pythonzombie.dom
+.. automodule:: zombie.dom
     :members:
     :undoc-members:
     :show-inheritance:
@@ -25,4 +25,4 @@ Subpackages
 
 .. toctree::
 
-    pythonzombie.proxy
+    zombie.proxy

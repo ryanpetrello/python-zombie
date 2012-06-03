@@ -6,9 +6,9 @@ except ImportError:
     from simplejson import loads, dumps  # noqa
 import fudge
 
-from pythonzombie.proxy.server import ZombieProxyServer
-from pythonzombie.proxy.client import ZombieProxyClient
-from pythonzombie.compat import StringIO
+from zombie.proxy.server import ZombieProxyServer
+from zombie.proxy.client import ZombieProxyClient
+from zombie.compat import StringIO
 
 
 class FakeNode(object):

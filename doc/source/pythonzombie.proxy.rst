@@ -4,7 +4,7 @@ proxy Package
 :mod:`client` Module
 --------------------
 
-.. automodule:: pythonzombie.proxy.client
+.. automodule:: zombie.proxy.client
     :members:
     :undoc-members:
     :show-inheritance:
@@ -12,7 +12,7 @@ proxy Package
 :mod:`server` Module
 --------------------
 
-.. automodule:: pythonzombie.proxy.server
+.. automodule:: zombie.proxy.server
     :members:
     :undoc-members:
     :show-inheritance:

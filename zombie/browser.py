@@ -1,6 +1,6 @@
-from pythonzombie.dom import BaseNode, verb
-from pythonzombie.proxy.server import ZombieProxyServer
-from pythonzombie.proxy.client import ZombieProxyClient
+from zombie.dom import BaseNode, verb
+from zombie.proxy.server import ZombieProxyServer
+from zombie.proxy.client import ZombieProxyClient
 
 __all__ = ['Browser']
 

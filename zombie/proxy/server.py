@@ -8,7 +8,7 @@ import atexit
 import random
 import sys
 
-from pythonzombie.proxy.client import ZombieProxyClient
+from zombie.proxy.client import ZombieProxyClient
 
 __all__ = ['ZombieProxyServer']
 __proxy_instances__ = []

@@ -4,8 +4,8 @@ import os
 
 import fudge
 
-from pythonzombie.proxy.server import ZombieProxyServer
-from pythonzombie.compat import StringIO
+from zombie.proxy.server import ZombieProxyServer
+from zombie.compat import StringIO
 
 
 class FakeNode(object):

@@ -1,7 +1,7 @@
-pythonzombie
+zombie
 ============
 
 .. toctree::
    :maxdepth: 4
 
-   pythonzombie
+   zombie
