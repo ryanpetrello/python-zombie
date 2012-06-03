@@ -1,9 +1,11 @@
-from pythonzombie.proxy.client  import ZombieProxyClient
-from pythonzombie               import Browser
-from unittest                   import TestCase
+from unittest import TestCase
+from urlparse import urlparse
+import os
 
 import fudge
-import os
+
+from pythonzombie.proxy.client import ZombieProxyClient
+from pythonzombie import Browser
 
 
 class BrowserClientTest(TestCase):
@@ -62,7 +64,8 @@ class TestBrowser(BrowserClientTest):
         path = os.path.dirname(os.path.abspath(__file__))
         path = os.path.join(path, 'helpers', 'example.html')
         self.path = 'file://%s' % path
-        self.html = open(path, 'r').read()
+        with open(path, 'r') as f:
+            self.html = f.read()
 
     def test_html(self):
         assert '<p>This is an HTML document</p>' in self.browser.visit(
@@ -86,11 +89,15 @@ class TestBrowser(BrowserClientTest):
         assert matches[0].tagName.lower() == 'input'
 
     def test_location_get(self):
-        assert self.browser.visit(self.path).location == self.path
+        for p in ('scheme', 'path'):
+            getattr(urlparse(self.browser.visit(self.path).location), p) == \
+                getattr(urlparse(self.path), p)
 
     def test_location_set(self):
         self.browser.location = self.path
-        assert self.browser.visit(self.path).location == self.path
+        for p in ('scheme', 'path'):
+            getattr(urlparse(self.browser.visit(self.path).location), p) == \
+                getattr(urlparse(self.path), p)
 
     def test_fill(self):
         self.browser.visit(self.path).fill('q', 'Zombie.js')
@@ -98,9 +105,8 @@ class TestBrowser(BrowserClientTest):
 
     def test_press_button(self):
         self.browser.visit(self.path)
-        assert self.browser.location.endswith(self.path)
         self.browser.press_button('Search')
-        assert self.browser.location.endswith('submit')
+        assert urlparse(self.browser.location).netloc == 'www.google.com'
 
 
 class TestDOMNode(BrowserClientTest):
@@ -135,7 +141,7 @@ class TestDOMNode(BrowserClientTest):
 
     def test_fill(self):
         node = self.browser.visit(self.path).css('input')[0]
-        assert node.value == ''
+        assert not node.value
         node.fill('Zombie.js')
         assert node.value == 'Zombie.js'
 
@@ -150,7 +156,7 @@ class TestDOMNode(BrowserClientTest):
         <input> fields should have a toggleable value.
         """
         self.browser.visit(self.path)
-        assert self.browser.css('input')[0].value == ''
+        assert not self.browser.css('input')[0].value
         self.browser.css('input')[0].value = 'Zombie.js'
         assert self.browser.css('input')[0].value == 'Zombie.js'
 
@@ -232,7 +238,5 @@ class TestDOMNode(BrowserClientTest):
 
     def test_fire(self):
         self.browser.visit(self.path)
-        assert self.browser.location.endswith(self.path)
         self.browser.css('button')[0].click()
-        assert self.browser.location.endswith('#submit')
-
+        assert urlparse(self.browser.location).netloc == 'www.google.com'
