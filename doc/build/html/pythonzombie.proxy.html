@@ -1,0 +1,227 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>proxy Package &mdash; pythonzombie 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pythonzombie 0.1.0 documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">pythonzombie 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="proxy-package">
+<h1>proxy Package<a class="headerlink" href="#proxy-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-pythonzombie.proxy.client">
+<span id="client-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">client</span></tt> Module<a class="headerlink" href="#module-pythonzombie.proxy.client" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pythonzombie.proxy.client.ZombieProxyClient">
+<em class="property">class </em><tt class="descclassname">pythonzombie.proxy.client.</tt><tt class="descname">ZombieProxyClient</tt><big>(</big><em>socket</em><big>)</big><a class="headerlink" href="#pythonzombie.proxy.client.ZombieProxyClient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Sends data to a ZombieProxyServer bound to a specific
+TCP socket.  Data is evaulated by the server and results
+(if any) are returned.</p>
+<dl class="method">
+<dt id="pythonzombie.proxy.client.ZombieProxyClient.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>socket</em><big>)</big><a class="headerlink" href="#pythonzombie.proxy.client.ZombieProxyClient.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Establish a new <a class="reference internal" href="#pythonzombie.proxy.client.ZombieProxyClient" title="pythonzombie.proxy.client.ZombieProxyClient"><tt class="xref py py-class docutils literal"><span class="pre">ZombieProxyClient</span></tt></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>socket</strong> &#8211; a unix socket address to connect to.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pythonzombie.proxy.client.ZombieProxyClient.json">
+<tt class="descname">json</tt><big>(</big><em>js</em><big>)</big><a class="headerlink" href="#pythonzombie.proxy.client.ZombieProxyClient.json" title="Permalink to this definition">¶</a></dt>
+<dd><p>A shortcut for passing Javascript instructions and decoding a JSON
+response from node.js.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>js</strong> &#8211; the Javascript string to execute</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pythonzombie.proxy.client.ZombieProxyClient.ping">
+<tt class="descname">ping</tt><big>(</big><big>)</big><a class="headerlink" href="#pythonzombie.proxy.client.ZombieProxyClient.ping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send a simple Javascript instruction and wait on a reply.</p>
+<p>A live Node.JS TCP server will cause this method to return &#8220;pong&#8221;.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pythonzombie.proxy.client.ZombieProxyClient.send">
+<tt class="descname">send</tt><big>(</big><em>js</em><big>)</big><a class="headerlink" href="#pythonzombie.proxy.client.ZombieProxyClient.send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Establishes a socket connection to the Zombie.js server and sends
+Javascript instructions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>js</strong> &#8211; the Javascript string to execute</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pythonzombie.proxy.client.ZombieProxyClient.wait">
+<tt class="descname">wait</tt><big>(</big><em>method</em>, <em>*args</em><big>)</big><a class="headerlink" href="#pythonzombie.proxy.client.ZombieProxyClient.wait" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call a method on the zombie.js Browser instance and wait on a callback.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>method</strong> &#8211; the method to call, e.g., html()</li>
+<li><strong>args</strong> &#8211; one of more arguments for the method</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="pythonzombie.proxy.client.NodeError">
+<em class="property">exception </em><tt class="descclassname">pythonzombie.proxy.client.</tt><tt class="descname">NodeError</tt><a class="headerlink" href="#pythonzombie.proxy.client.NodeError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+<p>An exception indicating node.js&#8217; failure to parse or evaluate Javascript
+instructions it received.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-pythonzombie.proxy.server">
+<span id="server-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">server</span></tt> Module<a class="headerlink" href="#module-pythonzombie.proxy.server" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pythonzombie.proxy.server.ZombieProxyServer">
+<em class="property">class </em><tt class="descclassname">pythonzombie.proxy.server.</tt><tt class="descname">ZombieProxyServer</tt><big>(</big><em>socket=None</em>, <em>wait=True</em><big>)</big><a class="headerlink" href="#pythonzombie.proxy.server.ZombieProxyServer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="pythonzombie.proxy.server.ZombieProxyServer.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>socket=None</em>, <em>wait=True</em><big>)</big><a class="headerlink" href="#pythonzombie.proxy.server.ZombieProxyServer.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Spawns a node.js subprocess that listens on a TCP socket.
+A ZombieProxyClient streams data to the server, which
+evaluates it as Javascript, passes it on to a Zombie.js
+Browser object, and returns the results.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>socket</strong> &#8211; a (random, by default) filepath representing the intended
+TCP socket location</li>
+<li><strong>wait</strong> &#8211; when True, wait until the node.js subprocess is responsive
+via the specified TCP socket.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">proxy Package</a><ul>
+<li><a class="reference internal" href="#module-pythonzombie.proxy.client"><tt class="docutils literal"><span class="pre">client</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-pythonzombie.proxy.server"><tt class="docutils literal"><span class="pre">server</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/pythonzombie.proxy.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">pythonzombie 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Ryan Petrello.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -25,7 +25,12 @@ class ZombieProxyClient(object):
     (if any) are returned.
     """
 
-    def __init__(self, socket='/tmp/zombie.sock'):
+    def __init__(self, socket):
+        """
+        Establish a new :class:`ZombieProxyClient`.
+
+        :param socket: a unix socket address to connect to.
+        """
         self.socket = socket
 
     def send(self, js):
@@ -33,7 +38,7 @@ class ZombieProxyClient(object):
         Establishes a socket connection to the Zombie.js server and sends
         Javascript instructions.
 
-        :param js the Javascript string to execute
+        :param js: the Javascript string to execute
         """
         # Establish a socket connection to the Zombie.js proxy server
         s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
@@ -64,7 +69,7 @@ class ZombieProxyClient(object):
         A shortcut for passing Javascript instructions and decoding a JSON
         response from node.js.
 
-        :param js the Javascript string to execute
+        :param js: the Javascript string to execute
         """
         return self.__decode__(self.send(
             "stream.end(JSON.stringify(%s));" % js
@@ -74,8 +79,8 @@ class ZombieProxyClient(object):
         """
         Call a method on the zombie.js Browser instance and wait on a callback.
 
-        :param method the method to call, e.g., html()
-        :param args one of more arguments for the method
+        :param method: the method to call, e.g., html()
+        :param args: one of more arguments for the method
         """
         if args:
             methodargs = ', '.join(

@@ -20,10 +20,10 @@ class Queryable(object):
         Evaluate a CSS selector against the document (or an optional context
         DOMNode) and return decoded text.
 
-        :param selector a string CSS selector
+        :param selector: a string CSS selector
                         (http://zombie.labnotes.org/selectors)
-        :param context an (optional) instance of DOMNode
-        :param method the method (e.g., html, text) to call on the browser
+        :param context: an (optional) instance of :class:`DOMNode`
+        :param method: the method (e.g., html, text) to call on the browser
         """
 
         #
@@ -60,13 +60,13 @@ class Queryable(object):
         Evaluate a CSS selector against the document (or an optional context
         DOMNode) and return a list of DOMNode objects.
 
-        :param selector a string CSS selector
+        :param selector: a string CSS selector
                         (http://zombie.labnotes.org/selectors)
-        :param context an (optional) instance of DOMNode
-        :param all_ when True, browser.queryAll is used and a list of DOMNodes
-                    are returned.
-                    when False, browser.query is used and a single DOMNode is
-                    returned.
+        :param context: an (optional) instance of :class:`DOMNode`
+        :param all_: when True, browser.queryAll is used and a list of
+                     :class:`DOMNode`s are returned.
+                     when False, browser.query is used and a single
+                     :class:`DOMNode` is returned.
         """
 
         #
@@ -147,7 +147,7 @@ class BaseNode(Queryable):
 
 class DOMNode(BaseNode):
     """
-    Represents a node in the current document's DOM.
+    :class:`.DOMNode` represents a node in the current document's DOM.
     """
 
     def __init__(self, index, client):

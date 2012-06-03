@@ -26,9 +26,9 @@ class Browser(BaseNode):
         """
         Returns the HTML content of the current document.
 
-        :param selector an optional string CSS selector
+        :param selector: an optional string CSS selector
                         (http://zombie.labnotes.org/selectors)
-        :param context an (optional) instance of DOMNode
+        :param context: an (optional) instance of :class:`DOMNode`
         """
         return self._with_context('html', selector, context)
 
@@ -37,9 +37,9 @@ class Browser(BaseNode):
         Evaluate a CSS selector against the document (or an optional context
         DOMNode) and return a single DOMNode object.
 
-        :param selector a string CSS selector
+        :param selector: a string CSS selector
                         (http://zombie.labnotes.org/selectors)
-        :param context an (optional) instance of DOMNode
+        :param context: an (optional) instance of :class:`DOMNode`
         """
         return self._query(selector, context, all_=False)
 
@@ -48,9 +48,9 @@ class Browser(BaseNode):
         Evaluate a CSS selector against the document (or an optional context
         DOMNode) and return a list of DOMNode objects.
 
-        :param selector a string CSS selector
+        :param selector: a string CSS selector
                         (http://zombie.labnotes.org/selectors)
-        :param context an (optional) instance of DOMNode
+        :param context: an (optional) instance of :class:`DOMNode`
         """
         return self._query(selector, context)
 
@@ -58,9 +58,9 @@ class Browser(BaseNode):
         """
         An alias for Browser.queryAll.
 
-        :param selector a string CSS selector
+        :param selector: a string CSS selector
                         (http://zombie.labnotes.org/selectors)
-        :param context an (optional) instance of DOMNode
+        :param context: an (optional) instance of :class:`DOMNode`
         """
         return self.queryAll(selector, context)
 
@@ -68,9 +68,9 @@ class Browser(BaseNode):
         """
         Returns the text content of specific elements
 
-        :param selector a string CSS selector
+        :param selector: a string CSS selector
                         (http://zombie.labnotes.org/selectors)
-        :param context an (optional) instance of DOMNode
+        :param context: an (optional) instance of :class:`DOMNode`
         """
         return self._with_context('text', selector, context)
 

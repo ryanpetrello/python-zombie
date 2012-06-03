@@ -1,0 +1,359 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pythonzombie Package &mdash; pythonzombie 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pythonzombie 0.1.0 documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">pythonzombie 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="pythonzombie-package">
+<h1>pythonzombie Package<a class="headerlink" href="#pythonzombie-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">pythonzombie</span></tt> Package<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-pythonzombie.browser">
+<span id="browser-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">browser</span></tt> Module<a class="headerlink" href="#module-pythonzombie.browser" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pythonzombie.browser.Browser">
+<em class="property">class </em><tt class="descclassname">pythonzombie.browser.</tt><tt class="descname">Browser</tt><big>(</big><em>server=None</em><big>)</big><a class="headerlink" href="#pythonzombie.browser.Browser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pythonzombie.dom.BaseNode" title="pythonzombie.dom.BaseNode"><tt class="xref py py-class docutils literal"><span class="pre">pythonzombie.dom.BaseNode</span></tt></a></p>
+<p>A Browser object, analogous to zombie.Browser.</p>
+<dl class="method">
+<dt id="pythonzombie.browser.Browser.back">
+<tt class="descname">back</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pythonzombie.browser.Browser.back" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pythonzombie.browser.Browser.clickLink">
+<tt class="descname">clickLink</tt><big>(</big><em>selector</em><big>)</big><a class="headerlink" href="#pythonzombie.browser.Browser.clickLink" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pythonzombie.browser.Browser.css">
+<tt class="descname">css</tt><big>(</big><em>selector</em>, <em>context=None</em><big>)</big><a class="headerlink" href="#pythonzombie.browser.Browser.css" title="Permalink to this definition">¶</a></dt>
+<dd><p>An alias for Browser.queryAll.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>selector</strong> &#8211; a string CSS selector
+(<a class="reference external" href="http://zombie.labnotes.org/selectors">http://zombie.labnotes.org/selectors</a>)</li>
+<li><strong>context</strong> &#8211; an (optional) instance of <tt class="xref py py-class docutils literal"><span class="pre">DOMNode</span></tt></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pythonzombie.browser.Browser.fill">
+<tt class="descname">fill</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pythonzombie.browser.Browser.fill" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pythonzombie.browser.Browser.html">
+<tt class="descname">html</tt><big>(</big><em>selector='html'</em>, <em>context=None</em><big>)</big><a class="headerlink" href="#pythonzombie.browser.Browser.html" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the HTML content of the current document.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>selector</strong> &#8211; an optional string CSS selector
+(<a class="reference external" href="http://zombie.labnotes.org/selectors">http://zombie.labnotes.org/selectors</a>)</li>
+<li><strong>context</strong> &#8211; an (optional) instance of <tt class="xref py py-class docutils literal"><span class="pre">DOMNode</span></tt></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pythonzombie.browser.Browser.location">
+<tt class="descname">location</tt><a class="headerlink" href="#pythonzombie.browser.Browser.location" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pythonzombie.browser.Browser.pressButton">
+<tt class="descname">pressButton</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pythonzombie.browser.Browser.pressButton" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pythonzombie.browser.Browser.query">
+<tt class="descname">query</tt><big>(</big><em>selector</em>, <em>context=None</em><big>)</big><a class="headerlink" href="#pythonzombie.browser.Browser.query" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate a CSS selector against the document (or an optional context
+DOMNode) and return a single DOMNode object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>selector</strong> &#8211; a string CSS selector
+(<a class="reference external" href="http://zombie.labnotes.org/selectors">http://zombie.labnotes.org/selectors</a>)</li>
+<li><strong>context</strong> &#8211; an (optional) instance of <tt class="xref py py-class docutils literal"><span class="pre">DOMNode</span></tt></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pythonzombie.browser.Browser.queryAll">
+<tt class="descname">queryAll</tt><big>(</big><em>selector</em>, <em>context=None</em><big>)</big><a class="headerlink" href="#pythonzombie.browser.Browser.queryAll" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate a CSS selector against the document (or an optional context
+DOMNode) and return a list of DOMNode objects.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>selector</strong> &#8211; a string CSS selector
+(<a class="reference external" href="http://zombie.labnotes.org/selectors">http://zombie.labnotes.org/selectors</a>)</li>
+<li><strong>context</strong> &#8211; an (optional) instance of <tt class="xref py py-class docutils literal"><span class="pre">DOMNode</span></tt></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pythonzombie.browser.Browser.text">
+<tt class="descname">text</tt><big>(</big><em>selector</em>, <em>context=None</em><big>)</big><a class="headerlink" href="#pythonzombie.browser.Browser.text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the text content of specific elements</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>selector</strong> &#8211; a string CSS selector
+(<a class="reference external" href="http://zombie.labnotes.org/selectors">http://zombie.labnotes.org/selectors</a>)</li>
+<li><strong>context</strong> &#8211; an (optional) instance of <tt class="xref py py-class docutils literal"><span class="pre">DOMNode</span></tt></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pythonzombie.browser.Browser.visit">
+<tt class="descname">visit</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pythonzombie.browser.Browser.visit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-pythonzombie.dom">
+<span id="dom-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">dom</span></tt> Module<a class="headerlink" href="#module-pythonzombie.dom" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pythonzombie.dom.BaseNode">
+<em class="property">class </em><tt class="descclassname">pythonzombie.dom.</tt><tt class="descname">BaseNode</tt><a class="headerlink" href="#pythonzombie.dom.BaseNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pythonzombie.dom.Queryable" title="pythonzombie.dom.Queryable"><tt class="xref py py-class docutils literal"><span class="pre">pythonzombie.dom.Queryable</span></tt></a></p>
+<p>More Browser/DOMNode shared functionality.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pythonzombie.dom.DOMNode">
+<em class="property">class </em><tt class="descclassname">pythonzombie.dom.</tt><tt class="descname">DOMNode</tt><big>(</big><em>index</em>, <em>client</em><big>)</big><a class="headerlink" href="#pythonzombie.dom.DOMNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pythonzombie.dom.BaseNode" title="pythonzombie.dom.BaseNode"><tt class="xref py py-class docutils literal"><span class="pre">pythonzombie.dom.BaseNode</span></tt></a></p>
+<p><a class="reference internal" href="#pythonzombie.dom.DOMNode" title="pythonzombie.dom.DOMNode"><tt class="xref py py-class docutils literal"><span class="pre">DOMNode</span></tt></a> represents a node in the current document&#8217;s DOM.</p>
+<dl class="attribute">
+<dt id="pythonzombie.dom.DOMNode.checked">
+<tt class="descname">checked</tt><a class="headerlink" href="#pythonzombie.dom.DOMNode.checked" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pythonzombie.dom.DOMNode.click">
+<tt class="descname">click</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pythonzombie.dom.DOMNode.click" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pythonzombie.dom.DOMNode.css">
+<tt class="descname">css</tt><big>(</big><em>selector</em><big>)</big><a class="headerlink" href="#pythonzombie.dom.DOMNode.css" title="Permalink to this definition">¶</a></dt>
+<dd><p>An alias for DOMNode.queryAll.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pythonzombie.dom.DOMNode.fill">
+<tt class="descname">fill</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pythonzombie.dom.DOMNode.fill" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pythonzombie.dom.DOMNode.fire">
+<tt class="descname">fire</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#pythonzombie.dom.DOMNode.fire" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pythonzombie.dom.DOMNode.json">
+<tt class="descname">json</tt><a class="headerlink" href="#pythonzombie.dom.DOMNode.json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pythonzombie.dom.DOMNode.query">
+<tt class="descname">query</tt><big>(</big><em>selector</em><big>)</big><a class="headerlink" href="#pythonzombie.dom.DOMNode.query" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate a CSS selector against this node and return a single</p>
+<p>(child) DOMNode object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pythonzombie.dom.DOMNode.queryAll">
+<tt class="descname">queryAll</tt><big>(</big><em>selector</em><big>)</big><a class="headerlink" href="#pythonzombie.dom.DOMNode.queryAll" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate a CSS selector against this node and return a list of
+(child) DOMNode objects.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pythonzombie.dom.DOMNode.tagName">
+<tt class="descname">tagName</tt><a class="headerlink" href="#pythonzombie.dom.DOMNode.tagName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="pythonzombie.dom.DOMNode.value">
+<tt class="descname">value</tt><a class="headerlink" href="#pythonzombie.dom.DOMNode.value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pythonzombie.dom.Queryable">
+<em class="property">class </em><tt class="descclassname">pythonzombie.dom.</tt><tt class="descname">Queryable</tt><a class="headerlink" href="#pythonzombie.dom.Queryable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>An abstract base class which represents a DOM reference
+point from which a CSS selector can be applied.</p>
+<dl class="method">
+<dt id="pythonzombie.dom.Queryable.decode">
+<tt class="descname">decode</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#pythonzombie.dom.Queryable.decode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="pythonzombie.dom.Queryable.encode">
+<tt class="descname">encode</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#pythonzombie.dom.Queryable.encode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pythonzombie.dom.verb">
+<tt class="descclassname">pythonzombie.dom.</tt><tt class="descname">verb</tt><big>(</big><em>f</em><big>)</big><a class="headerlink" href="#pythonzombie.dom.verb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Methods that are decorated as <cite>&#64;verb</cite> should always return a reference
+to the original object (e.g., Browser, DOMNode) to allow function chaining.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pythonzombie.proxy.html">proxy Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pythonzombie.proxy.html#module-pythonzombie.proxy.client"><tt class="docutils literal"><span class="pre">client</span></tt> Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pythonzombie.proxy.html#module-pythonzombie.proxy.server"><tt class="docutils literal"><span class="pre">server</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">pythonzombie Package</a><ul>
+<li><a class="reference internal" href="#id1"><tt class="docutils literal"><span class="pre">pythonzombie</span></tt> Package</a></li>
+<li><a class="reference internal" href="#module-pythonzombie.browser"><tt class="docutils literal"><span class="pre">browser</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-pythonzombie.dom"><tt class="docutils literal"><span class="pre">dom</span></tt> Module</a></li>
+<li><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/pythonzombie.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">pythonzombie 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Ryan Petrello.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -52,9 +52,9 @@ class ZombieProxyServer(object):
         evaluates it as Javascript, passes it on to a Zombie.js
         Browser object, and returns the results.
 
-        :param socket a (random, by default) filepath representing the intended
+        :param socket: a (random, by default) filepath representing the intended
                       TCP socket location
-        :param wait when True, wait until the node.js subprocess is responsive
+        :param wait: when True, wait until the node.js subprocess is responsive
                     via the specified TCP socket.
         """
         socket = socket or '/tmp/zombie-%s.sock' % random.randint(0, 10000)
