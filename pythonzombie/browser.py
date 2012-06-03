@@ -70,7 +70,7 @@ class Browser(BaseNode):
     #
     # Navigation
     #
-    def click_link(self, selector):
+    def clickLink(self, selector):
         self.client.wait('clickLink', selector)
 
     @property
@@ -103,7 +103,7 @@ class Browser(BaseNode):
         self._fill(field, value)
 
     @verb
-    def press_button(self, selector):
+    def pressButton(self, selector):
         """
         Press a specific button (by innerText or CSS selector in the current
         document.

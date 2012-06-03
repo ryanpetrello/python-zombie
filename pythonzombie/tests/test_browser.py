@@ -136,7 +136,7 @@ class TestBrowser(BrowserClientTest):
 
     def test_press_button(self):
         self.browser.visit(self.path)
-        self.browser.press_button('Search')
+        self.browser.pressButton('Search')
         assert urlparse(self.browser.location).netloc == 'www.google.com'
 
 
