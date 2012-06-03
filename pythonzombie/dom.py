@@ -1,6 +1,3 @@
-import abc
-
-
 def verb(f):
     """
     Methods that are decorated as `@verb` should always return a reference
@@ -17,8 +14,6 @@ class Queryable(object):
     An abstract base class which represents a DOM reference
     point from which a CSS selector can be applied.
     """
-
-    __metaclass__ = abc.ABCMeta
 
     def _with_context(self, method, selector, context=None):
         """
