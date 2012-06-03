@@ -4,6 +4,7 @@
 *.DS_Store
 *.tox
 .Python
+doc/build
 bin
 htmlcov
 include
