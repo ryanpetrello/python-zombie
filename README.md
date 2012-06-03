@@ -1,5 +1,5 @@
-A Python driver for Zombie.js (http://zombie.labnotes.org/), a headless browser
-powered by (http://nodejs.org/) node.js.
+A Python driver for [Zombie.js](http://zombie.labnotes.org/), a headless browser
+powered by [node.js](http://nodejs.org/).
 
     from pythonzombie import Browser
     b = Browser()
