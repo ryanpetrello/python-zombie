@@ -138,7 +138,7 @@ class TestDOMNode(BrowserClientTest):
 
         # The document contains a paragraph, but it's *outside* of the form,
         # so it shouldn't be found under the form DOM node.
-        0 == len(form.css('p'))
+        assert 0 == len(form.css('p'))
 
     def test_fill(self):
         node = self.browser.visit(self.path).css('input')[0]

@@ -18,9 +18,6 @@ class FakePopen(object):
     stdin = cStringIO.StringIO()
     stdout = cStringIO.StringIO()
 
-    def kill(self):
-        pass
-
 
 class TestServerSpawn(TestCase):
 
@@ -60,13 +57,19 @@ class TestServerSpawn(TestCase):
 
     @fudge.with_fakes
     def test_configurable_socket(self):
+        args = [
+            'env',
+            'node',
+            ZombieProxyServer.__proxy_path__(),
+            '/tmp/zombie-custom.sock'
+        ]
         with fudge.patched_context(
             subprocess,
             'Popen',
             (fudge.Fake('Popen').
                     is_callable().
                     with_args(
-                        self._args,
+                        args,
                         stdin=subprocess.PIPE,
                         stdout=subprocess.PIPE,
                         stderr=subprocess.STDOUT
@@ -113,7 +116,3 @@ class TestServerSpawn(TestCase):
             pass
 
         assert os.path.exists(self.server.socket)
-
-    def test_server_kill_cleanup(self):
-        self.server.kill()
-        assert not os.path.exists('/tmp/zombie.sock')

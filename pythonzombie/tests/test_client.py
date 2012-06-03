@@ -18,9 +18,6 @@ class FakePopen(object):
     stdin = cStringIO.StringIO()
     stdout = cStringIO.StringIO()
 
-    def kill(self):
-        pass
-
 
 class TestServerCommunication(TestCase):
 
@@ -32,7 +29,6 @@ class TestServerCommunication(TestCase):
     def tearDown(self):
         super(TestServerCommunication, self).tearDown()
         fudge.clear_expectations()
-        self.server.kill()
 
     def test_encode(self):
         foo = {

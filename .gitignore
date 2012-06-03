@@ -2,6 +2,7 @@
 *.egg-info
 *.coverage
 *.DS_Store
+*.tox
 .Python
 bin
 htmlcov

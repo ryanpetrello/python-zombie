@@ -7,6 +7,7 @@ var zombie = require('zombie');
 // of Zombie.js calls.
 //
 var browser = null;
+var ping = 'pong'
 
 //
 // This is used as a per-browser cache to store

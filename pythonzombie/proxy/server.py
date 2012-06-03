@@ -1,10 +1,16 @@
+from socket import error as SocketError
+import os
 import subprocess
+import signal
 import threading
 import time
 import atexit
-import os
 import random
 import sys
+
+from pythonzombie.proxy.client import ZombieProxyClient
+
+__proxy_instances__ = []
 
 
 class PipeWorker(threading.Thread):
@@ -26,7 +32,10 @@ class PipeWorker(threading.Thread):
         try:
             self.__worker__(self.pipe)
         except Exception, e:
-            sys.stdout.write(e)
+            try:
+                sys.stdout.write(e)
+            except:
+                pass
 
 
 class ZombieProxyServer(object):
@@ -57,14 +66,26 @@ class ZombieProxyServer(object):
         self.child.stdin.close()
 
         if wait:
-            retries = 100
-            while not os.path.exists(socket):
+
+            # Wait until we can ping the node.js server
+            client = ZombieProxyClient(socket)
+            retries = 30
+            while True:
                 retries -= 1
                 if retries < 0:
                     raise RuntimeError(
-                        "node.js has not started within 10 seconds."
+                        "The proxy server has not replied within 3 seconds."
                     )
+                try:
+                    assert client.ping() == 'pong'
+                except (SocketError, AssertionError):
+                    pass
+                else:
+                    break
                 time.sleep(.1)
+
+        global __proxy_instances__
+        __proxy_instances__.append((self.child, self.socket))
 
         #
         # Start a thread to monitor and redirect the
@@ -72,19 +93,25 @@ class ZombieProxyServer(object):
         #
         PipeWorker(self.child.stdout).start()
 
-        # When this process ends, clean up the node subprocess
-        atexit.register(self.kill)
-
     @classmethod
     def __proxy_path__(self):
-        path = os.path.dirname(os.path.abspath(__file__))
-        return os.path.join(path, 'server.js')
+        return os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            'server.js'
+        )
 
-    def kill(self):
-        if self.child:
-            self.child.kill()
-            self.child = None
+
+# When this process ends, ensure all node subprocesses terminate
+def __kill_node_processes__():
+    for child, socket in __proxy_instances__:
+        from os import path
+        if hasattr(child, 'kill'):
+            child.kill()
 
         # Cleanup the closed socket
-        if os.path.exists(self.socket):
-            os.remove(self.socket)
+        if path.exists(socket):
+            from os import remove
+            remove(socket)
+atexit.register(__kill_node_processes__)
+signal.signal(signal.SIGTERM, lambda signum, stack_frame: exit(1))
+signal.signal(signal.SIGINT, lambda signum, stack_frame: exit(1))

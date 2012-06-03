@@ -81,3 +81,8 @@ class ZombieProxyClient(object):
         response = self.__send__(js)
         if response:
             raise NodeError(self.__decode__(response))
+
+    def ping(self):
+        return self.__decode__(
+            self.__send__("stream.end(JSON.stringify(ping));")
+        )
