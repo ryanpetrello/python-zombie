@@ -1,7 +1,10 @@
 from unittest import TestCase
 import cStringIO
 
-from simplejson import loads, dumps
+try:
+    from json import loads, dumps
+except ImportError:
+    from simplejson import loads, dumps  # noqa
 import fudge
 
 from pythonzombie.proxy.server import ZombieProxyServer

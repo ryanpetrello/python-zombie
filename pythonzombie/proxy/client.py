@@ -1,5 +1,9 @@
-from simplejson import loads, dumps
 import socket
+
+try:
+    from json import loads, dumps
+except ImportError:
+    from simplejson import loads, dumps  # noqa
 
 
 class NodeError(Exception):

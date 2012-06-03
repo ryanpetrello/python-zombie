@@ -1,6 +1,7 @@
+import abc
+
 from pythonzombie.proxy.server import ZombieProxyServer
 from pythonzombie.proxy.client import ZombieProxyClient
-import abc
 
 
 def verb(f):

@@ -8,8 +8,6 @@ except ImportError:
 #
 # determine requirements
 #
-requirements = ['simplejson']
-
 setup(
     name="pythonzombie",
     version="0.0.1a1",
@@ -40,7 +38,7 @@ setup(
         'Topic :: Software Development :: Testing :: Traffic Generation'
     ],
     license="BSD",
+    install_requires=[],
     tests_require=['fudge'],
-    test_suite='pythonzombie.tests',
-    install_requires=requirements
+    test_suite='pythonzombie.tests'
 )
