@@ -4,7 +4,7 @@ import os
 import fudge
 
 from pythonzombie import Browser
-from pythonzombie.browser import DOMNode
+from pythonzombie.dom import DOMNode
 from pythonzombie.proxy.client import ZombieProxyClient
 from pythonzombie.compat import urlparse
 
