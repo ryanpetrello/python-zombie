@@ -54,6 +54,7 @@ class TestServerCommunication(BrowserClientTest):
 
             assert self.browser.visit(self.path) == self.browser
 
+
 class TestBrowser(BrowserClientTest):
 
     def setUp(self):
@@ -177,13 +178,13 @@ class TestDOMNode(BrowserClientTest):
         self.browser.visit(self.path)
         checkbox = self.browser.css('input[type="checkbox"]')[0]
         assert checkbox.value == '1'
-        assert checkbox.checked == False
+        assert not checkbox.checked
         checkbox.value = True
         assert checkbox.value == '1'
-        assert checkbox.checked == True
+        assert checkbox.checked
         checkbox.value = False
         assert checkbox.value == '1'
-        assert checkbox.checked == False
+        assert not checkbox.checked
 
     def test_checkbox_checked(self):
         """
@@ -191,9 +192,9 @@ class TestDOMNode(BrowserClientTest):
         """
         self.browser.visit(self.path)
         checkbox = self.browser.css('input[type="checkbox"]')[0]
-        assert checkbox.checked == False
+        assert not checkbox.checked
         checkbox.checked = True
-        assert checkbox.checked == True
+        assert checkbox.checked
 
     def test_radiobox_value(self):
         """
@@ -204,17 +205,17 @@ class TestDOMNode(BrowserClientTest):
         radios = self.browser.css('input[type="radio"]')
         assert radios[0].value == '1'
         assert radios[1].value == '2'
-        assert radios[0].checked == False
-        assert radios[1].checked == False
+        assert not radios[0].checked
+        assert not radios[1].checked
 
         radios[0].value = True
         assert radios[0].value == '1'
-        assert radios[0].checked == True
+        assert radios[0].checked
 
         radios[1].value = True
         assert radios[1].value == '2'
-        assert radios[1].checked == True
-        assert radios[0].checked == False
+        assert radios[1].checked
+        assert not radios[0].checked
 
     def test_radiobox_checked(self):
         """
@@ -224,17 +225,17 @@ class TestDOMNode(BrowserClientTest):
         radios = self.browser.css('input[type="radio"]')
         assert radios[0].value == '1'
         assert radios[1].value == '2'
-        assert radios[0].checked == False
-        assert radios[1].checked == False
+        assert not radios[0].checked
+        assert not radios[1].checked
 
         radios[0].checked = True
         assert radios[0].value == '1'
-        assert radios[0].checked == True
+        assert radios[0].checked
 
         radios[1].checked = True
         assert radios[1].value == '2'
-        assert radios[1].checked == True
-        assert radios[0].checked == False
+        assert radios[1].checked
+        assert not radios[0].checked
 
     def test_fire(self):
         self.browser.visit(self.path)

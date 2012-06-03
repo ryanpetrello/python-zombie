@@ -6,6 +6,7 @@ import os
 import random
 import sys
 
+
 class PipeWorker(threading.Thread):
 
     def __init__(self, pipe):
@@ -60,9 +61,10 @@ class ZombieProxyServer(object):
             while not os.path.exists(socket):
                 retries -= 1
                 if retries < 0:
-                    raise RuntimeError("Server has not been started for 10 seconds.")
+                    raise RuntimeError(
+                        "node.js has not started within 10 seconds."
+                    )
                 time.sleep(.1)
-
 
         #
         # Start a thread to monitor and redirect the

@@ -1,12 +1,12 @@
-from pythonzombie.proxy.server      import ZombieProxyServer
-from pythonzombie.proxy.client      import ZombieProxyClient
-from simplejson                     import loads, dumps
-from unittest                       import TestCase
-
+from unittest import TestCase
 import cStringIO
+
+from simplejson import loads, dumps
 import fudge
-import subprocess
-import os
+
+from pythonzombie.proxy.server import ZombieProxyServer
+from pythonzombie.proxy.client import ZombieProxyClient
+
 
 class FakeNode(object):
     def __json__(self):
@@ -55,8 +55,8 @@ class TestServerCommunication(TestCase):
 
     def test_simple_json(self):
         obj = {
-            'foo'   : 'bar',
-            'test'  : 500
+            'foo': 'bar',
+            'test': 500
         }
         assert self.client.json(obj) == obj
 

@@ -29,8 +29,8 @@ class Queryable(object):
         """
 
         #
-        # JSON-encode the provided CSS selector so it can be treated as a Javascript
-        # query argument.
+        # JSON-encode the provided CSS selector so it can be treated as
+        # a Javascript query argument.
         #
         # Combine the selector with the (optional) context reference and
         # building a function argstring to be passed to Zombie.js'

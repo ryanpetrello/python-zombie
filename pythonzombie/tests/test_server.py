@@ -1,11 +1,12 @@
-from pythonzombie.proxy.server      import ZombieProxyServer
-from simplejson                     import loads, dumps
-from unittest                       import TestCase
-
+from unittest import TestCase
 import cStringIO
-import fudge
 import subprocess
 import os
+
+import fudge
+
+from pythonzombie.proxy.server import ZombieProxyServer
+
 
 class FakeNode(object):
     def __json__(self):
@@ -31,21 +32,27 @@ class TestServerSpawn(TestCase):
         super(TestServerSpawn, self).tearDown()
         fudge.clear_expectations()
 
+    @property
+    def _args(self):
+        return [
+            'env',
+            'node',
+            ZombieProxyServer.__proxy_path__(),
+            '/tmp/zombie.sock'
+        ]
+
     @fudge.with_fakes
     def test_process_spawn(self):
-
-        args = ['env', 'node', ZombieProxyServer.__proxy_path__(), '/tmp/zombie.sock']
-
         with fudge.patched_context(
             subprocess,
             'Popen',
             (fudge.Fake('Popen').
                 is_callable().
                 with_args(
-                    args,
-                    stdin = subprocess.PIPE,
-                    stdout = subprocess.PIPE,
-                    stderr = subprocess.STDOUT
+                    self._args,
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT
                 ).
                 returns(FakePopen()))
             ):
@@ -53,19 +60,16 @@ class TestServerSpawn(TestCase):
 
     @fudge.with_fakes
     def test_configurable_socket(self):
-
-        args = ['env', 'node', ZombieProxyServer.__proxy_path__(), '/tmp/zombie-custom.sock']
-
         with fudge.patched_context(
             subprocess,
             'Popen',
             (fudge.Fake('Popen').
                     is_callable().
                     with_args(
-                        args,
-                        stdin = subprocess.PIPE,
-                        stdout = subprocess.PIPE,
-                        stderr = subprocess.STDOUT
+                        self._args,
+                        stdin=subprocess.PIPE,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.STDOUT
                     ).
                     returns(FakePopen()))
             ):
@@ -74,7 +78,6 @@ class TestServerSpawn(TestCase):
     @fudge.with_fakes
     def test_stdout_redirect_exception(self):
 
-        args = ['env', 'node', ZombieProxyServer.__proxy_path__(), '/tmp/zombie.sock']
         fake = FakePopen()
         fake.stdout = None
 
@@ -84,10 +87,10 @@ class TestServerSpawn(TestCase):
             (fudge.Fake('Popen').
                 is_callable().
                 with_args(
-                    args,
-                    stdin = subprocess.PIPE,
-                    stdout = subprocess.PIPE,
-                    stderr = subprocess.STDOUT
+                    self._args,
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT
                 ).
                 returns(fake))
             ):
@@ -106,10 +109,11 @@ class TestServerSpawn(TestCase):
             os.kill(self.server.child.pid, 0)
         except OSError:
             assert False
-        else: pass
+        else:
+            pass
 
         assert os.path.exists(self.server.socket)
 
     def test_server_kill_cleanup(self):
         self.server.kill()
-        assert os.path.exists('/tmp/zombie.sock') == False
+        assert not os.path.exists('/tmp/zombie.sock')
