@@ -83,9 +83,29 @@ class TestBrowser(BrowserClientTest):
 
     def test_html_with_context(self):
         self.browser.visit(self.path)
-        html = self.browser.html('#content', self.browser.css('body')[0])
+        html = self.browser.html('#content', self.browser.query('body'))
         assert '<title>Example</title>' not in html
         assert '<p>This is an HTML document</p>' in html
+
+    def test_text(self):
+        self.browser.visit(self.path)
+        text = self.browser.text('title')
+        assert text == 'Example'
+
+    def test_text_no_match(self):
+        self.browser.visit(self.path)
+        text = self.browser.text('blink')
+        assert not text
+
+    def test_text_with_context(self):
+        self.browser.visit(self.path)
+        text = self.browser.text('title', self.browser.query('head'))
+        assert text == 'Example'
+
+    def test_text_with_context_missing(self):
+        self.browser.visit(self.path)
+        text = self.browser.text('title', self.browser.query('body'))
+        assert not text
 
     def test_css(self):
         self.browser.visit(self.path)

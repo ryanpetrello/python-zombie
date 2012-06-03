@@ -64,8 +64,15 @@ class Browser(BaseNode):
         """
         return self.queryAll(selector, context)
 
-    def text(self, value):
-        return self.client.json('browser.text("%s")' % value)
+    def text(self, selector, context=None):
+        """
+        Returns the text content of specific elements
+
+        :param selector a string CSS selector
+                        (http://zombie.labnotes.org/selectors)
+        :param context an (optional) instance of DOMNode
+        """
+        return self._with_context('text', selector, context)
 
     #
     # Navigation
