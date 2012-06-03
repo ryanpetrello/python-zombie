@@ -1,5 +1,5 @@
-A Python driver for Zombie.js (http://zombie.labnotes.org/) running on
-top of node.js, inspired by Capybara-Zombie (https://github.com/plataformatec/capybara-zombie):
+A Python driver for Zombie.js (http://zombie.labnotes.org/), a headless browser
+powered by (http://nodejs.org/) node.js.
 
     from pythonzombie import Browser
     b = Browser()
