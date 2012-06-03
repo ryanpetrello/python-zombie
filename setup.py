@@ -22,7 +22,7 @@ setup(
         'Intended Audience :: Developers',
         'Intended Audience :: Information Technology',
         'Intended Audience :: System Administrators',
-        'License :: OSI Approved :: BSD License',
+        'License :: OSI Approved :: MIT License',
         'Operating System :: MacOS :: MacOS X',
         'Operating System :: Microsoft :: Windows',
         'Operating System :: POSIX',
@@ -37,7 +37,7 @@ setup(
         'Topic :: Software Development :: Testing',
         'Topic :: Software Development :: Testing :: Traffic Generation'
     ],
-    license="BSD",
+    license="MIT",
     install_requires=[],
     tests_require=['fudge'],
     test_suite='pythonzombie.tests'
