@@ -49,7 +49,7 @@ class TestServerSpawn(TestCase):
                 ).
                 returns(FakePopen()))
             ):
-            ZombieProxyServer()
+            ZombieProxyServer(socket='/tmp/zombie.sock', wait=False)
 
     @fudge.with_fakes
     def test_configurable_socket(self):
@@ -69,7 +69,7 @@ class TestServerSpawn(TestCase):
                     ).
                     returns(FakePopen()))
             ):
-            ZombieProxyServer(socket='/tmp/zombie-custom.sock')
+            ZombieProxyServer(socket='/tmp/zombie-custom.sock', wait=False)
 
     @fudge.with_fakes
     def test_stdout_redirect_exception(self):
@@ -91,7 +91,7 @@ class TestServerSpawn(TestCase):
                 ).
                 returns(fake))
             ):
-            ZombieProxyServer()
+            ZombieProxyServer(socket='/tmp/zombie.sock', wait=False)
 
     def test_server_running(self):
         assert self.server.child is not None
@@ -108,8 +108,8 @@ class TestServerSpawn(TestCase):
             assert False
         else: pass
 
-        assert os.path.exists('/tmp/zombie.sock')
+        assert os.path.exists(self.server.socket)
 
     def test_server_kill_cleanup(self):
-        self.server.kill() 
+        self.server.kill()
         assert os.path.exists('/tmp/zombie.sock') == False

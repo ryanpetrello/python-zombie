@@ -23,11 +23,11 @@ class FakePopen(object):
 
 
 class TestServerCommunication(TestCase):
-    
+
     def setUp(self):
         super(TestServerCommunication, self).setUp()
         self.server = ZombieProxyServer()
-        self.client = ZombieProxyClient()
+        self.client = ZombieProxyClient(self.server.socket)
 
     def tearDown(self):
         super(TestServerCommunication, self).tearDown()
@@ -38,9 +38,9 @@ class TestServerCommunication(TestCase):
         foo = {
             'foo': 'bar'
         }
-        self.client.__encode__(foo) == dumps(foo)
+        self.client.encode(foo) == dumps(foo)
 
-        self.client.__encode__(FakeNode()) == 'ENCODED'
+        self.client.encode(FakeNode()) == 'ENCODED'
 
     def test_decode(self):
         foo = dumps({
@@ -49,7 +49,7 @@ class TestServerCommunication(TestCase):
         self.client.__decode__(foo) == loads(foo)
 
     def test_simple_send(self):
-        self.client.send(
+        self.client.__send__(
             "stream.end()"
         )
 
@@ -64,13 +64,17 @@ class TestServerCommunication(TestCase):
     def test_simple_wait(self):
 
         js = """
-        browser.visit("http://example.com", function(err, browser){
-            if(err)
-                stream.end(JSON.stringify(err.stack));
-            else    
-                stream.end();
-        });
-        """
+        try {
+            browser.visit("%s",  function(err, browser){
+                if (err)
+                    stream.end(JSON.stringify(err.message));
+                else
+                    stream.end();
+            });
+        } catch (err) {
+            stream.end(JSON.stringify(err.message));
+        }
+        """ % 'http://example.com'
 
         with fudge.patched_context(
             ZombieProxyClient,
@@ -85,12 +89,16 @@ class TestServerCommunication(TestCase):
     def test_wait_without_arguments(self):
 
         js = """
-        browser.wait(null, function(err, browser){
-            if(err)
-                stream.end(JSON.stringify(err.stack));
-            else    
-                stream.end();
-        });
+        try {
+            browser.wait(null, function(err, browser){
+                if (err)
+                    stream.end(JSON.stringify(err.message));
+                else
+                    stream.end();
+            });
+        } catch (err) {
+            stream.end(JSON.stringify(err.message));
+        }
         """
 
         with fudge.patched_context(

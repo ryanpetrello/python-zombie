@@ -2,6 +2,7 @@ from pythonzombie.proxy.server import ZombieProxyServer
 from pythonzombie.proxy.client import ZombieProxyClient
 import abc
 
+
 def verb(f):
     """
     Methods that are decorated as `@verb` should always return a reference
@@ -10,7 +11,7 @@ def verb(f):
     def wrap(self, *args, **kwargs):
         f(self, *args, **kwargs)
         return self
-    return wrap 
+    return wrap
 
 
 class Queryable(object):
@@ -20,8 +21,8 @@ class Queryable(object):
     """
 
     __metaclass__ = abc.ABCMeta
-    
-    def __query__(self, selector, context=None):
+
+    def _query(self, selector, context=None):
         """
         Evaluate a CSS selector against the document (or an optional context
         DOMNode) and return a list of DOMNode objects.
@@ -35,8 +36,8 @@ class Queryable(object):
         # building a function argstring to be passed to Zombie.js'
         # browser.querySelectorAll() API method.
         #
-        args = ','.join(filter(None, [self.__encode__(selector)]))
-
+        args = ','.join(filter(None, [self.encode(selector)]))
+        #args = selector
         #
         # Run the compiled query, store object (JSDOM Element) references
         # in the TCP server's ELEMENTS cache, and return a stringified list of
@@ -44,32 +45,31 @@ class Queryable(object):
         #
         js = """
             var results = [];
-            var nodes = %s.querySelectorAll(%s);
+            var nodes = browser.queryAll(%(args)s, %(context)s);
             for(var i = 0; i < nodes.length; i++){
                 var node = nodes[i];
                 ELEMENTS.push(node);
                 results.push(ELEMENTS.length - 1);
             };
             stream.end(JSON.stringify(results));
-        """ % (
-            context if context else 'browser',
-            args
-        )
+        """ % {
+            'args': args,
+            'context': context if context else 'browser',
+        }
 
         #
         # Translate each index of ELEMENTS into a DOMNode object which can be
         # used to make subsequent object/attribute lookups later.
         #
-        return map(
-            lambda x: DOMNode(int(x), self.client),
-            self.__decode__(self.client.send(js))
-        )
+        return [DOMNode(int(x), self.client) for x in
+            self.decode(self.client.__send__(js))
+        ]
 
     # Shortcuts for JSON loads/dumps
-    def __encode__(self, value):
-        return self.client.__encode__(value)
+    def encode(self, value):
+        return self.client.encode(value)
 
-    def __decode__(self, value):
+    def decode(self, value):
         return self.client.__decode__(value)
 
 
@@ -78,16 +78,8 @@ class BaseNode(Queryable):
     More Browser/DOMNode shared functionality.
     """
 
-    def __fill__(self, field, value):
-        js = """
-            browser.fill(%s, %s);
-            stream.end();
-        """ % (
-            self.__encode__(field),
-            self.__encode__(value)
-        )
-       
-        self.client.send(js)
+    def _fill(self, field, value):
+        self.client.wait('fill', field, value)
 
 
 class Browser(BaseNode):
@@ -101,6 +93,7 @@ class Browser(BaseNode):
         #
         if server is None:
             server = ZombieProxyServer()
+        self.server = server
         self.client = ZombieProxyClient(server.socket)
 
     #
@@ -118,14 +111,20 @@ class Browser(BaseNode):
         Evaluate a CSS selector against the document (or an option context
         DOMNode) and return a list of DOMNode objects.
         """
-        return self.__query__(selector, context)
+        return self._query(selector, context)
+
+    def text(self, value):
+        return self.client.json('browser.text("%s")' % value)
 
     #
     # Navigation
     #
+    def click_link(self, selector):
+        self.client.wait('clickLink', selector)
+
     @property
     def location(self):
-        return self.client.json('browser.location')
+        return self.client.json('browser.location.toString()')
 
     @location.setter
     def location(self, url):
@@ -136,7 +135,11 @@ class Browser(BaseNode):
         """
         A shortcut to load the document from the specified URL.
         """
-        self.client.wait('visit', url) 
+        self.client.wait('visit', url)
+
+    @verb
+    def back(self):
+        self.client.wait('back')
 
     #
     # Forms
@@ -146,10 +149,10 @@ class Browser(BaseNode):
         """
         Fill a specified form field in the current document.
         """
-        self.__fill__(field, value)
+        self._fill(field, value)
 
     @verb
-    def pressButton(self, selector):
+    def press_button(self, selector):
         """
         Press a specific button (by innerText or CSS selector in the current
         document.
@@ -174,28 +177,28 @@ class DOMNode(BaseNode):
         Evaluate a CSS selector against this node and return a list of
         (child) DOMNode objects.
         """
-        return self.__query__(selector, self.__native__)
+        return self._query(selector, self._native)
 
     @verb
     def fill(self, value):
         """
         If applicable, fill the current node's value.
         """
-        self.__fill__(self, value)
+        self._fill(self, value)
 
     #
     # Attribute (normal and specialized)
     # access methods.
-    # 
+    #
     @property
     def tagName(self):
-        return self.__jsonattr__('tagName').lower()
-    
+        return self._jsonattr('tagName').lower()
+
     @property
     def value(self):
         if self.tagName == 'textarea':
             return self.textContent
-        return self.__jsonattr__('value')
+        return self._jsonattr('value')
 
     @value.setter
     def value(self, value):
@@ -216,14 +219,14 @@ class DOMNode(BaseNode):
             }
             stream.end();
         """ % {
-            'native'    : self.__native__,
-            'value'     : self.__encode__(value)
+            'native': self._native,
+            'value': self.encode(value)
         }
-        self.client.send(js)
+        self.client.__send__(js)
 
     @property
     def checked(self):
-        return self.__jsonattr__('checked')
+        return self._jsonattr('checked')
 
     @checked.setter
     def checked(self, value):
@@ -236,16 +239,19 @@ class DOMNode(BaseNode):
                 node.checked = %(value)s;
             stream.end();
         """ % {
-            'native'    : self.__native__,
-            'value'     : self.__encode__(value)
+            'native': self._native,
+            'value': self.encode(value)
         }
-        self.client.send(js)
+        self.client.__send__(js)
 
-    def __jsonattr__(self, attr):
-        return self.client.json("%s.%s" % (self.__native__, attr))
+    def _jsonattr(self, attr):
+        return self.client.json("%s.%s" % (self._native, attr))
 
     def __getattr__(self, name):
-        return self.__jsonattr__(name)
+        return self._jsonattr(name)
+
+    def __getitem__(self, name):
+        return self._jsonattr(name)
 
     #
     # Events
@@ -262,7 +268,7 @@ class DOMNode(BaseNode):
     # Private methods
     #
     @property
-    def __native__(self):
+    def _native(self):
         return "ELEMENTS[%s]" % self.index
 
     def __repr__(self):
@@ -276,5 +282,5 @@ class DOMNode(BaseNode):
         return "<%s>" % name
 
     @property
-    def __json__(self):
-        return self.__native__
+    def json(self):
+        return self._native

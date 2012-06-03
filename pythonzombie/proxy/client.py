@@ -2,6 +2,10 @@ from simplejson import loads, dumps
 import socket
 
 
+class NodeError(Exception):
+    pass
+
+
 class ZombieProxyClient(object):
     """
     Sends data to a ZombieProxyServer bound to a specific
@@ -24,24 +28,27 @@ class ZombieProxyClient(object):
         response = []
         while True:
             data = s.recv(4096)
-            if not data: break
+            if not data:
+                break
             response.append(data)
 
         # Close the socket connection
-        s.close();
+        s.close()
 
         return ''.join(response)
 
-    def __encode__(self, obj):
+    def encode(self, obj):
+        if hasattr(obj, 'json'):
+            return obj.json
         if hasattr(obj, '__json__'):
-            return obj.__json__
+            return obj.__json__()
         return dumps(obj)
 
     def __decode__(self, json):
-        return loads(json)
-
-    def send(self, js):
-        return self.__send__(js)
+        if json:
+            return loads(json)
+        else:
+            return None
 
     def json(self, js):
         return self.__decode__(self.__send__(
@@ -51,21 +58,26 @@ class ZombieProxyClient(object):
     def wait(self, method, *args):
         if args:
             methodargs = ', '.join(
-                [self.__encode__(a) for a in args]
-            )
+                [self.encode(a) for a in args]
+            ) + ', '
         else:
-            methodargs = 'null'
+            methodargs = 'null,'
 
         js = """
-        browser.%s(%s, function(err, browser){
-            if(err)
-                stream.end(JSON.stringify(err.stack));
-            else    
-                stream.end();
-        });
+        try {
+            browser.%s(%s function(err, browser){
+                if (err)
+                    stream.end(JSON.stringify(err.message));
+                else
+                    stream.end();
+            });
+        } catch (err) {
+            stream.end(JSON.stringify(err.message));
+        }
         """ % (
             method,
             methodargs
         )
-
-        return self.__send__(js);
+        response = self.__send__(js)
+        if response:
+            raise NodeError(self.__decode__(response))
