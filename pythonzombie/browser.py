@@ -65,7 +65,7 @@ class Queryable(object):
 
         return self.decode(self.client.send(js))
 
-    def _query(self, selector, context=None):
+    def _query(self, selector, context=None, all_=True):
         """
         Evaluate a CSS selector against the document (or an optional context
         DOMNode) and return a list of DOMNode objects.
@@ -73,6 +73,10 @@ class Queryable(object):
         :param selector a string CSS selector
                         (http://zombie.labnotes.org/selectors)
         :param context an (optional) instance of DOMNode
+        :param all_ when True, browser.queryAll is used and a list of DOMNodes
+                    are returned.
+                    when False, browser.query is used and a single DOMNode is
+                    returned.
         """
 
         #
@@ -90,16 +94,28 @@ class Queryable(object):
         # in the TCP server's ELEMENTS cache, and return a stringified list of
         # reference indexes.
         #
-        js = """
-            var results = [];
-            var nodes = browser.queryAll(%(args)s, %(context)s);
-            for(var i = 0; i < nodes.length; i++){
-                var node = nodes[i];
-                ELEMENTS.push(node);
-                results.push(ELEMENTS.length - 1);
-            };
-            stream.end(JSON.stringify(results));
-        """ % {
+        if all_ is True:
+            js = """
+                var results = [];
+                var nodes = browser.queryAll(%(args)s, %(context)s);
+                for(var i = 0; i < nodes.length; i++){
+                    var node = nodes[i];
+                    ELEMENTS.push(node);
+                    results.push(ELEMENTS.length - 1);
+                };
+                stream.end(JSON.stringify(results));
+            """
+        else:
+            js = """
+                var node = browser.query(%(args)s, %(context)s);
+                if(node){
+                    ELEMENTS.push(node);
+                    stream.end(JSON.stringify(ELEMENTS.length - 1));
+                }
+                stream.end();
+            """
+
+        js = js % {
             'args': args,
             'context': context if context else 'browser'
         }
@@ -108,9 +124,19 @@ class Queryable(object):
         # Translate each index of ELEMENTS into a DOMNode object which can be
         # used to make subsequent object/attribute lookups later.
         #
-        return [DOMNode(int(x), self.client) for x in
-            self.decode(self.client.send(js))
-        ]
+        if all_ is True:
+            return [DOMNode(int(x), self.client) for x in
+                self.decode(self.client.send(js))
+            ]
+
+        #
+        # If a reference is returned, translate the reference into a DOMNode
+        # object which can be used to make subsequent object/attribute lookups
+        # later.
+        #
+        decoded = self.decode(self.client.send(js))
+        if decoded is not None:
+            return DOMNode(decoded, self.client)
 
     # Shortcuts for JSON loads/dumps
     def encode(self, value):
@@ -156,9 +182,20 @@ class Browser(BaseNode):
         """
         return self._with_context('html', selector, context)
 
+    def query(self, selector, context=None):
+        """
+        Evaluate a CSS selector against the document (or an optional context
+        DOMNode) and return a single DOMNode object.
+
+        :param selector a string CSS selector
+                        (http://zombie.labnotes.org/selectors)
+        :param context an (optional) instance of DOMNode
+        """
+        return self._query(selector, context, all_=False)
+
     def queryAll(self, selector, context=None):
         """
-        Evaluate a CSS selector against the document (or an option context
+        Evaluate a CSS selector against the document (or an optional context
         DOMNode) and return a list of DOMNode objects.
 
         :param selector a string CSS selector
@@ -236,6 +273,13 @@ class DOMNode(BaseNode):
     #
     # Inherited functionality
     #
+    def query(self, selector):
+        """
+        Evaluate a CSS selector against this node and return a single
+        (child) DOMNode object.
+        """
+        return self._query(selector, self._native, all_=False)
+
     def queryAll(self, selector):
         """
         Evaluate a CSS selector against this node and return a list of

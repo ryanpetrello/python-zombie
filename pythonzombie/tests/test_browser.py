@@ -4,6 +4,7 @@ import os
 import fudge
 
 from pythonzombie import Browser
+from pythonzombie.browser import DOMNode
 from pythonzombie.proxy.client import ZombieProxyClient
 from pythonzombie.compat import urlparse
 
@@ -91,6 +92,22 @@ class TestBrowser(BrowserClientTest):
         for tag in ['h1', 'p', 'form', 'input', 'button']:
             matches = self.browser.css(tag)
             assert len(matches)
+
+    def test_css_no_results(self):
+        self.browser.visit(self.path)
+        matches = self.browser.css('blink')
+        assert len(matches) == 0
+
+    def test_query(self):
+        self.browser.visit(self.path)
+        for tag in ['h1', 'p', 'form', 'input', 'button']:
+            match = self.browser.query(tag)
+            assert isinstance(match, DOMNode)
+
+    def test_query_no_results(self):
+        self.browser.visit(self.path)
+        match = self.browser.query('blink')
+        assert match is None
 
     def test_by_id(self):
         matches = self.browser.visit(self.path).css('#submit')
