@@ -35,7 +35,7 @@ class TestServerCommunication(BrowserClientTest):
 
         js = """
         try {
-            browser.visit("%s",  function(err, browser){
+            browser.visit("%s", function(err, browser){
                 if (err)
                     stream.end(JSON.stringify(err.message));
                 else
@@ -69,6 +69,9 @@ class TestBrowser(BrowserClientTest):
         with open(path, 'r') as f:
             self.html = f.read()
 
+    #
+    # Document Content
+    #
     def test_html(self):
         self.browser.visit(self.path)
         html = self.browser.html()
@@ -139,6 +142,9 @@ class TestBrowser(BrowserClientTest):
         assert len(matches) == 1
         assert matches[0].tagName.lower() == 'input'
 
+    #
+    # Navigation
+    #
     def test_location_get(self):
         for p in ('scheme', 'path'):
             getattr(urlparse(self.browser.visit(self.path).location), p) == \
@@ -150,6 +156,20 @@ class TestBrowser(BrowserClientTest):
             getattr(urlparse(self.browser.visit(self.path).location), p) == \
                 getattr(urlparse(self.path), p)
 
+    def test_click_link(self):
+        self.browser.visit(self.path)
+        self.browser.clickLink('#about-zombie')
+        assert self.browser.location == 'http://zombie.labnotes.org/'
+
+    def test_back(self):
+        self.browser.visit('http://zombie.labnotes.org/')
+        self.browser.visit('http://google.com/')
+        self.browser.back()
+        assert self.browser.location == 'http://zombie.labnotes.org/'
+
+    #
+    # Forms
+    #
     def test_fill(self):
         self.browser.visit(self.path).fill('q', 'Zombie.js')
         assert self.browser.css('input')[0].value == 'Zombie.js'
@@ -161,6 +181,14 @@ class TestBrowser(BrowserClientTest):
 
 
 class TestDOMNode(BrowserClientTest):
+
+    def test_attribute_lookup(self):
+        button = self.browser.visit(self.path).query('button')
+        assert button.innerHTML == 'Search'
+
+    def test_item_lookup(self):
+        button = self.browser.visit(self.path).query('button')
+        assert button['innerHTML'] == 'Search'
 
     def test_printable(self):
         self.browser.visit(self.path)
@@ -189,6 +217,12 @@ class TestDOMNode(BrowserClientTest):
         # The document contains a paragraph, but it's *outside* of the form,
         # so it shouldn't be found under the form DOM node.
         assert 0 == len(form.css('p'))
+
+    def test_query_chaining(self):
+        doc = self.browser.visit(self.path)
+        form = doc.query('form')
+        button = form.query('button')
+        assert button.innerHTML == 'Search'
 
     def test_fill(self):
         node = self.browser.visit(self.path).css('input')[0]

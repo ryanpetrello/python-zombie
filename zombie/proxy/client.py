@@ -87,11 +87,11 @@ class ZombieProxyClient(object):
                 [self.__encode__(a) for a in args]
             ) + ', '
         else:
-            methodargs = 'null,'
+            methodargs = ''
 
         js = """
         try {
-            browser.%s(%s function(err, browser){
+            browser.%s(%sfunction(err, browser){
                 if (err)
                     stream.end(JSON.stringify(err.message));
                 else
