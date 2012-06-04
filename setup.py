@@ -36,7 +36,7 @@ setup(
     author="Ryan Petrello",
     author_email="ryan [at] ryanpetrello [dot] com",
     description="A Python driver for Zombie.js",
-    long_description=open('README.md').read(),
+    long_description=open('README.rst').read(),
     packages=find_packages(exclude=['ez_setup', 'tests']),
     classifiers=[
         'Development Status :: 1 - Planning',

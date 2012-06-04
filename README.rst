@@ -1,5 +1,5 @@
-A Python driver for [Zombie.js](http://zombie.labnotes.org/), a headless browser
-powered by [node.js](http://nodejs.org/).
+A Python driver for `Zombie.js <http://zombie.labnotes.org/)>`_, a headless browser
+powered by `node.js <http://nodejs.org/>`_.
 
     from zombie import Browser
     b = Browser()
@@ -12,11 +12,12 @@ Requires the latest node and zombie:
     curl http://npmjs.org/install.sh | sh
     npm install zombie
 
-## Development
+Development
+===========
 
-Source hosted at [GitHub](https://github.com/ryanpetrello/python-zombie). Report
-issues and feature requests on [GitHub
-Issues](https://github.com/ryanpetrello/python-zombie/issues).
+Source hosted at `GitHub <https://github.com/ryanpetrello/python-zombie>`_.
+Report issues and feature requests on `GitHub
+Issues <https://github.com/ryanpetrello/python-zombie/issues>`_.
 
 Tests require ``tox`` and can be run with ``python setup.py test``.
 
