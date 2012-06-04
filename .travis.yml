@@ -10,7 +10,6 @@ branches:
     - master
 install: 
   - bash < <(curl http://h3manth.com/njs)
-  - brew install node
   - curl http://npmjs.org/install.sh | sh
   - npm install zombie
   - pip install . --use-mirrors
