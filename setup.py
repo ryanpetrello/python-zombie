@@ -35,6 +35,7 @@ setup(
     include_package_data=True,
     author="Ryan Petrello",
     author_email="ryan [at] ryanpetrello [dot] com",
+    url="https://github.com/ryanpetrello/python-zombie",
     description="A Python driver for Zombie.js",
     long_description=open('README.rst').read(),
     packages=find_packages(exclude=['ez_setup', 'tests']),
@@ -47,7 +48,7 @@ setup(
         'Operating System :: MacOS :: MacOS X',
         'Operating System :: Microsoft :: Windows',
         'Operating System :: POSIX',
-        'Programming Language :: Python'
+        'Programming Language :: Python',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
