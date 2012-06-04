@@ -1,7 +1,6 @@
 A Python driver for `Zombie.js <http://zombie.labnotes.org/)>`_, a headless browser
-powered by `node.js <http://nodejs.org/>`_.
+powered by `node.js <http://nodejs.org/>`_.:
 
-::
     from zombie import Browser
     b = Browser()
     b.visit('http://google.com/m').fill('input', 'Zombie.js').pressButton('Search')
