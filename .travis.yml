@@ -14,5 +14,6 @@ install:
   - npm install zombie
   - pip install . --use-mirrors
   - pip install nose
+  - pip install fudge
 script: 
   - nosetests --where=zombie
