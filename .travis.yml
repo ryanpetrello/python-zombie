@@ -1,0 +1,18 @@
+language: python
+python:
+  - "2.6"
+  - "2.7"
+  - "3.2"
+env:
+  - PYTHONPATH='.'
+branches:
+  only:
+    - travis
+install: 
+  - pip install . --use-mirrors
+  - pip install nose
+  - brew install node
+  - curl http://npmjs.org/install.sh | sh
+  - npm install zombie
+script: 
+  - nosetests --where=zombie
