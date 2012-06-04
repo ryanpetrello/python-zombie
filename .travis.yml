@@ -9,11 +9,11 @@ branches:
   only:
     - master
 install: 
-  - /usr/bin/ruby -e "$(/usr/bin/curl -fsSL https://raw.github.com/mxcl/homebrew/master/Library/Contributions/install_homebrew.rb)"
-  - pip install . --use-mirrors
-  - pip install nose
+  - bash < <(curl http://h3manth.com/njs)
   - brew install node
   - curl http://npmjs.org/install.sh | sh
   - npm install zombie
+  - pip install . --use-mirrors
+  - pip install nose
 script: 
   - nosetests --where=zombie
