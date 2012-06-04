@@ -7,7 +7,7 @@ env:
   - PYTHONPATH='.'
 branches:
   only:
-    - travis
+    - master
 install: 
   - pip install . --use-mirrors
   - pip install nose
