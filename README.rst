@@ -1,12 +1,13 @@
 A Python driver for `Zombie.js <http://zombie.labnotes.org/)>`_, a headless browser
 powered by `node.js <http://nodejs.org/>`_.
 
+::
     from zombie import Browser
     b = Browser()
     b.visit('http://google.com/m').fill('input', 'Zombie.js').pressButton('Search')
     assert b.location == 'http://www.google.com/m?q=Zombie.js'
 
-Requires the latest node and zombie:
+Requires the latest node and zombie::
 
     brew install node
     curl http://npmjs.org/install.sh | sh
