@@ -8,8 +8,8 @@ env:
 branches:
   only:
     - master
-before_script: /usr/bin/ruby -e "$(/usr/bin/curl -fsSL https://raw.github.com/mxcl/homebrew/master/Library/Contributions/install_homebrew.rb)"
 install: 
+  - /usr/bin/ruby -e "$(/usr/bin/curl -fsSL https://raw.github.com/mxcl/homebrew/master/Library/Contributions/install_homebrew.rb)"
   - pip install . --use-mirrors
   - pip install nose
   - brew install node
