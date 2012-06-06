@@ -9,6 +9,7 @@ branches:
   only:
     - next
 before_install:
+  - export TRAVIS_PYTHON_VERSION=2.7
   - sudo apt-get install python-software-properties
   - sudo apt-add-repository -y ppa:chris-lea/node.js
   - sudo apt-get update
@@ -16,6 +17,7 @@ before_install:
   - npm update
   - npm install zombie
 install: 
+  - export TRAVIS_PYTHON_VERSION=3.2
   - pip install . --use-mirrors
   - pip install nose
   - pip install fudge
