@@ -2,6 +2,7 @@ language: python
 python:
   - "2.6"
   - "2.7"
+  - "3.2"
 env:
   - PYTHONPATH='.'
 branches:
@@ -10,7 +11,9 @@ branches:
 before_install:
   - npm update
   - npm cache clean
+  - ~/venvs/python2.7/bin/activate
   - npm install zombie
+  - ~/venvs/python$TRAVIS_PYTHON_VERSION/bin/activate
 install: 
   - pip install . --use-mirrors
   - pip install nose
