@@ -11,7 +11,6 @@ import sys
 from zombie.proxy.client import ZombieProxyClient
 
 __all__ = ['ZombieProxyServer']
-__proxy_instances__ = []
 
 
 class PipeWorker(threading.Thread):
@@ -43,7 +42,22 @@ class PipeWorker(threading.Thread):
                 pass
 
 
+class Singleton(type):
+
+    instance = None
+
+    def __init__(cls, name, bases, ns):
+        super(Singleton, cls).__init__(name, bases, ns)
+
+    def __call__(cls, *args, **kw):
+        if cls.instance is None:
+            cls.instance = super(Singleton, cls).__call__(*args, **kw)
+        return cls.instance
+
+
 class ZombieProxyServer(object):
+
+    __metaclass__ = Singleton
 
     def __init__(self, socket=None, wait=True):
         """
@@ -93,9 +107,6 @@ class ZombieProxyServer(object):
                     break
                 time.sleep(.1)
 
-        global __proxy_instances__
-        __proxy_instances__.append((self.child, self.socket))
-
         #
         # Start a thread to monitor and redirect the
         # subprocess stdout and stderr to the console.
@@ -112,15 +123,16 @@ class ZombieProxyServer(object):
 
 # When this process ends, ensure all node subprocesses terminate
 def __kill_node_processes__():  # pragma: nocover
-    for child, socket in __proxy_instances__:
+    instance = ZombieProxyServer.instance
+    if instance:
         from os import path
-        if hasattr(child, 'kill'):
-            child.kill()
+        if hasattr(instance.child, 'kill'):
+            instance.child.kill()
 
         # Cleanup the closed socket
-        if path.exists(socket):
+        if path.exists(instance.socket):
             from os import remove
-            remove(socket)
+            remove(instance.socket)
 atexit.register(__kill_node_processes__)
 signal.signal(signal.SIGTERM, lambda signum, stack_frame: exit(1))
 signal.signal(signal.SIGINT, lambda signum, stack_frame: exit(1))
