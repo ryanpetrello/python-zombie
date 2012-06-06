@@ -14,6 +14,7 @@ Requires the latest node and zombie::
 
 Installing
 ==========
+To install Zombie from PyPI::
 
     $ pip install zombie
 
