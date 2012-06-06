@@ -13,7 +13,7 @@ before_install:
   - npm cache clean
   - ~/venvs/python2.7/bin/activate
   - npm install zombie
-  - ~/venvs/python$TRAVIS_PYTHON_VERSION/bin/activate
+  - ~/venvs/$TRAVIS_PYTHON_VERSION/bin/activate
 install: 
   - pip install . --use-mirrors
   - pip install nose
