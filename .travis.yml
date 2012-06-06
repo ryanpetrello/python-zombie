@@ -2,6 +2,7 @@ language: python
 python:
   - "2.6"
   - "2.7"
+  - "pypy"
   - "3.2"
 env:
   - PYTHONPATH='.'
@@ -17,9 +18,9 @@ before_install:
   - sudo apt-get install nodejs npm
   - npm update zombie
   - npm install zombie
-install: 
+install:
   - pip install . --use-mirrors
   - pip install nose
   - pip install fudge
-script: 
+script:
   - nosetests --where=zombie
