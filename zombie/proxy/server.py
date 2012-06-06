@@ -41,23 +41,27 @@ class PipeWorker(threading.Thread):
             except:  # pragma: nocover
                 pass
 
-
-class Singleton(type):
-
-    instance = None
-
-    def __init__(cls, name, bases, ns):
-        super(Singleton, cls).__init__(name, bases, ns)
-
-    def __call__(cls, *args, **kw):
-        if cls.instance is None:
-            cls.instance = super(Singleton, cls).__call__(*args, **kw)
-        return cls.instance
+__server_instance__ = None
+proxy_path = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    'server.js'
+)
 
 
+def singleton(cls):
+    instances = {}
+
+    def getinstance(*args, **kwargs):
+        if cls not in instances:
+            instances[cls] = cls(*args, **kwargs)
+            global __server_instance__
+            __server_instance__ = instances[cls]
+        return instances[cls]
+    return getinstance
+
+
+@singleton
 class ZombieProxyServer(object):
-
-    __metaclass__ = Singleton
 
     def __init__(self, socket=None, wait=True):
         """
@@ -80,7 +84,7 @@ class ZombieProxyServer(object):
         # evaluates it as Javascript, and passes the eval'ed
         # input to a Zombie.js Browser object.
         #
-        args = ['env', 'node', self.__proxy_path__(), self.socket]
+        args = ['env', 'node', proxy_path, self.socket]
         self.child = subprocess.Popen(
             args,
             stdin=subprocess.PIPE,
@@ -113,17 +117,10 @@ class ZombieProxyServer(object):
         #
         PipeWorker(self.child.stdout).start()
 
-    @classmethod
-    def __proxy_path__(self):
-        return os.path.join(
-            os.path.dirname(os.path.abspath(__file__)),
-            'server.js'
-        )
-
 
 # When this process ends, ensure all node subprocesses terminate
 def __kill_node_processes__():  # pragma: nocover
-    instance = ZombieProxyServer.instance
+    instance = __server_instance__
     if instance:
         from os import path
         if hasattr(instance.child, 'kill'):
