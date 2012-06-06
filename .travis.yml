@@ -8,8 +8,8 @@ branches:
   only:
     - next
 before_install:
+  - node -v
   - sudo apt-get install npm
-  - export NODE_PATH=/usr/lib/node_modules
   - npm update
   - npm cache clean
   - npm install zombie
