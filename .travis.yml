@@ -13,6 +13,7 @@ before_install:
   - sudo apt-get update
   - sudo apt-get install nodejs nodejs-dev npm
   - npm update
+  - npm cache clean
   - npm install zombie
 install: 
   - pip install . --use-mirrors
