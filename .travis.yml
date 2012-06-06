@@ -12,6 +12,7 @@ before_install:
   - sudo apt-add-repository -y ppa:chris-lea/node.js
   - sudo apt-get update
   - sudo apt-get install nodejs nodejs-dev npm
+  - export NODE_PATH=/usr/lib/node_modules
   - npm update
   - npm cache clean
   - npm install zombie
