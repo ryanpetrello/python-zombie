@@ -7,7 +7,6 @@ env:
   - PYTHONPATH='.'
 branches:
   only:
-    - master
     - next
 before_install:
   - sudo apt-get update
