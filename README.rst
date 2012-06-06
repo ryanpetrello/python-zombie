@@ -12,6 +12,11 @@ Requires the latest node and zombie::
     curl http://npmjs.org/install.sh | sh
     npm install zombie
 
+.. _travis: http://travis-ci.org/ryanpetrello/python-zombie
+.. |travis| image:: https://secure.travis-ci.org/ryanpetrello/python-zombie.png
+
+|travis|_
+
 Installing
 ==========
 To install Zombie from PyPI::
