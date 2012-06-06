@@ -12,9 +12,9 @@ before_install:
   - sudo apt-add-repository -y ppa:chris-lea/node.js
   - sudo apt-get update
   - sudo apt-get install nodejs npm
-  - npm cache clean
+  - curl http://npmjs.org/install.sh | sh
   - npm update
-  - npm install zombie -g
+  - npm install zombie
 install: 
   - pip install . --use-mirrors
   - pip install nose
