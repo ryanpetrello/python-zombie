@@ -8,7 +8,6 @@ branches:
   only:
     - next
 before_install:
-  - sudo apt-get install npm
   - npm update
   - npm cache clean
   - npm install zombie
