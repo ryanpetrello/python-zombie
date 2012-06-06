@@ -14,7 +14,7 @@ Requires the latest node and zombie::
 
 Installing
 ==========
- ::
+
     $ pip install zombie
 
 ...or, for the latest (unstable) tip::
