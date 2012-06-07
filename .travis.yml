@@ -13,7 +13,6 @@ before_install:
   - sudo apt-get update
   - sudo apt-get install nodejs
   - curl http://npmjs.org/install.sh | sh
-  - npm update zombie
   - npm install zombie
 install: 
   - pip install . --use-mirrors
