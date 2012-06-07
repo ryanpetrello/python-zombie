@@ -44,6 +44,14 @@ class ZombieProxyClient(object):
         s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         s.connect(self.socket)
 
+        # Prepend JS to switch to the proper client context.
+        js = """
+        var _ctx = ctx_switch('%s');
+        browser = _ctx[0];
+        ELEMENTS = _ctx[1];
+        %s
+        """ % (id(self), js)
+
         # Send Zombie.js API calls, followed by a stream.end() call.
         if PY3:  # pragma: nocover
             js = bytes(js, 'utf-8')

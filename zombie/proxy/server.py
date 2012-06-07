@@ -11,7 +11,6 @@ import sys
 from zombie.proxy.client import ZombieProxyClient
 
 __all__ = ['ZombieProxyServer']
-__proxy_instances__ = []
 
 
 class PipeWorker(threading.Thread):
@@ -42,7 +41,26 @@ class PipeWorker(threading.Thread):
             except:  # pragma: nocover
                 pass
 
+__server_instance__ = None
+proxy_path = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    'server.js'
+)
 
+
+def singleton(cls):
+    instances = {}
+
+    def getinstance(*args, **kwargs):
+        if cls not in instances:
+            instances[cls] = cls(*args, **kwargs)
+            global __server_instance__
+            __server_instance__ = instances[cls]
+        return instances[cls]
+    return getinstance
+
+
+@singleton
 class ZombieProxyServer(object):
 
     def __init__(self, socket=None, wait=True):
@@ -66,7 +84,7 @@ class ZombieProxyServer(object):
         # evaluates it as Javascript, and passes the eval'ed
         # input to a Zombie.js Browser object.
         #
-        args = ['env', 'node', self.__proxy_path__(), self.socket]
+        args = ['env', 'node', proxy_path, self.socket]
         self.child = subprocess.Popen(
             args,
             stdin=subprocess.PIPE,
@@ -93,34 +111,25 @@ class ZombieProxyServer(object):
                     break
                 time.sleep(.1)
 
-        global __proxy_instances__
-        __proxy_instances__.append((self.child, self.socket))
-
         #
         # Start a thread to monitor and redirect the
         # subprocess stdout and stderr to the console.
         #
         PipeWorker(self.child.stdout).start()
 
-    @classmethod
-    def __proxy_path__(self):
-        return os.path.join(
-            os.path.dirname(os.path.abspath(__file__)),
-            'server.js'
-        )
-
 
 # When this process ends, ensure all node subprocesses terminate
 def __kill_node_processes__():  # pragma: nocover
-    for child, socket in __proxy_instances__:
+    instance = __server_instance__
+    if instance:
         from os import path
-        if hasattr(child, 'kill'):
-            child.kill()
+        if hasattr(instance.child, 'kill'):
+            instance.child.kill()
 
         # Cleanup the closed socket
-        if path.exists(socket):
+        if path.exists(instance.socket):
             from os import remove
-            remove(socket)
+            remove(instance.socket)
 atexit.register(__kill_node_processes__)
 signal.signal(signal.SIGTERM, lambda signum, stack_frame: exit(1))
 signal.signal(signal.SIGINT, lambda signum, stack_frame: exit(1))

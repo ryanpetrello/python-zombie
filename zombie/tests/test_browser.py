@@ -177,7 +177,7 @@ class TestBrowser(BrowserClientTest):
     def test_press_button(self):
         self.browser.visit(self.path)
         self.browser.pressButton('Search')
-        assert urlparse(self.browser.location).netloc == 'www.google.com'
+        assert urlparse(self.browser.location).path.endswith('/submit.html')
 
 
 class TestDOMNode(BrowserClientTest):
@@ -324,4 +324,4 @@ class TestDOMNode(BrowserClientTest):
     def test_fire(self):
         self.browser.visit(self.path)
         self.browser.css('button')[0].click()
-        assert urlparse(self.browser.location).netloc == 'www.google.com'
+        assert urlparse(self.browser.location).path.endswith('/submit.html')

@@ -1,22 +1,27 @@
 var net = require('net');
 var zombie = require('zombie');
 
-//
-// Store a global reference to the Zombie.js
-// browser object and a buffered collection
-// of Zombie.js return values.
-//
-var browser = null;
+// Defaults
 var ping = 'pong'
+var browser = null;
+var ELEMENTS = [];
 
 //
-// This is used as a per-browser cache to store
-// NodeList results.  Subsequent TCP API calls
-// will reference indexes of ELEMENTS to retrieve
-// DOM attributes/properties accumulated in previous
-// browser.querySelectorAll() calls.
+// Store global client states indexed by ZombieProxyClient (memory address):
 //
-var ELEMENTS = [];
+// {
+//   'CLIENTID': [X, Y]
+// }
+//
+// ...where X is some zombie.Browser instance...
+//
+// ...and Y is a per-browser cache (a list) used to store  NodeList results.
+// Subsequent TCP API calls will reference indexes to retrieve DOM
+// attributes/properties accumulated in previous browser.querySelectorAll()
+// calls.
+//
+//
+var CLIENTS = {};
 
 //
 // Simple proxy server implementation
@@ -26,15 +31,17 @@ var ELEMENTS = [];
 // Borrowed (heavily) from the Capybara-Zombie project
 // https://github.com/plataformatec/capybara-zombie
 //
+//
+function ctx_switch(id){
+    if(!CLIENTS[id])
+        CLIENTS[id] = [new zombie.Browser(), []];
+    return CLIENTS[id];
+}
 
 net.createServer(function (stream){
   stream.setEncoding('utf8');
 
   stream.on('data', function (data){
-    if (browser == null){
-      browser = new zombie.Browser();
-      ELEMENTS = [];
-    }
     eval(data);
   });
 

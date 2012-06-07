@@ -4,7 +4,7 @@ import os
 
 import fudge
 
-from zombie.proxy.server import ZombieProxyServer
+from zombie.proxy.server import ZombieProxyServer, proxy_path
 from zombie.compat import StringIO
 
 
@@ -34,7 +34,7 @@ class TestServerSpawn(TestCase):
         return [
             'env',
             'node',
-            ZombieProxyServer.__proxy_path__(),
+            proxy_path,
             '/tmp/zombie.sock'
         ]
 
@@ -60,7 +60,7 @@ class TestServerSpawn(TestCase):
         args = [
             'env',
             'node',
-            ZombieProxyServer.__proxy_path__(),
+            proxy_path,
             '/tmp/zombie-custom.sock'
         ]
         with fudge.patched_context(
