@@ -11,9 +11,7 @@ branches:
 before_install:
   - npm update
   - npm cache clean
-  - ~/virtualenv/python2.7/bin/activate
-  - npm install zombie
-  - ~/virtualenv/$TRAVIS_PYTHON_VERSION/bin/activate
+  - PYTHON=~/virtualenv/python2.7/bin/python npm install zombie
 install: 
   - pip install . --use-mirrors
   - pip install nose
