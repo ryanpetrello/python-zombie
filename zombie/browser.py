@@ -163,3 +163,28 @@ class Browser(BaseNode):
         document.
         """
         self.client.wait('pressButton', selector)
+
+    #
+    # Debugging
+    #
+    def dump(self):
+        """
+        Returns a debug string including Zombie version, current URL, history,
+        cookies, event loop, etc.  Useful for debugging and submitting error
+        reports.
+        """
+        raise NotImplementedError()
+
+    @property
+    def resources(self):
+        """
+        Returns a list of resources loaded by the browser.
+        """
+        raise NotImplementedError()
+
+    def viewInBrowser(self):
+        """
+        Views the current document in a real Web browser. Uses the default
+        system browser on OS X, BSD and Linux. Probably errors on Windows.
+        """
+        raise NotImplementedError()
