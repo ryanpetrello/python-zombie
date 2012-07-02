@@ -22,6 +22,20 @@ class Browser(BaseNode):
     #
     # Document Content
     #
+    @property
+    def body(self):
+        """
+        Returns the body element of the current document.
+        """
+        raise NotImplementedError()
+
+    def evaluate(self, expression):
+        """
+        Evaluates a JavaScript expression in the context of the current window
+        and returns the result.
+        """
+        raise NotImplementedError()
+
     def html(self, selector='html', context=None):
         """
         Returns the HTML content of the current document.
@@ -77,6 +91,7 @@ class Browser(BaseNode):
     #
     # Navigation
     #
+    @verb
     def clickLink(self, selector):
         self.client.wait('clickLink', selector)
 
@@ -98,6 +113,38 @@ class Browser(BaseNode):
     @verb
     def back(self):
         self.client.wait('back')
+
+    def link(self, selector):
+        """
+        Finds and returns a link <a> element. You can use a CSS selector or
+        find a link by its text contents (case sensitive, but ignores
+        leading/trailing spaces).
+        """
+        raise NotImplementedError()
+
+    def reload(self, selector):
+        """
+        Reloads the current page.
+        """
+        raise NotImplementedError()
+
+    def statusCode(self):
+        """
+        Returns the status code returned for this page request (200, 303, etc).
+        """
+        raise NotImplementedError()
+
+    def success(self):
+        """
+        Returns True if the status code is 2xx.
+        """
+        raise NotImplementedError()
+
+    def redirected(self):
+        """
+        Returns True if the page request followed a redirect.
+        """
+        raise NotImplementedError()
 
     #
     # Forms
