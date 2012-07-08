@@ -37,7 +37,7 @@ class TestServerCommunication(BrowserClientTest):
         try {
             browser.visit("%s", function(err, browser){
                 if (err)
-                    stream.end(JSON.stringify(err.message));
+                    stream.end(JSON.stringify(err.stack));
                 else
                     stream.end();
             });
