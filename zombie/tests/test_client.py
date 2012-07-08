@@ -66,7 +66,7 @@ class TestServerCommunication(TestCase):
         try {
             browser.visit("%s", function(err, browser){
                 if (err)
-                    stream.end(JSON.stringify(err.message));
+                    stream.end(JSON.stringify(err.stack));
                 else
                     stream.end();
             });
@@ -91,7 +91,7 @@ class TestServerCommunication(TestCase):
         try {
             browser.wait(function(err, browser){
                 if (err)
-                    stream.end(JSON.stringify(err.message));
+                    stream.end(JSON.stringify(err.stack));
                 else
                     stream.end();
             });
