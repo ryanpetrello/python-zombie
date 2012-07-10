@@ -171,6 +171,20 @@ class TestBrowser(BrowserClientTest):
         self.browser.clickLink('#about-zombie')
         assert self.browser.location == 'http://zombie.labnotes.org/'
 
+    def test_link_by_selector(self):
+        self.browser.visit(self.path)
+        match = self.browser.link('#about-zombie')
+        assert isinstance(match, DOMNode)
+
+        assert match.innerHTML == 'Learn About Zombie'
+
+    def test_link_by_inner_text(self):
+        self.browser.visit(self.path)
+        match = self.browser.link('Learn About Zombie')
+        assert isinstance(match, DOMNode)
+
+        assert match.id == 'about-zombie'
+
     def test_back(self):
         self.browser.visit('http://zombie.labnotes.org/')
         self.browser.visit('http://google.com/')

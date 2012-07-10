@@ -131,7 +131,7 @@ class Browser(BaseNode):
         find a link by its text contents (case sensitive, but ignores
         leading/trailing spaces).
         """
-        raise NotImplementedError()
+        return self._node('link', selector, None)
 
     def reload(self, selector):
         """
