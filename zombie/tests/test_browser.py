@@ -203,6 +203,10 @@ class TestBrowser(BrowserClientTest):
         self.browser.visit(self.path)
         assert self.browser.statusCode == 200
 
+    def test_success(self):
+        self.browser.visit(self.path)
+        assert self.browser.success is True
+
     #
     # Forms
     #

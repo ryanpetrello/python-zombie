@@ -146,11 +146,12 @@ class Browser(BaseNode):
         """
         return self.client.json('browser.statusCode')
 
+    @property
     def success(self):
         """
         Returns True if the status code is 2xx.
         """
-        raise NotImplementedError()
+        return self.client.json('browser.success')
 
     def redirected(self):
         """
