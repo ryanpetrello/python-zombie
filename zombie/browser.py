@@ -139,11 +139,12 @@ class Browser(BaseNode):
         """
         return self.client.wait('reload')
 
+    @property
     def statusCode(self):
         """
         Returns the status code returned for this page request (200, 303, etc).
         """
-        raise NotImplementedError()
+        return self.client.json('browser.statusCode')
 
     def success(self):
         """

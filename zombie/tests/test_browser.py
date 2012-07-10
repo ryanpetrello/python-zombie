@@ -199,6 +199,10 @@ class TestBrowser(BrowserClientTest):
         self.browser.reload()
         assert self.browser.css('input')[0].value == ''
 
+    def test_status_code_200(self):
+        self.browser.visit(self.path)
+        assert self.browser.statusCode == 200
+
     #
     # Forms
     #
