@@ -115,8 +115,9 @@ class Queryable(object):
         # used to make subsequent object/attribute lookups later.
         #
         if all_ is True:
-            return [DOMNode(int(x), self.client) for x in
-                self.decode(self.client.send(js))
+            return [
+                DOMNode(int(x), self.client)
+                for x in self.decode(self.client.send(js))
             ]
 
         #

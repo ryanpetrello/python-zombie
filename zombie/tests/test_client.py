@@ -78,10 +78,10 @@ class TestServerCommunication(TestCase):
         with fudge.patched_context(
             ZombieProxyClient,
             'send',
-            (fudge.Fake('send', expect_call=True).
-                with_args(js)
-            )):
-
+            (
+                fudge.Fake('send', expect_call=True).with_args(js)
+            )
+        ):
             self.client.wait('visit', 'http://example.com')
 
     @fudge.with_fakes
@@ -103,8 +103,8 @@ class TestServerCommunication(TestCase):
         with fudge.patched_context(
             ZombieProxyClient,
             'send',
-            (fudge.Fake('send', expect_call=True).
-                with_args(js)
-            )):
-
+            (
+                fudge.Fake('send', expect_call=True).with_args(js)
+            )
+        ):
             self.client.wait('wait')

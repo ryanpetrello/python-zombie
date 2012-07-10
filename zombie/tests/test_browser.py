@@ -49,10 +49,11 @@ class TestServerCommunication(BrowserClientTest):
         with fudge.patched_context(
             ZombieProxyClient,
             'send',
-            (fudge.Fake('send', expect_call=True).
+            (
+                fudge.Fake('send', expect_call=True).
                 with_args(js)
-            )):
-
+            )
+        ):
             assert self.browser.visit(self.path) == self.browser
 
 
