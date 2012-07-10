@@ -66,7 +66,7 @@ class Browser(BaseNode):
                         (http://zombie.labnotes.org/selectors)
         :param context: an (optional) instance of :class:`DOMNode`
         """
-        return self._query(selector, context, all_=False)
+        return self._node('query', selector, context)
 
     def queryAll(self, selector, context=None):
         """
@@ -77,7 +77,7 @@ class Browser(BaseNode):
                         (http://zombie.labnotes.org/selectors)
         :param context: an (optional) instance of :class:`DOMNode`
         """
-        return self._query(selector, context)
+        return self._nodes('queryAll', selector, context)
 
     def css(self, selector, context=None):
         """

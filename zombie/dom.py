@@ -20,10 +20,10 @@ class Queryable(object):
         Evaluate a CSS selector against the document (or an optional context
         DOMNode) and return decoded text.
 
+        :param method: the method (e.g., html, text) to call on the browser
         :param selector: a string CSS selector
                         (http://zombie.labnotes.org/selectors)
         :param context: an (optional) instance of :class:`DOMNode`
-        :param method: the method (e.g., html, text) to call on the browser
         """
 
         #
@@ -55,18 +55,22 @@ class Queryable(object):
 
         return self.decode(self.client.send(js))
 
-    def _query(self, selector, context=None, all_=True):
+    def _node(self, method, selector, context=None):
         """
-        Evaluate a CSS selector against the document (or an optional context
-        DOMNode) and return a list of DOMNode objects.
+        Evaluate a browser method and CSS selector against the document
+        (or an optional context DOMNode) and return a single DOMNode object,
+        e.g.,
 
+        browser._node('query', 'body > div')
+
+        ...roughly translates to the following Javascript...
+
+        browser.query('body > div')
+
+        :param method: the method (e.g., query) to call on the browser
         :param selector: a string CSS selector
                         (http://zombie.labnotes.org/selectors)
         :param context: an (optional) instance of :class:`DOMNode`
-        :param all_: when True, browser.queryAll is used and a list of
-                     :class:`DOMNode`s are returned.
-                     when False, browser.query is used and a single
-                     :class:`DOMNode` is returned.
         """
 
         #
@@ -84,41 +88,20 @@ class Queryable(object):
         # in the TCP server's ELEMENTS cache, and return a stringified list of
         # reference indexes.
         #
-        if all_ is True:
-            js = """
-                var results = [];
-                var nodes = browser.queryAll(%(args)s, %(context)s);
-                for(var i = 0; i < nodes.length; i++){
-                    var node = nodes[i];
-                    ELEMENTS.push(node);
-                    results.push(ELEMENTS.length - 1);
-                };
-                stream.end(JSON.stringify(results));
-            """
-        else:
-            js = """
-                var node = browser.query(%(args)s, %(context)s);
-                if(node){
-                    ELEMENTS.push(node);
-                    stream.end(JSON.stringify(ELEMENTS.length - 1));
-                }
-                stream.end();
-            """
+        js = """
+            var node = browser.%(method)s(%(args)s, %(context)s);
+            if(node){
+                ELEMENTS.push(node);
+                stream.end(JSON.stringify(ELEMENTS.length - 1));
+            }
+            stream.end();
+        """
 
         js = js % {
+            'method': method,
             'args': args,
             'context': context if context else 'browser'
         }
-
-        #
-        # Translate each index of ELEMENTS into a DOMNode object which can be
-        # used to make subsequent object/attribute lookups later.
-        #
-        if all_ is True:
-            return [
-                DOMNode(int(x), self.client)
-                for x in self.decode(self.client.send(js))
-            ]
 
         #
         # If a reference is returned, translate the reference into a DOMNode
@@ -128,6 +111,57 @@ class Queryable(object):
         decoded = self.decode(self.client.send(js))
         if decoded is not None:
             return DOMNode(decoded, self.client)
+
+    def _nodes(self, method, selector, context=None):
+        """
+        Similar to ``_node``, but returns every match (rather than just one).
+
+        :param method: the method (e.g., query) to call on the browser
+        :param selector: a string CSS selector
+                        (http://zombie.labnotes.org/selectors)
+        :param context: an (optional) instance of :class:`DOMNode`
+        """
+
+        #
+        # JSON-encode the provided CSS selector so it can be treated as
+        # a Javascript query argument.
+        #
+        # Combine the selector with the (optional) context reference and
+        # build a function argstring to be passed to Zombie.js'
+        # browser.querySelectorAll() API method.
+        #
+        args = ','.join(filter(None, [self.encode(selector)]))
+
+        #
+        # Run the compiled query, store object (JSDOM Element) references
+        # in the TCP server's ELEMENTS cache, and return a stringified list of
+        # reference indexes.
+        #
+        js = """
+            var results = [];
+            var nodes = browser.%(method)s(%(args)s, %(context)s);
+            for(var i = 0; i < nodes.length; i++){
+                var node = nodes[i];
+                ELEMENTS.push(node);
+                results.push(ELEMENTS.length - 1);
+            };
+            stream.end(JSON.stringify(results));
+        """
+
+        js = js % {
+            'method': method,
+            'args': args,
+            'context': context if context else 'browser'
+        }
+
+        #
+        # Translate each index of ELEMENTS into a DOMNode object which can be
+        # used to make subsequent object/attribute lookups later.
+        #
+        return [
+            DOMNode(int(x), self.client)
+            for x in self.decode(self.client.send(js))
+        ]
 
     # Shortcuts for JSON loads/dumps
     def encode(self, value):
@@ -164,14 +198,14 @@ class DOMNode(BaseNode):
 
         (child) DOMNode object.
         """
-        return self._query(selector, self._native, all_=False)
+        return self._node('query', selector, self._native)
 
     def queryAll(self, selector):
         """
         Evaluate a CSS selector against this node and return a list of
         (child) DOMNode objects.
         """
-        return self._query(selector, self._native)
+        return self._nodes('queryAll', selector, self._native)
 
     def css(self, selector):
         """
