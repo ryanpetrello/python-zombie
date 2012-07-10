@@ -72,6 +72,15 @@ class TestBrowser(BrowserClientTest):
     #
     # Document Content
     #
+    def test_body(self):
+        self.browser.visit(self.path)
+        body = self.browser.body
+        assert isinstance(body, DOMNode)
+
+        html = body.innerHTML
+        assert '<title>Example</title>' not in html
+        assert '<p>This is an HTML document</p>' in html
+
     def test_html(self):
         self.browser.visit(self.path)
         html = self.browser.html()

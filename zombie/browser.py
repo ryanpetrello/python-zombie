@@ -1,4 +1,4 @@
-from zombie.dom import BaseNode, verb
+from zombie.dom import BaseNode, DOMNode, verb
 from zombie.proxy.server import ZombieProxyServer
 from zombie.proxy.client import ZombieProxyClient
 
@@ -27,7 +27,18 @@ class Browser(BaseNode):
         """
         Returns the body element of the current document.
         """
-        raise NotImplementedError()
+
+        js = """
+            ELEMENTS.push(browser.body);
+            stream.end(JSON.stringify(ELEMENTS.length - 1));
+        """
+
+        #
+        # Translate the reference into a DOMNode object which can be used to
+        # make subsequent object/attribute lookups later.
+        #
+        decoded = self.decode(self.client.send(js))
+        return DOMNode(decoded, self.client)
 
     def evaluate(self, expression):
         """
