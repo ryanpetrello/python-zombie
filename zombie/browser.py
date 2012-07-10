@@ -133,11 +133,11 @@ class Browser(BaseNode):
         """
         return self._node('link', selector, None)
 
-    def reload(self, selector):
+    def reload(self):
         """
         Reloads the current page.
         """
-        raise NotImplementedError()
+        return self.client.wait('reload')
 
     def statusCode(self):
         """

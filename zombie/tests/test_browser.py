@@ -191,6 +191,14 @@ class TestBrowser(BrowserClientTest):
         self.browser.back()
         assert self.browser.location == 'http://zombie.labnotes.org/'
 
+    def test_reload(self):
+        self.browser.visit(self.path)
+        self.browser.fill('q', 'Zombie.js')
+        assert self.browser.css('input')[0].value == 'Zombie.js'
+
+        self.browser.reload()
+        assert self.browser.css('input')[0].value == ''
+
     #
     # Forms
     #
