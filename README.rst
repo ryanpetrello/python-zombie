@@ -1,4 +1,4 @@
-A Python driver for `Zombie.js <http://zombie.labnotes.org/)>`_, a headless browser
+A Python driver for `Zombie.js <http://zombie.labnotes.org/>`_, a headless browser
 powered by `node.js <http://nodejs.org/>`_. ::
 
     from zombie import Browser
