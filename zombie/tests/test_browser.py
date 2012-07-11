@@ -306,6 +306,14 @@ class TestDOMNode(BrowserClientTest):
         button = self.browser.visit(self.path).query('button')
         assert button.innerHTML == 'Search'
 
+    def test_text_content(self):
+        btn = self.browser.visit(self.path).query('button')
+        assert btn.textContent == btn.innerText == btn.text == 'Search'
+
+    def test_html_content(self):
+        btn = self.browser.visit(self.path).query('button')
+        assert btn.innerHTML == btn.html == 'Search'
+
     def test_item_lookup(self):
         button = self.browser.visit(self.path).query('button')
         assert button['innerHTML'] == 'Search'

@@ -225,6 +225,18 @@ class DOMNode(BaseNode):
     # access methods.
     #
     @property
+    def text(self):
+        return self.textContent
+
+    @property
+    def innerText(self):
+        return self.textContent
+
+    @property
+    def html(self):
+        return self.innerHTML
+
+    @property
     def tagName(self):
         return self._jsonattr('tagName').lower()
 
