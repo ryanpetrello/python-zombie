@@ -6,7 +6,7 @@ import fudge
 from zombie import Browser
 from zombie.dom import DOMNode
 from zombie.proxy.client import ZombieProxyClient
-from zombie.compat import urlparse
+from zombie.compat import urlparse, PY3
 
 
 class BrowserClientTest(TestCase):
@@ -218,6 +218,66 @@ class TestBrowser(BrowserClientTest):
         self.browser.visit(self.path)
         self.browser.pressButton('Search')
         assert urlparse(self.browser.location).path.endswith('/submit.html')
+
+
+class TestBrowserRedirection(BrowserClientTest):
+
+    def setUp(self):
+        super(TestBrowserRedirection, self).setUp()
+        self.browser = Browser()
+
+        from wsgiref.simple_server import make_server
+        import threading
+        import random
+
+        self.port = random.randint(8000, 9999)
+
+        class WSGIRunner(threading.Thread):
+
+            def __init__(self, app, port):
+                super(WSGIRunner, self).__init__()
+                self.server = make_server('', port, app)
+
+            def run(self):
+                self.server.serve_forever()
+
+            def stop(self):
+                self.server.shutdown()
+                self.join()
+
+        def app(environ, start_response):
+            """
+            A sample WSGI app that forcibly redirects all requests to /
+            """
+            if environ['PATH_INFO'] == '/':
+                response_headers = [('Content-type', 'text/plain')]
+                start_response('200 OK', response_headers)
+                return [
+                    bytes('Hello world!', 'utf-8') if PY3 else 'Hello world!'
+                ]
+
+            response_headers = [
+                ('Location', '/'),
+                ('Content-type', 'text/plain')
+            ]
+            start_response('302 Found', response_headers)
+            return [bytes('', 'utf-8') if PY3 else '']
+
+        self.runner = WSGIRunner(app, self.port)
+        self.runner.start()
+
+    def tearDown(self):
+        super(TestBrowserRedirection, self).tearDown()
+        self.runner.stop()
+
+    def test_redirected(self):
+        self.browser.visit('http://localhost:%d/' % self.port)
+        assert 'Hello world!' in self.browser.html()
+        assert self.browser.redirected is False
+
+        self.browser.visit('http://localhost:%d/redirect' % self.port)
+        assert 'Hello world!' in self.browser.html()
+        assert self.browser.redirected is True
 
 
 class TestDOMNode(BrowserClientTest):

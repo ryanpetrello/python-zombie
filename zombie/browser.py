@@ -153,11 +153,12 @@ class Browser(BaseNode):
         """
         return self.client.json('browser.success')
 
+    @property
     def redirected(self):
         """
         Returns True if the page request followed a redirect.
         """
-        raise NotImplementedError()
+        return self.client.json('browser.redirected')
 
     #
     # Forms
