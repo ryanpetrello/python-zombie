@@ -42,7 +42,7 @@ class TestServerCommunication(BrowserClientTest):
                     stream.end();
             });
         } catch (err) {
-            stream.end(JSON.stringify(err.message));
+            stream.end(JSON.stringify(err.stack));
         }
         """ % self.path
 

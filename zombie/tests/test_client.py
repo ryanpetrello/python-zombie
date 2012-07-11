@@ -71,7 +71,7 @@ class TestServerCommunication(TestCase):
                     stream.end();
             });
         } catch (err) {
-            stream.end(JSON.stringify(err.message));
+            stream.end(JSON.stringify(err.stack));
         }
         """ % 'http://example.com'
 
@@ -96,7 +96,7 @@ class TestServerCommunication(TestCase):
                     stream.end();
             });
         } catch (err) {
-            stream.end(JSON.stringify(err.message));
+            stream.end(JSON.stringify(err.stack));
         }
         """
 
