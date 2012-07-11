@@ -40,13 +40,6 @@ class Browser(BaseNode):
         decoded = self.decode(self.client.send(js))
         return DOMNode(decoded, self.client)
 
-    def evaluate(self, expression):
-        """
-        Evaluates a JavaScript expression in the context of the current window
-        and returns the result.
-        """
-        raise NotImplementedError()
-
     def html(self, selector='html', context=None):
         """
         Returns the HTML content of the current document.
