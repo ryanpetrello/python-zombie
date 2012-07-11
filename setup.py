@@ -40,7 +40,7 @@ setup(
     long_description=open('README.rst').read(),
     packages=find_packages(exclude=['ez_setup', 'tests']),
     classifiers=[
-        'Development Status :: 1 - Planning',
+        'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
         'Intended Audience :: Information Technology',
         'Intended Audience :: System Administrators',
