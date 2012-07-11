@@ -219,6 +219,26 @@ class TestBrowser(BrowserClientTest):
         self.browser.pressButton('Search')
         assert urlparse(self.browser.location).path.endswith('/submit.html')
 
+    #
+    # Debugging
+    #
+    def test_dump(self):
+        self.browser.visit(self.path)
+        self.browser.dump()
+
+    def test_resources(self):
+        self.browser.visit('http://google.com')
+
+        resources = self.browser.resources
+        assert len(resources)
+
+        for r in resources:
+            assert r['url']
+            assert r['time']
+            assert r['size']
+            assert r['request']
+            assert r['response']
+
 
 class TestBrowserRedirection(BrowserClientTest):
 

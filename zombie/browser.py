@@ -183,22 +183,36 @@ class Browser(BaseNode):
     #
     def dump(self):
         """
-        Returns a debug string including Zombie version, current URL, history,
+        Prints a debug string including Zombie version, current URL, history,
         cookies, event loop, etc.  Useful for debugging and submitting error
         reports.
         """
-        raise NotImplementedError()
+        self.client.json('browser.dump()')
 
     @property
     def resources(self):
         """
         Returns a list of resources loaded by the browser.
         """
-        raise NotImplementedError()
+        js = """
+            var resources = browser.resources.map(
+                function(r){
+                    return {
+                        'url': r.url,
+                        'time': r.time + 'ms',
+                        'size': r.size / 1024 + 'kb',
+                        'request': r.request.toString(),
+                        'response': r.request.toString()
+                    }
+                }
+            );
+            stream.end(JSON.stringify(resources))
+        """
+        return self.decode(self.client.send(js))
 
     def viewInBrowser(self):
         """
         Views the current document in a real Web browser. Uses the default
         system browser on OS X, BSD and Linux. Probably errors on Windows.
         """
-        raise NotImplementedError()
+        return self.client.send('browser.viewInBrowser()')  # pragma: nocover
