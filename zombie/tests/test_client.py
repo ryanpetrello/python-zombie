@@ -66,22 +66,22 @@ class TestServerCommunication(TestCase):
         try {
             browser.visit("%s", function(err, browser){
                 if (err)
-                    stream.end(JSON.stringify(err.message));
+                    stream.end(JSON.stringify(err.stack));
                 else
                     stream.end();
             });
         } catch (err) {
-            stream.end(JSON.stringify(err.message));
+            stream.end(JSON.stringify(err.stack));
         }
         """ % 'http://example.com'
 
         with fudge.patched_context(
             ZombieProxyClient,
             'send',
-            (fudge.Fake('send', expect_call=True).
-                with_args(js)
-            )):
-
+            (
+                fudge.Fake('send', expect_call=True).with_args(js)
+            )
+        ):
             self.client.wait('visit', 'http://example.com')
 
     @fudge.with_fakes
@@ -91,20 +91,20 @@ class TestServerCommunication(TestCase):
         try {
             browser.wait(function(err, browser){
                 if (err)
-                    stream.end(JSON.stringify(err.message));
+                    stream.end(JSON.stringify(err.stack));
                 else
                     stream.end();
             });
         } catch (err) {
-            stream.end(JSON.stringify(err.message));
+            stream.end(JSON.stringify(err.stack));
         }
         """
 
         with fudge.patched_context(
             ZombieProxyClient,
             'send',
-            (fudge.Fake('send', expect_call=True).
-                with_args(js)
-            )):
-
+            (
+                fudge.Fake('send', expect_call=True).with_args(js)
+            )
+        ):
             self.client.wait('wait')

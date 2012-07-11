@@ -101,12 +101,12 @@ class ZombieProxyClient(object):
         try {
             browser.%s(%sfunction(err, browser){
                 if (err)
-                    stream.end(JSON.stringify(err.message));
+                    stream.end(JSON.stringify(err.stack));
                 else
                     stream.end();
             });
         } catch (err) {
-            stream.end(JSON.stringify(err.message));
+            stream.end(JSON.stringify(err.stack));
         }
         """ % (
             method,

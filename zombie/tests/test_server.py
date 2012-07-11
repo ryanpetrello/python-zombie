@@ -50,9 +50,7 @@ class TestServerSpawn(TestCase):
                     stdin=subprocess.PIPE,
                     stdout=subprocess.PIPE,
                     stderr=subprocess.STDOUT
-                ).
-                returns(FakePopen()))
-            ):
+                ).returns(FakePopen()))):
             ZombieProxyServer(socket='/tmp/zombie.sock', wait=False)
 
     @fudge.with_fakes
@@ -67,15 +65,13 @@ class TestServerSpawn(TestCase):
             subprocess,
             'Popen',
             (fudge.Fake('Popen').
-                    is_callable().
-                    with_args(
-                        args,
-                        stdin=subprocess.PIPE,
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.STDOUT
-                    ).
-                    returns(FakePopen()))
-            ):
+                is_callable().
+                with_args(
+                    args,
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT
+                ).returns(FakePopen()))):
             ZombieProxyServer(socket='/tmp/zombie-custom.sock', wait=False)
 
     @fudge.with_fakes
@@ -95,8 +91,7 @@ class TestServerSpawn(TestCase):
                     stdout=subprocess.PIPE,
                     stderr=subprocess.STDOUT
                 ).
-                returns(fake))
-            ):
+                returns(fake))):
             ZombieProxyServer(socket='/tmp/zombie.sock', wait=False)
 
     def test_server_running(self):

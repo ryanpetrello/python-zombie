@@ -6,7 +6,7 @@ import fudge
 from zombie import Browser
 from zombie.dom import DOMNode
 from zombie.proxy.client import ZombieProxyClient
-from zombie.compat import urlparse
+from zombie.compat import urlparse, PY3
 
 
 class BrowserClientTest(TestCase):
@@ -37,22 +37,23 @@ class TestServerCommunication(BrowserClientTest):
         try {
             browser.visit("%s", function(err, browser){
                 if (err)
-                    stream.end(JSON.stringify(err.message));
+                    stream.end(JSON.stringify(err.stack));
                 else
                     stream.end();
             });
         } catch (err) {
-            stream.end(JSON.stringify(err.message));
+            stream.end(JSON.stringify(err.stack));
         }
         """ % self.path
 
         with fudge.patched_context(
             ZombieProxyClient,
             'send',
-            (fudge.Fake('send', expect_call=True).
+            (
+                fudge.Fake('send', expect_call=True).
                 with_args(js)
-            )):
-
+            )
+        ):
             assert self.browser.visit(self.path) == self.browser
 
 
@@ -72,6 +73,15 @@ class TestBrowser(BrowserClientTest):
     #
     # Document Content
     #
+    def test_body(self):
+        self.browser.visit(self.path)
+        body = self.browser.body
+        assert isinstance(body, DOMNode)
+
+        html = body.innerHTML
+        assert '<title>Example</title>' not in html
+        assert '<p>This is an HTML document</p>' in html
+
     def test_html(self):
         self.browser.visit(self.path)
         html = self.browser.html()
@@ -161,11 +171,41 @@ class TestBrowser(BrowserClientTest):
         self.browser.clickLink('#about-zombie')
         assert self.browser.location == 'http://zombie.labnotes.org/'
 
+    def test_link_by_selector(self):
+        self.browser.visit(self.path)
+        match = self.browser.link('#about-zombie')
+        assert isinstance(match, DOMNode)
+
+        assert match.innerHTML == 'Learn About Zombie'
+
+    def test_link_by_inner_text(self):
+        self.browser.visit(self.path)
+        match = self.browser.link('Learn About Zombie')
+        assert isinstance(match, DOMNode)
+
+        assert match.id == 'about-zombie'
+
     def test_back(self):
         self.browser.visit('http://zombie.labnotes.org/')
         self.browser.visit('http://google.com/')
         self.browser.back()
         assert self.browser.location == 'http://zombie.labnotes.org/'
+
+    def test_reload(self):
+        self.browser.visit(self.path)
+        self.browser.fill('q', 'Zombie.js')
+        assert self.browser.css('input')[0].value == 'Zombie.js'
+
+        self.browser.reload()
+        assert self.browser.css('input')[0].value == ''
+
+    def test_status_code_200(self):
+        self.browser.visit(self.path)
+        assert self.browser.statusCode == 200
+
+    def test_success(self):
+        self.browser.visit(self.path)
+        assert self.browser.success is True
 
     #
     # Forms
@@ -178,6 +218,86 @@ class TestBrowser(BrowserClientTest):
         self.browser.visit(self.path)
         self.browser.pressButton('Search')
         assert urlparse(self.browser.location).path.endswith('/submit.html')
+
+    #
+    # Debugging
+    #
+    def test_dump(self):
+        self.browser.visit(self.path)
+        self.browser.dump()
+
+    def test_resources(self):
+        self.browser.visit('http://google.com')
+
+        resources = self.browser.resources
+        assert len(resources)
+
+        for r in resources:
+            assert r['url']
+            assert r['time']
+            assert r['size']
+            assert r['request']
+            assert r['response']
+
+
+class TestBrowserRedirection(BrowserClientTest):
+
+    def setUp(self):
+        super(TestBrowserRedirection, self).setUp()
+        self.browser = Browser()
+
+        from wsgiref.simple_server import make_server
+        import threading
+        import random
+
+        self.port = random.randint(8000, 9999)
+
+        class WSGIRunner(threading.Thread):
+
+            def __init__(self, app, port):
+                super(WSGIRunner, self).__init__()
+                self.server = make_server('', port, app)
+
+            def run(self):
+                self.server.serve_forever()
+
+            def stop(self):
+                self.server.shutdown()
+                self.join()
+
+        def app(environ, start_response):
+            """
+            A sample WSGI app that forcibly redirects all requests to /
+            """
+            if environ['PATH_INFO'] == '/':
+                response_headers = [('Content-type', 'text/plain')]
+                start_response('200 OK', response_headers)
+                return [
+                    bytes('Hello world!', 'utf-8') if PY3 else 'Hello world!'
+                ]
+
+            response_headers = [
+                ('Location', '/'),
+                ('Content-type', 'text/plain')
+            ]
+            start_response('302 Found', response_headers)
+            return [bytes('', 'utf-8') if PY3 else '']
+
+        self.runner = WSGIRunner(app, self.port)
+        self.runner.start()
+
+    def tearDown(self):
+        super(TestBrowserRedirection, self).tearDown()
+        self.runner.stop()
+
+    def test_redirected(self):
+        self.browser.visit('http://localhost:%d/' % self.port)
+        assert 'Hello world!' in self.browser.html()
+        assert self.browser.redirected is False
+
+        self.browser.visit('http://localhost:%d/redirect' % self.port)
+        assert 'Hello world!' in self.browser.html()
+        assert self.browser.redirected is True
 
 
 class TestDOMNode(BrowserClientTest):
