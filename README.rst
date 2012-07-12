@@ -3,8 +3,8 @@ powered by `node.js <http://nodejs.org/>`_. ::
 
     from zombie import Browser
     b = Browser()
-    b.visit('http://google.com/m').fill('input', 'Zombie.js').pressButton('Search')
-    assert b.location == 'http://www.google.com/m?q=Zombie.js'
+    b.visit('http://pypi.python.org/').fill('term', 'Zombie').pressButton('submit')
+    assert "A Python driver for Zombie.js" in b.body.text
 
 Requires the latest node and zombie::
 
