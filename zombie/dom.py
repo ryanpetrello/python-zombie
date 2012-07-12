@@ -20,8 +20,7 @@ class Queryable(object):
         # a Javascript query argument.
         #
         # Combine the selector with the (optional) context reference and
-        # build a function argstring to be passed to Zombie.js'
-        # browser.querySelectorAll() API method.
+        # build a function argstring to be passed to Zombie.js.
         #
         args = ','.join(filter(None, [self.encode(selector)]))
 
@@ -29,8 +28,7 @@ class Queryable(object):
             context = context._native
 
         #
-        # Run the compiled query, store object (JSDOM Element) references
-        # in the TCP server's ELEMENTS cache, and return an encoded string.
+        # Run the method (with compiled args) and return an encoded string.
         #
         js = """
             var results = [];
@@ -67,15 +65,14 @@ class Queryable(object):
         # a Javascript query argument.
         #
         # Combine the selector with the (optional) context reference and
-        # build a function argstring to be passed to Zombie.js'
-        # browser.querySelectorAll() API method.
+        # build a function argstring to be passed to Zombie.js.
         #
         args = ','.join(filter(None, [self.encode(selector)]))
 
         #
-        # Run the compiled query, store object (JSDOM Element) references
-        # in the TCP server's ELEMENTS cache, and return a stringified list of
-        # reference indexes.
+        # Run the compiled query, store an object (JSDOM Element) reference
+        # in the TCP server's ELEMENTS cache, and return a stringified
+        # reference index.
         #
         js = """
             var node = browser.%(method)s(%(args)s, %(context)s);
@@ -116,8 +113,7 @@ class Queryable(object):
         # a Javascript query argument.
         #
         # Combine the selector with the (optional) context reference and
-        # build a function argstring to be passed to Zombie.js'
-        # browser.querySelectorAll() API method.
+        # build a function argstring to be passed to Zombie.js.
         #
         args = ','.join(filter(None, [self.encode(selector)]))
 

@@ -165,8 +165,11 @@ class Browser(BaseNode):
     def reload(self):
         """
         Reloads the current page.
+
+        Returns the :class:`zombie.browser.Browser` to allow function chaining.
         """
-        return self.client.wait('reload')
+        self.client.wait('reload')
+        return self
 
     @property
     def statusCode(self):
