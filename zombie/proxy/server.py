@@ -51,13 +51,16 @@ proxy_path = os.path.join(
 def singleton(cls):
     instances = {}
 
-    def getinstance(*args, **kwargs):
+    def ZombieProxyServer(*args, **kwargs):
         if cls not in instances:
             instances[cls] = cls(*args, **kwargs)
             global __server_instance__
             __server_instance__ = instances[cls]
         return instances[cls]
-    return getinstance
+        ZombieProxyServer.__name__ = cls.__name__
+        ZombieProxyServer.__doc__ = cls.__doc__
+        ZombieProxyServer.__repr__ = cls.__repr__
+    return ZombieProxyServer
 
 
 @singleton
@@ -66,9 +69,9 @@ class ZombieProxyServer(object):
     def __init__(self, socket=None, wait=True):
         """
         Spawns a node.js subprocess that listens on a TCP socket.
-        A ZombieProxyClient streams data to the server, which
-        evaluates it as Javascript, passes it on to a Zombie.js
-        Browser object, and returns the results.
+        A :class:`zombie.proxy.client.ZombieProxyClient` streams data to
+        the server, which evaluates it as Javascript, passes it on to
+        a zombie.js Browser object, and returns the results.
 
         :param socket: a (random, by default) filepath representing the
                        intended TCP socket location

@@ -20,8 +20,8 @@ class NodeError(Exception):
 
 class ZombieProxyClient(object):
     """
-    Sends data to a ZombieProxyServer bound to a specific
-    TCP socket.  Data is evaulated by the server and results
+    Sends data to a :class:`zombie.proxy.server.ZombieProxyServer` bound to
+    a specific TCP socket.  Data is evaulated by the server and results
     (if any) are returned.
     """
 
@@ -35,7 +35,7 @@ class ZombieProxyClient(object):
 
     def send(self, js):
         """
-        Establishes a socket connection to the Zombie.js server and sends
+        Establishes a socket connection to the zombie.js server and sends
         Javascript instructions.
 
         :param js: the Javascript string to execute
@@ -120,7 +120,7 @@ class ZombieProxyClient(object):
         """
         Send a simple Javascript instruction and wait on a reply.
 
-        A live Node.JS TCP server will cause this method to return "pong".
+        A live node.js TCP server will cause this method to return "pong".
         """
         return self.__decode__(
             self.send("stream.end(JSON.stringify(ping));")
