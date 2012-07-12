@@ -7,10 +7,16 @@ __all__ = ['Browser']
 
 class Browser(BaseNode):
     """
-    A Browser object, analogous to zombie.Browser.
+    A Browser object, analogous to zombie.js' ``Browser``.
     """
 
     def __init__(self, server=None):
+        """
+        Start a new Browser instance.
+
+        :param server: an (optional) instance of
+                       :class:`zombie.proxy.server.ZombieProxyServer`.
+        """
         #
         # If a proxy server isn't specified, spawn one automatically.
         #
@@ -25,7 +31,8 @@ class Browser(BaseNode):
     @property
     def body(self):
         """
-        Returns the body element of the current document.
+        Returns a :class:`zombie.dom.DOMNode` representing the body element of
+        the current document.
         """
 
         js = """
@@ -42,49 +49,50 @@ class Browser(BaseNode):
 
     def html(self, selector='html', context=None):
         """
-        Returns the HTML content of the current document.
+        Returns the HTML content (string) of the current document.
 
         :param selector: an optional string CSS selector
                         (http://zombie.labnotes.org/selectors)
-        :param context: an (optional) instance of :class:`DOMNode`
+        :param context: an (optional) instance of :class:`zombie.dom.DOMNode`
         """
         return self._with_context('html', selector, context)
 
     def query(self, selector, context=None):
         """
         Evaluate a CSS selector against the document (or an optional context
-        DOMNode) and return a single DOMNode object.
+        DOMNode) and return a single :class:`zombie.browser.DOMNode` object.
 
         :param selector: a string CSS selector
                         (http://zombie.labnotes.org/selectors)
-        :param context: an (optional) instance of :class:`DOMNode`
+        :param context: an (optional) instance of :class:`zombie.dom.DOMNode`
         """
         return self._node('query', selector, context)
 
     def queryAll(self, selector, context=None):
         """
         Evaluate a CSS selector against the document (or an optional context
-        DOMNode) and return a list of DOMNode objects.
+        :class:`zombie.dom.DOMNode`) and return a list of
+        :class:`zombie.dom.DOMNode` objects.
 
         :param selector: a string CSS selector
                         (http://zombie.labnotes.org/selectors)
-        :param context: an (optional) instance of :class:`DOMNode`
+        :param context: an (optional) instance of :class:`zombie.dom.DOMNode`
         """
         return self._nodes('queryAll', selector, context)
 
     def css(self, selector, context=None):
         """
-        An alias for Browser.queryAll.
+        An alias for :class:`zombie.browser.Browser.queryAll`.
 
         :param selector: a string CSS selector
                         (http://zombie.labnotes.org/selectors)
-        :param context: an (optional) instance of :class:`DOMNode`
+        :param context: an (optional) instance of :class:`zombie.dom.DOMNode`
         """
         return self.queryAll(selector, context)
 
     def text(self, selector, context=None):
         """
-        Returns the text content of specific elements
+        Returns the text content of specific elements.
 
         :param selector: a string CSS selector
                         (http://zombie.labnotes.org/selectors)
@@ -97,14 +105,29 @@ class Browser(BaseNode):
     #
     @verb
     def clickLink(self, selector):
+        """
+        Clicks on a link. The first argument is the link text or CSS selector.
+
+        :param selector: an optional string CSS selector
+                        (http://zombie.labnotes.org/selectors) or inner text
+        """
         self.client.wait('clickLink', selector)
 
     @property
     def location(self):
+        """
+        Returns the location of the current document (same as
+        ``window.location.toString()``).
+        """
         return self.client.json('browser.location.toString()')
 
     @location.setter
     def location(self, url):
+        """
+        Changes document location, loading a new document if necessary (same as
+        setting ``window.location``). This will also work if you just need to
+        change the hash (Zombie.js will fire a hashchange event).
+        """
         self.visit(url)
 
     @verb
@@ -116,6 +139,9 @@ class Browser(BaseNode):
 
     @verb
     def back(self):
+        """
+        Navigate to the previous page in history.
+        """
         self.client.wait('back')
 
     def link(self, selector):
@@ -142,14 +168,14 @@ class Browser(BaseNode):
     @property
     def success(self):
         """
-        Returns True if the status code is 2xx.
+        Returns ``True`` if the status code is 2xx.
         """
         return self.client.json('browser.success')
 
     @property
     def redirected(self):
         """
-        Returns True if the page request followed a redirect.
+        Returns ``True`` if the page request followed a redirect.
         """
         return self.client.json('browser.redirected')
 
@@ -160,13 +186,16 @@ class Browser(BaseNode):
     def fill(self, field, value):
         """
         Fill a specified form field in the current document.
+
+        :param field: an instance of :class:`zombie.dom.DOMNode`
+        :param value: any string value
         """
         self._fill(field, value)
 
     @verb
     def pressButton(self, selector):
         """
-        Press a specific button (by innerText or CSS selector in the current
+        Press a specific button (by innerText or CSS selector) in the current
         document.
         """
         self.client.wait('pressButton', selector)
@@ -185,7 +214,15 @@ class Browser(BaseNode):
     @property
     def resources(self):
         """
-        Returns a list of resources loaded by the browser.
+        Returns a list of resources loaded by the browser, e.g.,
+
+        [{
+            'url': '...',
+            'time': '...ms',
+            'size': '...kb',
+            'request': '...',
+            'response': '...'
+        }]
         """
         js = """
             var resources = browser.resources.map(

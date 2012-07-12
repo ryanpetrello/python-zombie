@@ -1,8 +1,13 @@
+from functools import wraps
+
+
 def verb(f):
     """
     Methods that are decorated as `@verb` should always return a reference
     to the original object (e.g., Browser, DOMNode) to allow function chaining.
     """
+
+    @wraps(f)
     def wrap(self, *args, **kwargs):
         f(self, *args, **kwargs)
         return self
@@ -217,6 +222,8 @@ class DOMNode(BaseNode):
     def fill(self, value):
         """
         If applicable, fill the current node's value.
+
+        :param value: any string value
         """
         self._fill(self, value)
 
