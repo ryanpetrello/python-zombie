@@ -1,14 +1,3 @@
-def verb(f):
-    """
-    Methods that are decorated as `@verb` should always return a reference
-    to the original object (e.g., Browser, DOMNode) to allow function chaining.
-    """
-    def wrap(self, *args, **kwargs):
-        f(self, *args, **kwargs)
-        return self
-    return wrap
-
-
 class Queryable(object):
     """
     An abstract base class which represents a DOM reference
@@ -23,7 +12,7 @@ class Queryable(object):
         :param method: the method (e.g., html, text) to call on the browser
         :param selector: a string CSS selector
                         (http://zombie.labnotes.org/selectors)
-        :param context: an (optional) instance of :class:`DOMNode`
+        :param context: an (optional) instance of :class:`zombie.dom.DOMNode`
         """
 
         #
@@ -58,8 +47,8 @@ class Queryable(object):
     def _node(self, method, selector, context=None):
         """
         Evaluate a browser method and CSS selector against the document
-        (or an optional context DOMNode) and return a single DOMNode object,
-        e.g.,
+        (or an optional context DOMNode) and return a single
+        :class:`zombie.dom.DOMNode` object, e.g.,
 
         browser._node('query', 'body > div')
 
@@ -70,7 +59,7 @@ class Queryable(object):
         :param method: the method (e.g., query) to call on the browser
         :param selector: a string CSS selector
                         (http://zombie.labnotes.org/selectors)
-        :param context: an (optional) instance of :class:`DOMNode`
+        :param context: an (optional) instance of :class:`zombie.dom.DOMNode`
         """
 
         #
@@ -182,7 +171,7 @@ class BaseNode(Queryable):
 
 class DOMNode(BaseNode):
     """
-    :class:`.DOMNode` represents a node in the current document's DOM.
+    Represents a node in the current document's DOM.
     """
 
     def __init__(self, index, client):
@@ -194,48 +183,87 @@ class DOMNode(BaseNode):
     #
     def query(self, selector):
         """
-        Evaluate a CSS selector against this node and return a single
+        Evaluate a CSS selector against this element and return a single
+        (child) :class:`zombie.dom.DOMNode` object.
 
-        (child) DOMNode object.
+        :param selector: a string CSS selector
+                        (http://zombie.labnotes.org/selectors)
         """
         return self._node('query', selector, self._native)
 
     def queryAll(self, selector):
         """
-        Evaluate a CSS selector against this node and return a list of
-        (child) DOMNode objects.
+        Evaluate a CSS selector against this element and return a list of
+        (child) :class:`zombie.dom.DOMNode` objects.
+
+        :param selector: a string CSS selector
+                        (http://zombie.labnotes.org/selectors)
         """
         return self._nodes('queryAll', selector, self._native)
 
     def css(self, selector):
         """
-        An alias for DOMNode.queryAll.
+        An alias for :class:`zombie.dom.DOMNode.queryAll`.
         """
         return self.queryAll(selector)
 
-    @verb
     def fill(self, value):
         """
         If applicable, fill the current node's value.
+
+        :param value: any string value
+
+        Returns the :class:`zombie.dom.DOMNode` to allow function chaining.
         """
         self._fill(self, value)
+        return self
 
     #
     # Attribute (normal and specialized)
     # access methods.
     #
     @property
+    def text(self):
+        """
+        The ``textContent`` of the current node.
+        """
+        return self.textContent
+
+    @property
+    def innerText(self):
+        """
+        The ``textContent`` of the current node.
+        """
+        return self.textContent
+
+    @property
+    def html(self):
+        """
+        The ``innerHTML`` of the current node.
+        """
+        return self.innerHTML
+
+    @property
     def tagName(self):
+        """
+        The ``tagName`` of the current node.
+        """
         return self._jsonattr('tagName').lower()
 
     @property
     def value(self):
+        """
+        The ``value`` of the current node.
+        """
         if self.tagName == 'textarea':
             return self.textContent
         return self._jsonattr('value')
 
     @value.setter
     def value(self, value):
+        """
+        Used to set the ``value`` of form elements.
+        """
         js = """
             var node = %(native)s;
             var tagName = node.tagName;
@@ -260,10 +288,17 @@ class DOMNode(BaseNode):
 
     @property
     def checked(self):
+        """
+        The ``checked`` attribute of an ``<input type="checkbox">``.
+        """
         return self._jsonattr('checked')
 
     @checked.setter
     def checked(self, value):
+        """
+        Used to set the ``checked`` attribute of an ``<input
+        type="checkbox">``.
+        """
         js = """
             var node = %(native)s;
             var type = node.getAttribute('type');
@@ -290,13 +325,25 @@ class DOMNode(BaseNode):
     #
     # Events
     #
-    @verb
     def fire(self, event):
-        self.client.wait('fire', event, self)
+        """
+        Fires a specified DOM event on the current node.
 
-    @verb
+        :param event: the name of the event to fire (e.g., 'click').
+
+        Returns the :class:`zombie.dom.DOMNode` to allow function chaining.
+        """
+        self.client.wait('fire', event, self)
+        return self
+
     def click(self):
+        """
+        Fires a ``click`` event on the current node.
+
+        Returns the :class:`zombie.dom.DOMNode` to allow function chaining.
+        """
         self.fire('click')
+        return self
 
     #
     # Private methods
@@ -317,4 +364,7 @@ class DOMNode(BaseNode):
 
     @property
     def json(self):
+        """
+        The JSON representation of the current node.
+        """
         return self._native
