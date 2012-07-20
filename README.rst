@@ -1,12 +1,10 @@
 A Python driver for `Zombie.js <http://zombie.labnotes.org/>`_, a headless browser
 powered by `node.js <http://nodejs.org/>`_. ::
 
-```python
-from zombie import Browser
-b = Browser()
-b.visit('http://pypi.python.org/').fill('term', 'Zombie').pressButton('submit')
-assert "A Python driver for Zombie.js" in b.body.text
-```
+    from zombie import Browser
+    b = Browser()
+    b.visit('http://pypi.python.org/').fill('term', 'Zombie').pressButton('submit')
+    assert "A Python driver for Zombie.js" in b.body.text
 
 Requires the latest node and zombie::
 
