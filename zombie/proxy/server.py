@@ -7,6 +7,7 @@ import time
 import atexit
 import random
 import sys
+import logging
 
 from zombie.proxy.client import ZombieProxyClient
 
@@ -23,12 +24,13 @@ class PipeWorker(threading.Thread):
         super(PipeWorker, self).__init__()
         self.pipe = pipe
         self.daemon = True
+        self.log = logging.getLogger(__name__)
 
     def __worker__(self, pipe):
         while True:
             line = pipe.readline()
             if line:
-                sys.stdout.write(line)
+                self.log.debug(line)
             else:
                 break
 
