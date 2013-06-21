@@ -162,7 +162,7 @@ class BaseNode(Queryable):
     """
 
     def _fill(self, field, value):
-        self.client.wait('fill', field, value)
+        self.client.nowait('fill', field, value)
 
 
 class DOMNode(BaseNode):
@@ -329,7 +329,7 @@ class DOMNode(BaseNode):
 
         Returns the :class:`zombie.dom.DOMNode` to allow function chaining.
         """
-        self.client.wait('fire', event, self)
+        self.client.wait('fire', self, event)
         return self
 
     def click(self):

@@ -244,12 +244,14 @@ class Browser(BaseNode):
         js = """
             var resources = browser.resources.map(
                 function(r){
+                    var request = r.request;
+                    var response = r.response;
                     return {
-                        'url': r.url,
-                        'time': r.time + 'ms',
-                        'size': r.size / 1024 + 'kb',
-                        'request': r.request.toString(),
-                        'response': r.request.toString()
+                        'method': request.method,
+                        'url': request.url,
+                        'statusCode': response.statusCode,
+                        'statusText': response.statusText,
+                        'time': (response.time - request.time) + 'ms',
                     }
                 }
             );
