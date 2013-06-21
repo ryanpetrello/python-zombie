@@ -10,6 +10,21 @@ from zombie.compat import PY3
 __all__ = ['ZombieProxyClient', 'NodeError']
 
 
+def _encode(obj):
+    if hasattr(obj, 'json'):
+        return obj.json
+    if hasattr(obj, '__json__'):
+        return obj.__json__()
+    return dumps(obj)
+
+
+def _decode(json):
+    if json:
+        return loads(json)
+    else:
+        return None
+
+
 class NodeError(Exception):
     """
     An exception indicating node.js' failure to parse or evaluate Javascript
@@ -24,6 +39,8 @@ class ZombieProxyClient(object):
     a specific TCP socket.  Data is evaulated by the server and results
     (if any) are returned.
     """
+    __encode__ = staticmethod(_encode)
+    __decode__ = staticmethod(_decode)
 
     def __init__(self, socket):
         """
@@ -83,6 +100,23 @@ class ZombieProxyClient(object):
             "stream.end(JSON.stringify(%s));" % js
         ))
 
+    def nowait(self, method, *args):
+        """
+        There are methods that do not support callback
+        """
+        methodargs = encode_args(args)
+        js = """
+        try {
+            browser.%s(%s);
+            stream.end();
+        } catch (err) {
+            stream.end(JSON.stringify(err.stack));
+        }
+        """ % (method, methodargs)
+        response = self.send(js)
+        if response:
+            raise NodeError(self.__decode__(response))
+
     def wait(self, method, *args):
         """
         Call a method on the zombie.js Browser instance and wait on a callback.
@@ -90,13 +124,7 @@ class ZombieProxyClient(object):
         :param method: the method to call, e.g., html()
         :param args: one of more arguments for the method
         """
-        if args:
-            methodargs = ', '.join(
-                [self.__encode__(a) for a in args]
-            ) + ', '
-        else:
-            methodargs = ''
-
+        methodargs = encode_args(args, extra=True)
         js = """
         try {
             browser.%s(%sfunction(err, browser){
@@ -108,10 +136,7 @@ class ZombieProxyClient(object):
         } catch (err) {
             stream.end(JSON.stringify(err.stack));
         }
-        """ % (
-            method,
-            methodargs
-        )
+        """ % (method, methodargs)
         response = self.send(js)
         if response:
             raise NodeError(self.__decode__(response))
@@ -126,15 +151,15 @@ class ZombieProxyClient(object):
             self.send("stream.end(JSON.stringify(ping));")
         )
 
-    def __encode__(self, obj):
-        if hasattr(obj, 'json'):
-            return obj.json
-        if hasattr(obj, '__json__'):
-            return obj.__json__()
-        return dumps(obj)
 
-    def __decode__(self, json):
-        if json:
-            return loads(json)
-        else:
-            return None
+def encode_args(args, extra=False):
+    """Encode args for js execution"""
+    if args:
+        methodargs = ', '.join(
+            [_encode(a) for a in args]
+        )
+        if extra:
+            methodargs += ', '
+    else:
+        methodargs = ''
+    return methodargs
