@@ -1,5 +1,5 @@
 var net = require('net');
-var zombie = require('zombie');
+var Browser = require('zombie');
 
 // Defaults
 var ping = 'pong'
@@ -34,10 +34,9 @@ var CLIENTS = {};
 //
 function ctx_switch(id){
     if(!CLIENTS[id])
-        CLIENTS[id] = [new zombie.Browser(), []];
+        CLIENTS[id] = [new Browser(), []];
     return CLIENTS[id];
 }
-
 net.createServer(function (stream){
   stream.setEncoding('utf8');
 
