@@ -6,7 +6,7 @@ powered by `node.js <http://nodejs.org/>`_. ::
     b.visit('http://pypi.python.org/').fill('term', 'Zombie').pressButton('submit')
     assert "A Python driver for Zombie.js" in b.body.text
 
-Requires the latest node and zombie::
+Requires the latest node (0.10) and zombie (2.0.0alpha)::
 
     brew install node
     curl https://npmjs.org/install.sh | sh
