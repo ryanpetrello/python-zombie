@@ -22,7 +22,7 @@ class PipeWorker(threading.Thread):
     def __init__(self, pipe):
         super(PipeWorker, self).__init__()
         self.pipe = pipe
-        self.setDaemon(True)
+        self.daemon = True
 
     def __worker__(self, pipe):
         while True:
