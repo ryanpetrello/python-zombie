@@ -101,6 +101,18 @@ class Browser(BaseNode):
         """
         return self._with_context('text', selector, context)
 
+    def unselectOption(self, selector):
+        """
+        Unselects the given option
+
+        Special case. It seems there is a problem in Zombie: unselectOption
+        doesn't accept a selector.
+
+        Pull request pending in the zombie project
+        """
+        self.query(selector).unselectOption()
+        return self
+
     #
     # Navigation
     #
@@ -193,31 +205,6 @@ class Browser(BaseNode):
         return self.client.json('browser.redirected')
 
     #
-    # Forms
-    #
-    def fill(self, field, value):
-        """
-        Fill a specified form field in the current document.
-
-        :param field: an instance of :class:`zombie.dom.DOMNode`
-        :param value: any string value
-
-        Returns the :class:`zombie.browser.Browser` to allow function chaining.
-        """
-        self._fill(field, value)
-        return self
-
-    def pressButton(self, selector):
-        """
-        Press a specific button (by innerText or CSS selector) in the current
-        document.
-
-        Returns the :class:`zombie.browser.Browser` to allow function chaining.
-        """
-        self.client.wait('pressButton', selector)
-        return self
-
-    #
     # Debugging
     #
     def dump(self):
@@ -234,11 +221,11 @@ class Browser(BaseNode):
         Returns a list of resources loaded by the browser, e.g.,
         ::
             [{
-                'url': '...',
-                'time': '...ms',
-                'size': '...kb',
-                'request': '...',
-                'response': '...'
+                'method': 'GET',
+                'url': 'http://www.example.com/',
+                'statusCode': '200',
+                'statusText': 'OK',
+                'time': '200ms'
             }]
         """
         js = """

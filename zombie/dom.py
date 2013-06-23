@@ -160,9 +160,59 @@ class BaseNode(Queryable):
     """
     More Browser/DOMNode shared functionality.
     """
+    #
+    # Forms
+    #
+    def fill(self, field, value):
+        """
+        Fill a specified form field in the current document.
 
-    def _fill(self, field, value):
+        :param field: an instance of :class:`zombie.dom.DOMNode`
+        :param value: any string value
+        :return: self to allow function chaining.
+        """
         self.client.nowait('fill', field, value)
+        return self
+
+    def pressButton(self, selector):
+        """
+        Press a specific button.
+
+        :param selector: CSS selector or innerText
+        :return: self to allow function chaining.
+        """
+        self.client.wait('pressButton', selector)
+        return self
+
+    def check(self, selector):
+        self.client.nowait('check', selector)
+        return self
+
+    def select(self, selector, value):
+        self.client.nowait('select', selector, value)
+        return self
+
+    def selectOption(self, selector):
+        self.client.nowait('selectOption', selector)
+        return self
+
+    def unselect(self, selector, value):
+        self.client.nowait('unselect', selector, value)
+        return self
+
+    def unselectOption(self, selector):
+        self.client.nowait('unselectOption', selector)
+        return self
+
+    def attach(self, selector, filename):
+        self.client.nowait('attach', selector, filename)
+        return self
+
+    #
+    # query
+    #
+    def field(self, selector, context=None):
+        return self._node('field', selector, context)
 
 
 class DOMNode(BaseNode):
@@ -203,6 +253,9 @@ class DOMNode(BaseNode):
         """
         return self.queryAll(selector)
 
+    #
+    # Forms
+    #
     def fill(self, value):
         """
         If applicable, fill the current node's value.
@@ -211,7 +264,82 @@ class DOMNode(BaseNode):
 
         Returns the :class:`zombie.dom.DOMNode` to allow function chaining.
         """
-        self._fill(self, value)
+        return super(DOMNode, self).fill(self, value)
+
+    def pressButton(self):
+        """
+        If applicable, press this button
+
+        Returns the :class:`zombie.dom.DOMNode` to allow function chaining.
+        """
+        return super(DOMNode, self).pressButton(self)
+
+    def check(self):
+        """
+        If applicable, Checks a checkbox
+
+        Returns the :class:`zombie.dom.DOMNode` to allow function chaining.
+        """
+        return super(DOMNode, self).check(self)
+
+    def uncheck(self):
+        """
+        If applicable, unchecks a checkbox
+
+        Returns the :class:`zombie.dom.DOMNode` to allow function chaining.
+        """
+        return super(DOMNode, self).uncheck(self)
+
+    def select(self, value):
+        """
+        If applicable, selects an option
+
+        :param value: Value (or label) or option to select
+
+        Returns the :class:`zombie.dom.DOMNode` to allow function chaining.
+        """
+        return super(DOMNode, self).select(self, value)
+
+    def selectOption(self):
+        """
+        If applicable, selects this option
+
+        Returns the :class:`zombie.dom.DOMNode` to allow function chaining.
+        """
+        return super(DOMNode, self).selectOption(self)
+
+    def unselect(self, value):
+        """
+        If applicable, unselect an option
+
+        :param value: Value (or label) or option to unselect
+
+        Returns the :class:`zombie.dom.DOMNode` to allow function chaining.
+        """
+        return super(DOMNode, self).unselect(self, value)
+
+    def unselectOption(self):
+        """
+        If applicable unselect this option
+
+        Returns the :class:`zombie.dom.DOMNode` to allow function chaining.
+        """
+        return super(DOMNode, self).unselectOption(self)
+
+    def attach(self, filename):
+        """
+        If applicable, attaches a file to the specified input field
+
+        :param filename: Filename of the file to attach.
+
+        Returns the :class:`zombie.dom.DOMNode` to allow function chaining.
+        """
+        return super(DOMNode, self).attach(self, filename)
+
+    def field(self):
+        """
+        The field of a :class:`zombie.dom.DOMNode` is itself. Returns self.
+        """
         return self
 
     #

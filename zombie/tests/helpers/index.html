@@ -10,18 +10,32 @@
     <p>This is an HTML document</p>
   </div>
   <div>
-    <form id="form" name="form" class="submittable" method="GET" action="submit.html">
+    <form id="form" name="form" class="submittable" method="POST" action="/submit">
       <input name="q" type="text" class="textfield"></input>
 
-      <input type="checkbox" value="1"></input>
+      <input name="mycheckbox" type="checkbox" value="1"></input>
+
       <input name="color" type="radio" value="1"></input>
       <input name="color" type="radio" value="2"></input>
 
+      <input type="file" name="myfile" />
+
       <textarea cols="80" rows="5"></textarea>
 
-      <button id="submit">Search</button>
+      <select name="planet">
+        <option value="earth" selected="selected">Planet Earth</option>
+        <option value="mars">Planet Mars</option>
+      </select>
+
+      <select name="colors" multiple="multiple">
+        <option value="red" selected="selected">Color red</option>
+        <option value="green">Color green</option>
+        <option value="blue">Color blue</option>
+      </select>
+
+      <button type="submit" name="submit" id="submit">Search</button>
     </form>
   </div>
-  <a id="about-zombie" href="http://zombie.labnotes.org/">Learn About Zombie</a>
+  <a id="about-zombie" href="/location2">Learn About Zombie</a>
 </body>
 </html>

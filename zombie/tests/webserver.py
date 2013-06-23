@@ -53,7 +53,7 @@ class TestWSGIRequestHandler(WSGIRequestHandler):
 
     def log_message(self, format, *args):
         """Override the stdout logging"""
-        msg = "%s - - [%s] %s\n" % (
+        msg = "%s - - [%s] %s" % (
             self.address_string(),
             self.log_date_time_string(), format % args)
         self._log(logging.INFO, msg)
@@ -138,6 +138,7 @@ def build_test_app():
 
     builder = AppBuilder(base)
     builder.add_html('GET', '/', 'index.html')
+    builder.add_html('GET', '/location2', 'location2.html')
     builder.add_html('POST', '/submit', 'submit.html')
     builder.add_redirect('GET', '/redirect', '/')
     return builder

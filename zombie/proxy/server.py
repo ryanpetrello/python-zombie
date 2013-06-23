@@ -30,7 +30,7 @@ class PipeWorker(threading.Thread):
         while True:
             line = pipe.readline()
             if line:
-                self.log.debug(line)
+                self.log.debug(line[:-1])
             else:
                 break
 
