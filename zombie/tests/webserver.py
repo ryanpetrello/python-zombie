@@ -2,8 +2,8 @@ import logging
 import os.path
 import random
 import threading
-import unittest
 from wsgiref.simple_server import make_server, WSGIRequestHandler
+from zombie.compat import TestCase, to_bytes
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +67,7 @@ class AppBuilder(object):
     def add_html(self, method, path, filename):
         filepath = os.path.join(self.base, filename)
         with open(filepath, 'r') as html_file:
-            contents = html_file.read()
+            contents = to_bytes(html_file.read())
 
         def action(environ, start_response):
             start_response(
@@ -84,7 +84,7 @@ class AppBuilder(object):
                 ('Content-type', 'text/plain')
             ]
             start_response('302 Found', response_headers)
-            return ''
+            return to_bytes('')
         self.add_route(method, path, action)
 
     def add_route(self, method, path, action):
@@ -128,7 +128,7 @@ class App(object):
         self.start_response(
             '404 NOT FOUND',
             [('Content-Type', 'text/plain')])
-        return 'Not Found'
+        return to_bytes('Not Found')
 
 
 def build_test_app():
@@ -144,7 +144,7 @@ def build_test_app():
     return builder
 
 
-class WebServerTestCase(unittest.TestCase):
+class WebServerTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
         """Starts the HTTP server with some basic urls"""

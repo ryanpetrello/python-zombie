@@ -79,9 +79,9 @@ class TestBrowser(BaseTestCase):
 
         browser.attach(selector, __file__)
         files = [{
-            u'type': u'application/octet-stream',
-            u'name': os.path.basename(__file__),
-            u'size': os.path.getsize(__file__)}]
+            'type': 'application/octet-stream',
+            'name': os.path.basename(__file__),
+            'size': os.path.getsize(__file__)}]
         self.assertEqual(files, browser.query(selector).files)
 
     def test_field(self):

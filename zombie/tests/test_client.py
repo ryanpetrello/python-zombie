@@ -1,6 +1,9 @@
 import os
-from unittest import TestCase
-from SocketServer import UnixStreamServer, StreamRequestHandler
+from zombie.compat import TestCase, PY3
+if PY3:
+    from socketserver import UnixStreamServer, StreamRequestHandler
+else:
+    from SocketServer import UnixStreamServer, StreamRequestHandler
 import threading
 
 try:
