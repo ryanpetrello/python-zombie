@@ -32,6 +32,35 @@ var CLIENTS = {};
 // https://github.com/plataformatec/capybara-zombie
 //
 //
+function cleanup() {
+    for (var key in CLIENTS) {
+        CLIENTS[key][0].destroy();
+    }
+    CLIENTS = {};
+}
+
+function check_field(browser, node, value) {
+    var type = node.getAttribute('type');
+    if (type == "radio") browser.choose(node);
+    else node.checked = value;
+}
+
+function set_field(browser, node, value) {
+    var tagName = node.tagName;
+    if (tagName == "TEXTAREA") {
+        node.textContent = value;
+    } else {
+        var type = node.getAttribute('type');
+        if(type == "checkbox"){
+            value ? browser.check(node) : browser.uncheck(node);
+        }else if(type == "radio"){
+            browser.choose(node);
+        }else{
+            browser.fill(node, value);
+        }
+    }
+}
+
 function ctx_switch(id){
     if(!CLIENTS[id])
         CLIENTS[id] = [new Browser(), []];

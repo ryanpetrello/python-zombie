@@ -1,3 +1,4 @@
+import contextlib
 import socket
 
 try:
@@ -10,7 +11,10 @@ from zombie.compat import PY3
 __all__ = ['ZombieProxyClient', 'NodeError']
 
 
-def _encode(obj):
+def encode(obj):
+    """
+    Encode one argument/object to json
+    """
     if hasattr(obj, 'json'):
         return obj.json
     if hasattr(obj, '__json__'):
@@ -18,11 +22,40 @@ def _encode(obj):
     return dumps(obj)
 
 
-def _decode(json):
-    if json:
-        return loads(json)
-    else:
+def encode_args(args, extra=False):
+    """
+    Encode a list of arguments
+    """
+    if not args:
+        return ''
+
+    methodargs = ', '.join([encode(a) for a in args])
+    if extra:
+        methodargs += ', '
+
+    return methodargs
+
+
+def decode(json):
+    if json is None:
         return None
+    return loads(json)
+
+
+class Element(object):
+    def __init__(self, index):
+        self.__index = index
+
+    @property
+    def index(self):
+        return self.__index
+
+    @property
+    def json(self):
+        return "ELEMENTS[%s]" % self.__index
+
+    def __str__(self):
+        return self.json
 
 
 class NodeError(Exception):
@@ -33,89 +66,103 @@ class NodeError(Exception):
     pass
 
 
+class ZombieServerConnection(object):
+    def __init__(self, socket_address):
+        self.__socket_address = socket_address
+
+    def send(self, data):
+        if PY3:  # pragma: nocover
+            data = bytes(data, 'utf-8')
+
+        with self._open_connection() as con:
+            con.send(data)
+            response = self._receive(con)
+
+        return response
+
+    def _open_connection(self):
+        sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        sock.connect(self.__socket_address)
+        return contextlib.closing(sock)
+
+    def _receive(self, con):
+        response = []
+        while True:
+            data = con.recv(4096)
+            if not data:
+                break
+            if PY3:  # pragma: nocover
+                data = str(data, 'utf-8')
+            response.append(data)
+        return ''.join(response)
+
+
 class ZombieProxyClient(object):
     """
     Sends data to a :class:`zombie.proxy.server.ZombieProxyServer` bound to
     a specific TCP socket.  Data is evaulated by the server and results
     (if any) are returned.
     """
-    __encode__ = staticmethod(_encode)
-    __decode__ = staticmethod(_decode)
 
-    def __init__(self, socket):
+    def __init__(self, socket_address):
         """
         Establish a new :class:`ZombieProxyClient`.
 
         :param socket: a unix socket address to connect to.
         """
-        self.socket = socket
+        self.connection = ZombieServerConnection(socket_address)
 
-    def send(self, js):
+    def _send(self, javascript):
         """
         Establishes a socket connection to the zombie.js server and sends
         Javascript instructions.
 
         :param js: the Javascript string to execute
         """
-        # Establish a socket connection to the Zombie.js proxy server
-        s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        s.connect(self.socket)
 
         # Prepend JS to switch to the proper client context.
-        js = """
-        var _ctx = ctx_switch('%s');
-        browser = _ctx[0];
-        ELEMENTS = _ctx[1];
-        %s
-        """ % (id(self), js)
+        message = """
+        try {
+            var _ctx = ctx_switch('%s');
+            var browser = _ctx[0];
+            var ELEMENTS = _ctx[1];
+            var result = null;
+            %s
+        } catch(err) {
+            stream.end(JSON.stringify([1, err.stack]));
+        }
+        """ % (id(self), javascript)
 
-        # Send Zombie.js API calls, followed by a stream.end() call.
-        if PY3:  # pragma: nocover
-            js = bytes(js, 'utf-8')
-        s.send(js)
+        response = self.connection.send(message)
 
-        # Read the response
-        response = []
-        while True:
-            data = s.recv(4096)
-            if not data:
-                break
-            if PY3:  # pragma: nocover
-                data = str(data, 'utf-8')
-            response.append(data)
+        return self._handle_response(response)
 
-        # Close the socket connection
-        s.close()
+    def _handle_response(self, response):
+        if not response:
+            raise NodeError('Empty response, communication error')
+        errno, result = decode(response)
+        if errno == 1:
+            raise NodeError(result)
+        return result
 
-        return ''.join(response)
-
-    def json(self, js):
+    def json(self, js, args=None):
         """
         A shortcut for passing Javascript instructions and decoding a JSON
         response from node.js.
 
         :param js: the Javascript string to execute
         """
-        return self.__decode__(self.send(
-            "stream.end(JSON.stringify(%s));" % js
-        ))
+        return self.nowait("result = %s" % js, args)
 
-    def nowait(self, method, *args):
-        """
-        There are methods that do not support callback
-        """
-        methodargs = encode_args(args)
+    def nowait(self, js, args=None):
+        if args:
+            js = "%s(%s)" % (js, encode_args(args))
+
         js = """
-        try {
-            browser.%s(%s);
-            stream.end();
-        } catch (err) {
-            stream.end(JSON.stringify(err.stack));
-        }
-        """ % (method, methodargs)
-        response = self.send(js)
-        if response:
-            raise NodeError(self.__decode__(response))
+            %s;
+            stream.end(JSON.stringify([0, result]));
+        """ % js
+        return self._send(js)
 
     def wait(self, method, *args):
         """
@@ -126,20 +173,15 @@ class ZombieProxyClient(object):
         """
         methodargs = encode_args(args, extra=True)
         js = """
-        try {
-            browser.%s(%sfunction(err, browser){
-                if (err)
-                    stream.end(JSON.stringify(err.stack));
-                else
-                    stream.end();
-            });
-        } catch (err) {
-            stream.end(JSON.stringify(err.stack));
-        }
+        %s(%sfunction(err, browser){
+            if (err) {
+                stream.end(JSON.stringify([1, err.stack]));
+            }
+            else
+                stream.end(JSON.stringify([0, null]));
+        });
         """ % (method, methodargs)
-        response = self.send(js)
-        if response:
-            raise NodeError(self.__decode__(response))
+        response = self._send(js)
 
     def ping(self):
         """
@@ -147,19 +189,77 @@ class ZombieProxyClient(object):
 
         A live node.js TCP server will cause this method to return "pong".
         """
-        return self.__decode__(
-            self.send("stream.end(JSON.stringify(ping));")
-        )
+        return self.json('ping')
 
+    def cleanup(self):
+        """
+        Destroy and clean up any browser and elements in the server
 
-def encode_args(args, extra=False):
-    """Encode args for js execution"""
-    if args:
-        methodargs = ', '.join(
-            [_encode(a) for a in args]
-        )
-        if extra:
-            methodargs += ', '
-    else:
-        methodargs = ''
-    return methodargs
+        As new browsers are created, memory will be reserved in the node
+        process. In order to avoid memory problems you will need to clean up
+        those browsers or one by one, or using this clean up in a specific
+        moment in your code
+        """
+        self.nowait('cleanup()')
+
+    def create_element(self, method, args=None):
+        """
+        Evaluate a browser method and CSS selector against the document
+        (or an optional context DOMNode) and return a single
+        :class:`zombie.dom.DOMNode` object, e.g.,
+
+        browser._node('query', 'body > div')
+
+        ...roughly translates to the following Javascript...
+
+        browser.query('body > div')
+
+        :param method: the method (e.g., query) to call on the browser
+        :param selector: a string CSS selector
+                        (http://zombie.labnotes.org/selectors)
+        :param context: an (optional) instance of :class:`zombie.dom.DOMNode`
+        """
+        if args is None:
+            arguments = ''
+        else:
+            arguments = "(%s)" % encode_args(args)
+        js = """
+            var element = %(method)s%(args)s;
+            if (element) {
+                ELEMENTS.push(element);
+                result = ELEMENTS.length - 1;
+            }
+        """ % {
+            'method': method,
+            'args': arguments
+        }
+
+        index = self.nowait(js)
+        if index is None:
+            return None
+
+        return Element(index)
+
+    def create_elements(self, method, args=[]):
+        """
+        Execute a browser method that will return a list of elements.
+
+        Returns a list of the element indexes
+        """
+        args = encode_args(args)
+
+        js = """
+            result = [];
+            var elements = %(method)s(%(args)s);
+            for(var i = 0; i < elements.length; i++){
+                var element = elements[i];
+                ELEMENTS.push(element);
+                result.push(ELEMENTS.length - 1);
+            };
+        """ % {
+            'method': method,
+            'args': args,
+        }
+
+        indexes = self.nowait(js)
+        return map(Element, indexes)

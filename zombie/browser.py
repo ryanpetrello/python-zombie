@@ -1,11 +1,19 @@
-from zombie.dom import BaseNode, DOMNode
 from zombie.proxy.server import ZombieProxyServer
 from zombie.proxy.client import ZombieProxyClient
 
-__all__ = ['Browser']
+__all__ = ['Browser', 'DOMNode']
 
 
-class Browser(BaseNode):
+class Literal(object):
+    def __init__(self, value):
+        self.__value = value
+
+    @property
+    def json(self):
+        return self.__value
+
+
+class Browser(object):
     """
     A Browser object, analogous to zombie.js' ``Browser``.
     """
@@ -26,6 +34,62 @@ class Browser(BaseNode):
         self.client = ZombieProxyClient(server.socket)
 
     #
+    # Forms
+    #
+    def fill(self, field, value):
+        """
+        Fill a specified form field in the current document.
+
+        :param field: an instance of :class:`zombie.dom.DOMNode`
+        :param value: any string value
+        :return: self to allow function chaining.
+        """
+        self.client.nowait('browser.fill', (field, value))
+        return self
+
+    def pressButton(self, selector):
+        """
+        Press a specific button.
+
+        :param selector: CSS selector or innerText
+        :return: self to allow function chaining.
+        """
+        self.client.wait('browser.pressButton', selector)
+        return self
+
+    def check(self, selector):
+        self.client.nowait('browser.check', (selector,))
+        return self
+
+    def select(self, selector, value):
+        self.client.nowait('browser.select', (selector, value))
+        return self
+
+    def selectOption(self, selector):
+        self.client.nowait('browser.selectOption', (selector,))
+        return self
+
+    def unselect(self, selector, value):
+        self.client.nowait('browser.unselect', (selector, value))
+        return self
+
+    def unselectOption(self, selector):
+        self.client.nowait('browser.unselectOption', (selector,))
+        return self
+
+    def attach(self, selector, filename):
+        self.client.nowait('browser.attach', (selector, filename))
+        return self
+
+    #
+    # query
+    #
+    def field(self, selector, context=None):
+        element = self.client.create_element(
+            'browser.field', (selector, context))
+        return DOMNode(element, self)
+
+    #
     # Document Content
     #
     @property
@@ -34,20 +98,10 @@ class Browser(BaseNode):
         Returns a :class:`zombie.dom.DOMNode` representing the body element of
         the current document.
         """
+        element = self.client.create_element('browser.body')
+        return DOMNode(element, self)
 
-        js = """
-            ELEMENTS.push(browser.body);
-            stream.end(JSON.stringify(ELEMENTS.length - 1));
-        """
-
-        #
-        # Translate the reference into a DOMNode object which can be used to
-        # make subsequent object/attribute lookups later.
-        #
-        decoded = self.decode(self.client.send(js))
-        return DOMNode(decoded, self.client)
-
-    def html(self, selector='html', context=None):
+    def html(self, selector=None, context=None):
         """
         Returns the HTML content (string) of the current document.
 
@@ -55,7 +109,7 @@ class Browser(BaseNode):
                         (http://zombie.labnotes.org/selectors)
         :param context: an (optional) instance of :class:`zombie.dom.DOMNode`
         """
-        return self._with_context('html', selector, context)
+        return self.client.json('browser.html', (selector, context))
 
     def query(self, selector, context=None):
         """
@@ -67,7 +121,9 @@ class Browser(BaseNode):
                         (http://zombie.labnotes.org/selectors)
         :param context: an (optional) instance of :class:`zombie.dom.DOMNode`
         """
-        return self._node('query', selector, context)
+        element = self.client.create_element(
+            'browser.query', (selector, context))
+        return DOMNode.factory(element, self)
 
     def queryAll(self, selector, context=None):
         """
@@ -79,7 +135,9 @@ class Browser(BaseNode):
                         (http://zombie.labnotes.org/selectors)
         :param context: an (optional) instance of :class:`zombie.dom.DOMNode`
         """
-        return self._nodes('queryAll', selector, context)
+        elements = self.client.create_elements(
+            'browser.queryAll', (selector, context))
+        return [DOMNode(e, self) for e in elements]
 
     def css(self, selector, context=None):
         """
@@ -99,7 +157,7 @@ class Browser(BaseNode):
                         (http://zombie.labnotes.org/selectors)
         :param context: an (optional) instance of :class:`zombie.dom.DOMNode`
         """
-        return self._with_context('text', selector, context)
+        return self.client.json('browser.text', (selector, context))
 
     def unselectOption(self, selector):
         """
@@ -125,7 +183,7 @@ class Browser(BaseNode):
 
         Returns the :class:`zombie.browser.Browser` to allow function chaining.
         """
-        self.client.wait('clickLink', selector)
+        self.client.wait('browser.clickLink', selector)
         return self
 
     @property
@@ -151,7 +209,7 @@ class Browser(BaseNode):
 
         Returns the :class:`zombie.browser.Browser` to allow function chaining.
         """
-        self.client.wait('visit', url)
+        self.client.wait('browser.visit', url)
         return self
 
     def back(self):
@@ -160,7 +218,7 @@ class Browser(BaseNode):
 
         Returns the :class:`zombie.browser.Browser` to allow function chaining.
         """
-        self.client.wait('back')
+        self.client.wait('browser.back')
         return self
 
     def link(self, selector):
@@ -172,7 +230,8 @@ class Browser(BaseNode):
         :param selector: an optional string CSS selector
                         (http://zombie.labnotes.org/selectors) or inner text
         """
-        return self._node('link', selector, None)
+        element = self.client.create_element('browser.link', (selector,))
+        return DOMNode(element, self)
 
     def reload(self):
         """
@@ -180,7 +239,7 @@ class Browser(BaseNode):
 
         Returns the :class:`zombie.browser.Browser` to allow function chaining.
         """
-        self.client.wait('reload')
+        self.client.wait('browser.reload')
         return self
 
     @property
@@ -203,6 +262,10 @@ class Browser(BaseNode):
         Returns ``True`` if the page request followed a redirect.
         """
         return self.client.json('browser.redirected')
+
+    def fire(self, selector, event_name):
+        self.client.wait('browser.fire', selector, event_name)
+        return self
 
     #
     # Debugging
@@ -229,7 +292,7 @@ class Browser(BaseNode):
             }]
         """
         js = """
-            var resources = browser.resources.map(
+            browser.resources.map(
                 function(r){
                     var request = r.request;
                     var response = r.response;
@@ -241,10 +304,9 @@ class Browser(BaseNode):
                         'time': (response.time - request.time) + 'ms',
                     }
                 }
-            );
-            stream.end(JSON.stringify(resources))
+            )
         """
-        return self.decode(self.client.send(js))
+        return self.client.json(js)
 
     def viewInBrowser(self):
         """
@@ -252,3 +314,248 @@ class Browser(BaseNode):
         system browser on OS X, BSD and Linux. Probably errors on Windows.
         """
         return self.client.send('browser.viewInBrowser()')  # pragma: nocover
+
+
+class DOMNode(object):
+    """
+    Represents a node in the current document's DOM.
+    """
+    @staticmethod
+    def factory(element, browser):
+        if element is None:
+            return None
+        return DOMNode(element, browser)
+
+    def __init__(self, element, browser):
+        self.element = element
+        self.client = browser.client
+        self.browser = browser
+
+    def query(self, selector):
+        """
+        Evaluate a CSS selector against this element and return a single
+        (child) :class:`zombie.dom.DOMNode` object.
+
+        :param selector: a string CSS selector
+                        (http://zombie.labnotes.org/selectors)
+        """
+        return self.browser.query(selector, self.element)
+
+    def queryAll(self, selector):
+        """
+        Evaluate a CSS selector against this element and return a list of
+        (child) :class:`zombie.dom.DOMNode` objects.
+
+        :param selector: a string CSS selector
+                        (http://zombie.labnotes.org/selectors)
+        """
+        return self.browser.queryAll(selector, self.element)
+
+    def css(self, selector):
+        """
+        An alias for :class:`zombie.dom.DOMNode.queryAll`.
+        """
+        return self.queryAll(selector)
+
+    #
+    # Forms
+    #
+    def fill(self, value):
+        """
+        If applicable, fill the current node's value.
+
+        :param value: any string value
+
+        Returns the :class:`zombie.dom.DOMNode` to allow function chaining.
+        """
+        return self.browser.fill(self.element, value)
+
+    def pressButton(self):
+        """
+        If applicable, press this button
+
+        Returns the :class:`zombie.dom.DOMNode` to allow function chaining.
+        """
+        return self.browser.pressButton(self.element)
+
+    def check(self):
+        """
+        If applicable, Checks a checkbox
+
+        Returns the :class:`zombie.dom.DOMNode` to allow function chaining.
+        """
+        return self.browser.check(self.element)
+
+    def uncheck(self):
+        """
+        If applicable, unchecks a checkbox
+
+        Returns the :class:`zombie.dom.DOMNode` to allow function chaining.
+        """
+        return self.browser.uncheck(self.element)
+
+    def select(self, value):
+        """
+        If applicable, selects an option
+
+        :param value: Value (or label) or option to select
+
+        Returns the :class:`zombie.dom.DOMNode` to allow function chaining.
+        """
+        return self.browser.select(self.element, value)
+
+    def selectOption(self):
+        """
+        If applicable, selects this option
+
+        Returns the :class:`zombie.dom.DOMNode` to allow function chaining.
+        """
+        return self.browser.selectOption(self.element)
+
+    def unselect(self, value):
+        """
+        If applicable, unselect an option
+
+        :param value: Value (or label) or option to unselect
+
+        Returns the :class:`zombie.dom.DOMNode` to allow function chaining.
+        """
+        return self.browser.unselect(self.element, value)
+
+    def unselectOption(self):
+        """
+        If applicable unselect this option
+
+        Returns the :class:`zombie.dom.DOMNode` to allow function chaining.
+        """
+        return self.client.nowait('browser.unselectOption', (self.element,))
+
+    def attach(self, filename):
+        """
+        If applicable, attaches a file to the specified input field
+
+        :param filename: Filename of the file to attach.
+
+        Returns the :class:`zombie.dom.DOMNode` to allow function chaining.
+        """
+        return self.browser.attach(self.element, filename)
+
+    def field(self):
+        """
+        The field of a :class:`zombie.dom.DOMNode` is itself. Returns self.
+        """
+        return self
+
+    #
+    # Attribute (normal and specialized)
+    # access methods.
+    #
+    @property
+    def text(self):
+        """
+        The ``textContent`` of the current node.
+        """
+        return self.textContent
+
+    @property
+    def innerText(self):
+        """
+        The ``textContent`` of the current node.
+        """
+        return self.textContent
+
+    @property
+    def html(self):
+        """
+        The ``innerHTML`` of the current node.
+        """
+        return self.innerHTML
+
+    @property
+    def tagName(self):
+        """
+        The ``tagName`` of the current node.
+        """
+        return self._jsonattr('tagName').lower()
+
+    @property
+    def value(self):
+        """
+        The ``value`` of the current node.
+        """
+        if self.tagName == 'textarea':
+            return self.textContent
+        return self._jsonattr('value')
+
+    @value.setter
+    def value(self, value):
+        """
+        Used to set the ``value`` of form elements.
+        """
+        self.client.nowait(
+            'set_field', (Literal('browser'), self.element, value))
+
+    @property
+    def checked(self):
+        """
+        The ``checked`` attribute of an ``<input type="checkbox">``.
+        """
+        return self._jsonattr('checked')
+
+    @checked.setter
+    def checked(self, value):
+        """
+        Used to set the ``checked`` attribute of an ``<input
+        type="checkbox">``.
+        """
+        self.client.nowait(
+            'check_field', (Literal('browser'), self.element, value))
+
+    def _jsonattr(self, attr):
+        return self.client.json("%s.%s" % (self.element.json, attr))
+
+    def __getattr__(self, name):
+        return self._jsonattr(name)
+
+    def __getitem__(self, name):
+        return self._jsonattr(name)
+
+    #
+    # Events
+    #
+    def fire(self, event):
+        """
+        Fires a specified DOM event on the current node.
+
+        :param event: the name of the event to fire (e.g., 'click').
+
+        Returns the :class:`zombie.dom.DOMNode` to allow function chaining.
+        """
+        self.browser.fire(self.element, event)
+        return self
+
+    def click(self):
+        """
+        Fires a ``click`` event on the current node.
+
+        Returns the :class:`zombie.dom.DOMNode` to allow function chaining.
+        """
+        self.fire('click')
+        return self
+
+    #
+    # Private methods
+    #
+    @property
+    def json(self):
+        return self.element.json
+
+    def __repr__(self):
+        name, id, className = self.tagName.upper(), self.id, self.className
+        if id and className:
+            name = "%s#%s.%s" % (name, id, className)
+        elif id:
+            name = "%s#%s" % (name, id)
+        elif className:
+            name = "%s.%s" % (name, className)
+        return "<%s>" % name

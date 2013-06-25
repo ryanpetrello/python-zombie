@@ -1,8 +1,7 @@
 from unittest import TestCase
 import os
 
-from zombie import Browser
-from zombie.dom import DOMNode
+from zombie.browser import Browser, DOMNode
 from zombie.proxy.client import ZombieProxyClient
 from zombie.compat import urlparse, PY3
 from zombie.tests.webserver import WebServerTestCase
@@ -21,7 +20,9 @@ class TestBrowser(BaseTestCase):
     #
     def test_fill(self):
         self.browser.fill('q', 'Zombie.js')
-        assert self.browser.css('input')[0].value == 'Zombie.js'
+        self.assertEqual(
+            'Zombie.js',
+            self.browser.css('input[name=q]')[0].value)
 
     def test_press_button(self):
         browser = self.browser
@@ -136,7 +137,7 @@ class TestBrowser(BaseTestCase):
 
     def test_css_no_results(self):
         matches = self.browser.css('blink')
-        assert len(matches) == 0
+        self.assertEqual(0, len(matches))
 
     def test_query(self):
         for tag in ['h1', 'p', 'form', 'input', 'button']:
@@ -145,7 +146,7 @@ class TestBrowser(BaseTestCase):
 
     def test_query_no_results(self):
         match = self.browser.query('blink')
-        assert match is None
+        self.assertIsNone(match)
 
     def test_by_id(self):
         matches = self.browser.css('#submit')
@@ -228,7 +229,6 @@ class TestBrowser(BaseTestCase):
             assert r['statusCode']
             assert r['statusText']
             assert r['time']
-
 
     def test_not_redirected(self):
         self.assertIn('<title>Example', self.browser.html())

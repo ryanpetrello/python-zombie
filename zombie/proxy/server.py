@@ -97,7 +97,7 @@ class ZombieProxyServer(object):
             stderr=subprocess.STDOUT
         )
         self.child.stdin.close()
-
+        PipeWorker(self.child.stdout).start()
         if wait:
             # Wait until we can ping the node.js server
             client = ZombieProxyClient(socket)
@@ -120,7 +120,6 @@ class ZombieProxyServer(object):
         # Start a thread to monitor and redirect the
         # subprocess stdout and stderr to the console.
         #
-        PipeWorker(self.child.stdout).start()
 
 
 # When this process ends, ensure all node subprocesses terminate

@@ -1,4 +1,7 @@
+import os
 from unittest import TestCase
+from SocketServer import UnixStreamServer, StreamRequestHandler
+import threading
 
 try:
     from json import loads, dumps
@@ -6,105 +9,160 @@ except ImportError:
     from simplejson import loads, dumps  # noqa
 import fudge
 
+from zombie.proxy.client import (
+    encode,
+    encode_args,
+    decode,
+    Element,
+    NodeError,
+    ZombieServerConnection,
+    ZombieProxyClient)
 from zombie.proxy.server import ZombieProxyServer
-from zombie.proxy.client import ZombieProxyClient
-from zombie.compat import StringIO
+from zombie.tests.webserver import WebServerTestCase
 
 
-class FakeNode(object):
-    def __json__(self):
-        return 'ENCODED'
+class EncodeTests(TestCase):
+    def test_json(self):
+        obj = lambda: 1
+        obj.json = "myjson"
+        self.assertEqual("myjson", encode(obj))
+
+    def test_json_method(self):
+        obj = lambda: 1
+        obj.__json__ = lambda: "anotherjson"
+        self.assertEqual("anotherjson", encode(obj))
+
+    def test_asis(self):
+        obj = [1, 2]
+        self.assertEqual("[1, 2]", encode(obj))
 
 
-class FakePopen(object):
+class EncodeArgsTests(TestCase):
+    def test_none(self):
+        self.assertEqual('', encode_args(None))
 
-    stdin = StringIO()
-    stdout = StringIO()
+    def test_empty(self):
+        self.assertEqual('', encode_args([]))
+
+    def test_arguments(self):
+        self.assertEqual('"one", "two"', encode_args(['one', 'two']))
+
+    def test_arguments_extra(self):
+        self.assertEqual('"one", ', encode_args(['one'], True))
 
 
-class TestServerCommunication(TestCase):
+class DecodeTests(TestCase):
+    def test_none(self):
+        self.assertEqual(None, decode(None))
+
+    def test_something(self):
+        self.assertEqual([1], decode("[1]"))
+
+
+class ElementTests(TestCase):
+    def test_index(self):
+        self.assertEqual(15, Element(15).index)
+
+    def test_json(self):
+        self.assertEqual("ELEMENTS[15]", Element(15).json)
+
+    def test_str(self):
+        self.assertEqual("ELEMENTS[15]", str(Element(15)))
+
+
+class EchoHandler(StreamRequestHandler):
+    def handle(self):
+        self.wfile.write(self.rfile.readline())
+
+
+class EchoServer(threading.Thread):
+    def __init__(self, address):
+        super(EchoServer, self).__init__()
+        self.daemon = True
+        self.server = UnixStreamServer(address, EchoHandler)
+
+    def run(self):
+        self.server.handle_request()
+
+    def stop(self):
+        self.server.shutdown()
+
+
+class ZombieServerConnectionTests(TestCase):
+    address = '/tmp/testing-unix-server'
+
+    def cleanup(self):
+        if os.path.exists(self.address):
+            os.remove(self.address)
 
     def setUp(self):
-        super(TestServerCommunication, self).setUp()
+        self.cleanup()
+        self.server = EchoServer(self.address)
+        self.server.start()
+        self.connection = ZombieServerConnection(self.address)
+
+    def tearDown(self):
+        self.cleanup()
+
+    def test_send(self):
+        res = self.connection.send('Hello world!\n')
+        self.assertEqual('Hello world!\n', res)
+
+
+class ZombieProxyClientTests(WebServerTestCase):
+    def setUp(self):
+        super(ZombieProxyClientTests, self).setUp()
+        # Note, As a singleton so it will be created once, not in every test.
         self.server = ZombieProxyServer()
         self.client = ZombieProxyClient(self.server.socket)
 
     def tearDown(self):
-        super(TestServerCommunication, self).tearDown()
-        fudge.clear_expectations()
-
-    def test_encode(self):
-        foo = {
-            'foo': 'bar'
-        }
-        self.client.__encode__(foo) == dumps(foo)
-
-        self.client.__encode__(FakeNode()) == 'ENCODED'
-
-    def test_decode(self):
-        foo = dumps({
-            'foo': 'bar'
-        })
-        self.client.__decode__(foo) == loads(foo)
-
-    def test_simple_send(self):
-        self.client.send(
-            "stream.end()"
-        )
+        super(ZombieProxyClientTests, self).tearDown()
 
     def test_simple_json(self):
         obj = {
             'foo': 'bar',
             'test': 500
         }
-        assert self.client.json(obj) == obj
+        self.assertEqual(obj, self.client.json(obj))
 
-    @fudge.with_fakes
-    def test_simple_wait(self):
+    def test_nowait(self):
+        self.assertEqual('Test', self.client.nowait("result = 'Test';"))
 
-        js = """
-        try {
-            browser.visit("%s", function(err, browser){
-                if (err)
-                    stream.end(JSON.stringify(err.stack));
-                else
-                    stream.end();
-            });
-        } catch (err) {
-            stream.end(JSON.stringify(err.stack));
-        }
-        """ % 'http://example.com'
+    def test_wait(self):
+        self.client.wait('browser.visit', self.base_url)
 
-        with fudge.patched_context(
-            ZombieProxyClient,
-            'send',
-            (
-                fudge.Fake('send', expect_call=True).with_args(js)
-            )
-        ):
-            self.client.wait('visit', 'http://example.com')
+    def test_wait_error(self):
+        with self.assertRaises(NodeError):
+            self.client.wait('browser.visit', self.base_url + 'notfound')
 
-    @fudge.with_fakes
-    def test_wait_without_arguments(self):
+    def test_ping(self):
+        self.assertEqual("pong", self.client.ping())
 
-        js = """
-        try {
-            browser.wait(function(err, browser){
-                if (err)
-                    stream.end(JSON.stringify(err.stack));
-                else
-                    stream.end();
-            });
-        } catch (err) {
-            stream.end(JSON.stringify(err.stack));
-        }
-        """
+    def test_cleanup(self):
+        client = self.client
+        self.assertEqual(1, client.json('browser.testing = 1'))
+        client.cleanup()
+        self.assertFalse(client.json('"testing" in browser'))
 
-        with fudge.patched_context(
-            ZombieProxyClient,
-            'send',
-            (
-                fudge.Fake('send', expect_call=True).with_args(js)
-            )
-        ):
-            self.client.wait('wait')
+    def test_create_element(self):
+        client = self.client
+        client.wait('browser.visit', self.base_url)
+        self.assertEqual(
+            0,
+            client.create_element('browser.query', ('form',)).index)
+        self.assertEqual(
+            1,
+            client.create_element('browser.query', ('form',)).index)
+
+    def test_create_element_attribute(self):
+        client = self.client
+        client.wait('browser.visit', self.base_url)
+        self.assertEqual(
+            0, client.create_element('browser.html').index)
+
+    def test_create_elements(self):
+        client = self.client
+        client.wait('browser.visit', self.base_url)
+        res = client.create_elements('browser.queryAll', ('input', ))
+        self.assertEqual([0, 1, 2, 3, 4], [x.index for x in res])
