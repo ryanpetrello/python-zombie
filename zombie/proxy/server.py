@@ -26,7 +26,7 @@ class PipeWorker(threading.Thread):
         self.daemon = True
         self.log = logging.getLogger(__name__)
 
-    def __worker__(self, pipe):
+    def __worker(self, pipe):
         while True:
             line = pipe.readline()
             if line:
@@ -36,10 +36,10 @@ class PipeWorker(threading.Thread):
 
     def run(self):
         try:
-            self.__worker__(self.pipe)
+            self.__worker(self.pipe)
         except Exception as e:
             try:
-                sys.stdout.write(e)
+                self.log.error(e)
             except:  # pragma: nocover
                 pass
 
