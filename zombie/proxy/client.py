@@ -122,15 +122,10 @@ class ZombieProxyClient(object):
 
         # Prepend JS to switch to the proper client context.
         message = """
-        try {
-            var _ctx = ctx_switch('%s');
-            var browser = _ctx[0];
-            var ELEMENTS = _ctx[1];
-            var result = null;
+            var _ctx = ctx_switch('%s'),
+                browser = _ctx[0],
+                ELEMENTS = _ctx[1];
             %s
-        } catch(err) {
-            stream.end(JSON.stringify([1, err.stack]));
-        }
         """ % (id(self), javascript)
 
         response = self.connection.send(message)
@@ -138,8 +133,6 @@ class ZombieProxyClient(object):
         return self._handle_response(response)
 
     def _handle_response(self, response):
-        if not response:
-            raise NodeError('Empty response, communication error')
         errno, result = decode(response)
         if errno == 1:
             raise NodeError(result)

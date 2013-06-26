@@ -70,7 +70,12 @@ net.createServer(function (stream){
   stream.setEncoding('utf8');
 
   stream.on('data', function (data){
-    eval(data);
+    var result = null;
+    try {
+        eval(data);
+    } catch(err) {
+        stream.end(JSON.stringify([1, err.stack]));
+    }
   });
 
 }).listen(process.argv[2], function(){

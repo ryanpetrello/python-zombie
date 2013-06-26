@@ -129,6 +129,10 @@ class ZombieProxyClientTests(WebServerTestCase):
         }
         self.assertEqual(obj, self.client.json(obj))
 
+    def test_malformed_command(self):
+        with self.assertRaises(NodeError):
+            self.client.json("banana")
+
     def test_nowait(self):
         self.assertEqual('Test', self.client.nowait("result = 'Test';"))
 
