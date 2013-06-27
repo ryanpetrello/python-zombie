@@ -66,15 +66,46 @@ function ctx_switch(id){
         CLIENTS[id] = [new Browser(), []];
     return CLIENTS[id];
 }
+
+function create_elements(ELEMENTS, results) {
+    var result = [];
+    for(var i = 0; i < results.length; i++) {
+        ELEMENTS.push(results[i]);
+        result.push(ELEMENTS.length - 1);
+    }
+    return result;
+}
+
+function create_element(ELEMENTS, result) {
+    if (result) {
+        ELEMENTS.push(result);
+        return ELEMENTS.length - 1;
+    }
+    return null;
+}
+
 net.createServer(function (stream){
   stream.setEncoding('utf8');
+
+    function return_error(err) {
+        stream.end(JSON.stringify([1, err.stack]));
+    }
+
+    function return_result(result) {
+        stream.end(JSON.stringify([0, result]));
+    }
+
+    function wait_callback(err, browser) {
+        if (err) return_error(err);
+        else return_result(null);
+    };
 
   stream.on('data', function (data){
     var result = null;
     try {
         eval(data);
     } catch(err) {
-        stream.end(JSON.stringify([1, err.stack]));
+        return_error(err);
     }
   });
 

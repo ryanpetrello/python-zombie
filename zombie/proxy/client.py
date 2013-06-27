@@ -153,7 +153,7 @@ class ZombieProxyClient(object):
 
         js = """
             %s;
-            stream.end(JSON.stringify([0, result]));
+            return_result(result);
         """ % js
         return self._send(js)
 
@@ -166,13 +166,7 @@ class ZombieProxyClient(object):
         """
         methodargs = encode_args(args, extra=True)
         js = """
-        %s(%sfunction(err, browser){
-            if (err) {
-                stream.end(JSON.stringify([1, err.stack]));
-            }
-            else
-                stream.end(JSON.stringify([0, null]));
-        });
+        %s(%s wait_callback);
         """ % (method, methodargs)
         response = self._send(js)
 
@@ -217,17 +211,13 @@ class ZombieProxyClient(object):
         else:
             arguments = "(%s)" % encode_args(args)
         js = """
-            var element = %(method)s%(args)s;
-            if (element) {
-                ELEMENTS.push(element);
-                result = ELEMENTS.length - 1;
-            }
+            create_element(ELEMENTS, %(method)s%(args)s);
         """ % {
             'method': method,
             'args': arguments
         }
 
-        index = self.nowait(js)
+        index = self.json(js)
         if index is None:
             return None
 
@@ -242,17 +232,11 @@ class ZombieProxyClient(object):
         args = encode_args(args)
 
         js = """
-            result = [];
-            var elements = %(method)s(%(args)s);
-            for(var i = 0; i < elements.length; i++){
-                var element = elements[i];
-                ELEMENTS.push(element);
-                result.push(ELEMENTS.length - 1);
-            };
+            create_elements(ELEMENTS, %(method)s(%(args)s))
         """ % {
             'method': method,
             'args': args,
         }
 
-        indexes = self.nowait(js)
+        indexes = self.json(js)
         return map(Element, indexes)
