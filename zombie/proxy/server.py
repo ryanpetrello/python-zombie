@@ -40,7 +40,7 @@ class PipeWorker(threading.Thread):
         except Exception as e:
             try:
                 self.log.error(e)
-            except:  # pragma: nocover
+            except:
                 pass
 
 __server_instance__ = None
