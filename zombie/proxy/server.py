@@ -80,6 +80,10 @@ class ZombieProxyServer(object):
         socket = socket or '/tmp/zombie-%s.sock' % random.randint(0, 10000)
 
         self.socket = socket
+
+        # Kill the node process when finished
+        atexit.register(__kill_node_processes__)
+
         #
         # Spawn the node proxy server in a subprocess.
         # This is a simple socket server that listens for data,
@@ -113,11 +117,6 @@ class ZombieProxyServer(object):
                     break
                 time.sleep(.1)
 
-        #
-        # Start a thread to monitor and redirect the
-        # subprocess stdout and stderr to the console.
-        #
-
 
 # When this process ends, ensure all node subprocesses terminate
 def __kill_node_processes__():  # pragma: nocover
@@ -131,6 +130,3 @@ def __kill_node_processes__():  # pragma: nocover
         if path.exists(instance.socket):
             from os import remove
             remove(instance.socket)
-atexit.register(__kill_node_processes__)
-signal.signal(signal.SIGTERM, lambda signum, stack_frame: exit(1))
-signal.signal(signal.SIGINT, lambda signum, stack_frame: exit(1))
