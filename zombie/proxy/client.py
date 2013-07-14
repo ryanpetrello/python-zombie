@@ -37,12 +37,20 @@ def encode_args(args, extra=False):
 
 
 def decode(json):
+    """
+    Decode json.
+
+    Returns None if None is given as json
+    """
     if json is None:
         return None
     return loads(json)
 
 
 class Element(object):
+    """
+    Reference to an element stored in the nodejs server
+    """
     def __init__(self, index):
         self.__index = index
 

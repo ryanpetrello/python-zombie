@@ -172,4 +172,4 @@ class ZombieProxyClientTests(WebServerTestCase):
         client = self.client
         client.wait('browser.visit', self.base_url)
         res = client.create_elements('browser.queryAll', ('input', ))
-        self.assertEqual([0, 1, 2, 3, 4], [x.index for x in res])
+        self.assertEqual(list(range(6)), [x.index for x in res])

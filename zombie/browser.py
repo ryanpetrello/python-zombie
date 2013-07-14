@@ -61,6 +61,10 @@ class Browser(object):
         self.client.nowait('browser.check', (selector,))
         return self
 
+    def uncheck(self, selector):
+        self.client.nowait('browser.uncheck', (selector,))
+        return self
+
     def select(self, selector, value):
         self.client.nowait('browser.select', (selector, value))
         return self
@@ -71,10 +75,6 @@ class Browser(object):
 
     def unselect(self, selector, value):
         self.client.nowait('browser.unselect', (selector, value))
-        return self
-
-    def unselectOption(self, selector):
-        self.client.nowait('browser.unselectOption', (selector,))
         return self
 
     def attach(self, selector, filename):

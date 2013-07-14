@@ -57,18 +57,16 @@ class TestBrowser(BaseTestCase):
     def test_unselect(self):
         browser = self.browser
         select = "select[name=colors]"
-        option = "option[value=green]"
+        option = "option[value=red]"
 
-        browser.select(select, 'Color green')
         self.assertTrue(browser.query(option).selected)
-        browser.unselect(select, 'Color green')
+        browser.unselect(select, 'Color red')
         self.assertFalse(browser.query(option).selected)
 
     def test_unselectOption(self):
         browser = self.browser
-        selector = "option[value=green]"
+        selector = "option[value=red]"
 
-        browser.selectOption(selector)
         self.assertTrue(browser.query(selector).selected)
         browser.unselectOption(selector)
         self.assertFalse(browser.query(selector).selected)
@@ -275,7 +273,7 @@ class TestDOMNode(BaseTestCase):
         form = self.browser.css('form')[0]
         inputs = form.css('input')
 
-        self.assertEqual(5, len(inputs))
+        self.assertEqual(6, len(inputs))
         self.assertTrue(all(f.tagName.lower() == 'input' for f in inputs))
 
         # The document contains a paragraph, but it's *outside* of the form,
@@ -380,3 +378,47 @@ class TestDOMNode(BaseTestCase):
     def test_fire(self):
         self.browser.css('button')[0].click()
         assert urlparse(self.browser.location).path.endswith('/submit')
+
+    def test_pressButton(self):
+        self.browser.query('#submit').pressButton()
+        self.assertTrue(self.browser.location.endswith('/submit'))
+
+    def test_check(self):
+        element = self.browser.query('input[name=mycheckbox]')
+        element.check()
+        self.assertTrue(element.checked)
+
+    def test_uncheck(self):
+        element = self.browser.query('input[name=mycheckedcheckbox]')
+        self.assertTrue(element.checked)
+        element.uncheck()
+        self.assertFalse(element.checked)
+
+    def test_select(self):
+        element = self.browser.query('select[name=planet]')
+        element.select('Planet Mars')
+        self.assertTrue(self.browser.query('option[value=mars]').selected)
+
+    def test_selectOption(self):
+        element = self.browser.query('option[value=mars]')
+        element.selectOption()
+        self.assertTrue(element.selected)
+
+    def test_unselect(self):
+        element = self.browser.query('select[name=colors]')
+        element.unselect('Color red')
+        self.assertFalse(self.browser.query('option[value=red]').selected)
+
+    def test_attach(self):
+        element = self.browser.query('input[name=myfile]')
+
+        element.attach(__file__)
+        files = [{
+            'type': 'application/octet-stream',
+            'name': os.path.basename(__file__),
+            'size': os.path.getsize(__file__)}]
+        self.assertEqual(files, element.files)
+
+    def test_field(self):
+        element = self.browser.query('body')
+        self.assertIs(element, element.field())
