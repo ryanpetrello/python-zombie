@@ -3,6 +3,7 @@
 *.coverage
 *.DS_Store
 *.tox
+*.swp
 .Python
 doc/build
 bin
