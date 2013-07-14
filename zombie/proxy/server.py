@@ -59,9 +59,6 @@ def singleton(cls):
             global __server_instance__
             __server_instance__ = instances[cls]
         return instances[cls]
-        ZombieProxyServer.__name__ = cls.__name__
-        ZombieProxyServer.__doc__ = cls.__doc__
-        ZombieProxyServer.__repr__ = cls.__repr__
     return ZombieProxyServer
 
 
