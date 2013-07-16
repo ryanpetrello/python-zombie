@@ -81,6 +81,10 @@ class Browser(object):
         self.client.nowait('browser.attach', (selector, filename))
         return self
 
+    def choose(self, selector):
+        self.client.nowait('browser.choose', (selector, ))
+        return self
+
     #
     # query
     #
@@ -92,6 +96,12 @@ class Browser(object):
     #
     # Document Content
     #
+    def load(self, html):
+        """
+        Loads raw html
+        """
+        self.client.wait('browser.load', html)
+
     @property
     def body(self):
         """
@@ -278,6 +288,16 @@ class Browser(object):
         """
         self.client.json('browser.dump()')
 
+    def get_resource(self, url):
+        return self.client.wait_return('browser.resources.get', url)
+
+    def evaluate(self, code):
+        self.client.nowait('browser.evaluate', (code, ))
+
+    def wait(self, wait_argument=None):
+        arguments = [] if wait_argument is None else [wait_argument]
+        self.client.wait('browser.wait', *arguments)
+
     @property
     def resources(self):
         """
@@ -439,6 +459,12 @@ class DOMNode(object):
         Returns the :class:`zombie.dom.DOMNode` to allow function chaining.
         """
         return self.browser.attach(self.element, filename)
+
+    def choose(self):
+        """
+        If applicable, chooses this radio button
+        """
+        return self.browser.choose(self.element)
 
     def field(self):
         """

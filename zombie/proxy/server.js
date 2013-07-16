@@ -88,16 +88,21 @@ net.createServer(function (stream){
   stream.setEncoding('utf8');
 
     function return_error(err) {
-        stream.end(JSON.stringify([1, err.stack]));
-    }
+      stream.end(JSON.stringify([1, err.stack]));
+    };
 
     function return_result(result) {
-        stream.end(JSON.stringify([0, result]));
-    }
+      stream.end(JSON.stringify([0, result]));
+    };
 
     function wait_callback(err, browser) {
-        if (err) return_error(err);
-        else return_result(null);
+      if (err) return_error(err);
+      else return_result(null);
+    };
+
+    function wait_n_return_callback(err, value) {
+      if (err) return_error(err);
+      else return_result(value);
     };
 
   stream.on('data', function (data){
