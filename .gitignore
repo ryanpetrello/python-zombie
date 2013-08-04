@@ -10,3 +10,4 @@ htmlcov
 include
 lib
 share
+node_modules
