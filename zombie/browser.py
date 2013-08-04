@@ -142,6 +142,13 @@ class Browser(BaseNode):
         self.client.wait('visit', url)
         return self
 
+    def load(self, content):
+        """
+        Loads the html given
+        """
+        self.client.wait('load', content)
+        return self
+
     def back(self):
         """
         Navigate to the previous page in history.
