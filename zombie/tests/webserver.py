@@ -80,7 +80,7 @@ class AppBuilder(object):
     def add_redirect(self, method, path, redirect_to):
         def action(environ, start_response):
             response_headers = [
-                ('Location', '/'),
+                ('Location', redirect_to),
                 ('Content-type', 'text/plain')
             ]
             start_response('302 Found', response_headers)

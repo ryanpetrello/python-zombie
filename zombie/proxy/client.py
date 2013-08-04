@@ -191,7 +191,6 @@ class ZombieProxyClient(object):
         """ % (method, methodargs)
         return self._send(js)
 
-
     def ping(self):
         """
         Send a simple Javascript instruction and wait on a reply.

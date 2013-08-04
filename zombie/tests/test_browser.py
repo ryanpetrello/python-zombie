@@ -82,6 +82,11 @@ class TestBrowser(BaseTestCase):
             'size': os.path.getsize(__file__)}]
         self.assertEqual(files, browser.query(selector).files)
 
+    def test_choose(self):
+        browser = self.browser
+        browser.choose('#color-2')
+        self.assertEqual('2', browser.query('input[name=color]:checked').value)
+
     def test_field(self):
         field = self.browser.field('mycheckbox')
         self.assertEqual('checkbox', field.type)
@@ -89,6 +94,11 @@ class TestBrowser(BaseTestCase):
     #
     # Document Content
     #
+    def test_load(self):
+        browser = self.browser
+        browser.load("<html><head><title>Hey</title></head></html>")
+        self.assertEqual('Hey', browser.query('title').text)
+
     def test_body(self):
         body = self.browser.body
         assert isinstance(body, DOMNode)
@@ -217,6 +227,20 @@ class TestBrowser(BaseTestCase):
     # Dump is broken in Zombie 2.0
     #def test_dump(self):
     #    self.browser.dump()
+
+    def test_get_resource(self):
+        res = self.browser.get_resource('/location2')
+        self.assertEqual(200, res['statusCode'])
+
+    def test_post_resource(self):
+        res = self.browser.post_resource('/submit', {})
+        self.assertIn('Submitted', res['body'])
+
+    def test_evaluate(self):
+        self.assertEqual(2, self.browser.evaluate('1+1'))
+
+    def test_wait(self):
+        self.browser.wait()
 
     def test_resources(self):
         resources = self.browser.resources
@@ -418,6 +442,11 @@ class TestDOMNode(BaseTestCase):
             'name': os.path.basename(__file__),
             'size': os.path.getsize(__file__)}]
         self.assertEqual(files, element.files)
+
+    def test_choose(self):
+        browser = self.browser
+        browser.query('#color-2').choose()
+        self.assertEqual('2', browser.query('input[name=color]:checked').value)
 
     def test_field(self):
         element = self.browser.query('body')

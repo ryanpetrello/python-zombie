@@ -289,10 +289,20 @@ class Browser(object):
         self.client.json('browser.dump()')
 
     def get_resource(self, url):
+        """
+        Gets a resource and returns a json with information
+        """
         return self.client.wait_return('browser.resources.get', url)
 
+    def post_resource(self, url, form_params):
+        options = {
+            'headers': {
+                'content-type': 'application/x-www-form-urlencoded'},
+            'params': form_params}
+        return self.client.wait_return('browser.resources.post', url, options)
+
     def evaluate(self, code):
-        self.client.nowait('browser.evaluate', (code, ))
+        return self.client.json('browser.evaluate', (code, ))
 
     def wait(self, wait_argument=None):
         arguments = [] if wait_argument is None else [wait_argument]
