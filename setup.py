@@ -7,6 +7,10 @@ except ImportError:
 from distutils.core import Command
 
 __version__ = '0.2.0'
+tests_require = []
+
+if sys.version_info < (2, 7):
+    tests_require += ['unittest2']
 
 
 class Tox(Command):
@@ -62,5 +66,6 @@ setup(
     ],
     license="MIT",
     install_requires=[],
+    tests_require=tests_require,
     cmdclass={'test': Tox}
 )
