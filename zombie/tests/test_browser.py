@@ -224,9 +224,6 @@ class TestBrowser(BaseTestCase):
     #
     # Debugging
     #
-    # Dump is broken in Zombie 2.0
-    #def test_dump(self):
-    #    self.browser.dump()
 
     def test_get_resource(self):
         res = self.browser.get_resource('/location2')
