@@ -14,7 +14,7 @@ before_install:
   - npm cache clean
   - PYTHON=~/virtualenv/python2.7/bin/python npm install zombie
 install: 
-  - python setup.py install
+  - if [[ $TRAVIS_PYTHON_VERSION == 2.6 ]]; then pip install --use-mirrors unittest2; fi
   - pip install . --use-mirrors
   - pip install nose
   - pip install fudge
