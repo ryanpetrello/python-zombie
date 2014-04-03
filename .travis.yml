@@ -17,5 +17,6 @@ install:
   - pip install . --use-mirrors
   - pip install nose
   - pip install fudge
+  - pip install unittest2
 script: 
   - nosetests --where=zombie
