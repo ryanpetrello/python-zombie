@@ -9,7 +9,7 @@ powered by `node.js <http://nodejs.org/>`_. ::
 Requires the latest node (0.10) and zombie (2.0.0alpha)::
 
     brew install node
-    curl https://npmjs.org/install.sh | sh
+    curl https://www.npmjs.org/install.sh | sh
     npm install zombie
 
 .. _travis: http://travis-ci.org/ryanpetrello/python-zombie
