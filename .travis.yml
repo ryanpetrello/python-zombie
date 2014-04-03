@@ -14,7 +14,7 @@ before_install:
   - npm cache clean
   - PYTHON=~/virtualenv/python2.7/bin/python npm install zombie
 install: 
-  - pip install unittest2
+  - python setup.py install
   - pip install . --use-mirrors
   - pip install nose
   - pip install fudge
