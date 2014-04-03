@@ -1,10 +1,5 @@
-try:
-    from setuptools import setup, find_packages
-except ImportError:
-    from ez_setup import use_setuptools
-    use_setuptools()
-    from setuptools import setup, find_packages  # noqa
-from distutils.core import Command
+from setuptools import setup, find_packages, Command
+import sys
 
 __version__ = '0.2.0'
 tests_require = []
