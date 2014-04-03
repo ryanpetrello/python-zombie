@@ -6,7 +6,7 @@ except ImportError:
     from setuptools import setup, find_packages  # noqa
 from distutils.core import Command
 
-from zombie import __version__
+__version__ = '0.2.0'
 
 
 class Tox(Command):
