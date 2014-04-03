@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+    <title>Example</title>
+</head>
+<body>
+  <div id="content">
+    <h1>Search</h1>
+    <p>This is an HTML document</p>
+  </div>
+  <div>
+    <form id="form" name="form" class="submittable" method="POST" action="/submit">
+      <input name="q" type="text" class="textfield"></input>
+
+      <input name="mycheckbox" type="checkbox" value="1"></input>
+      <input name="mycheckedcheckbox" type="checkbox" checked="checked" value="2"></input>
+
+      <input id="color-1" name="color" type="radio" value="1"></input>
+      <input id="color-2" name="color" type="radio" value="2"></input>
+
+      <input type="file" name="myfile" />
+
+      <textarea cols="80" rows="5"></textarea>
+
+      <select name="planet">
+        <option value="earth" selected="selected">Planet Earth</option>
+        <option value="mars">Planet Mars</option>
+      </select>
+
+      <select name="colors" multiple="multiple">
+        <option value="red" selected="selected">Color red</option>
+        <option value="green">Color green</option>
+        <option value="blue">Color blue</option>
+      </select>
+
+      <button type="submit" name="submit" id="submit">Search</button>
+    </form>
+  </div>
+  <a id="about-zombie" href="/location2">Learn About Zombie</a>
+</body>
+</html>

@@ -3,6 +3,7 @@
 *.coverage
 *.DS_Store
 *.tox
+*.swp
 .Python
 doc/build
 bin
@@ -10,3 +11,4 @@ htmlcov
 include
 lib
 share
+node_modules
