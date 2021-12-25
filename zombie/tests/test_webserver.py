@@ -11,7 +11,7 @@ from zombie.tests.webserver import WebServerTestCase
 
 class TestServerTests(WebServerTestCase):
     """
-    Test the TestServer to make sure it does what we want and avoid misterious
+    Test the TestServer to make sure it does what we want and avoid mysterious
     problems during normal testing
     """
     def test_index(self):

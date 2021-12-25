@@ -108,7 +108,7 @@ class ZombieServerConnection(object):
 class ZombieProxyClient(object):
     """
     Sends data to a :class:`zombie.proxy.server.ZombieProxyServer` bound to
-    a specific TCP socket.  Data is evaulated by the server and results
+    a specific TCP socket.  Data is evaluated by the server and results
     (if any) are returned.
     """
 
