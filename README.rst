@@ -1,3 +1,16 @@
+**THIS PROJECT IS NO LONGER MAINTAINED**
+========================================
+
+If you're trying to do headless testing in Python, I recommend checking out https://playwright.dev/
+
+.. _travis: http://travis-ci.org/ryanpetrello/python-zombie
+.. |travis| image:: https://secure.travis-ci.org/ryanpetrello/python-zombie.png
+
+|travis|_
+
+Installing
+==========
+
 A Python driver for `Zombie.js <http://zombie.labnotes.org/>`_, a headless browser
 powered by `node.js <http://nodejs.org/>`_. ::
 
@@ -10,13 +23,6 @@ powered by `node.js <http://nodejs.org/>`_. ::
     curl https://www.npmjs.org/install.sh | sh
     npm install zombie
 
-.. _travis: http://travis-ci.org/ryanpetrello/python-zombie
-.. |travis| image:: https://secure.travis-ci.org/ryanpetrello/python-zombie.png
-
-|travis|_
-
-Installing
-==========
 To install Zombie from PyPI::
 
     $ pip install zombie
